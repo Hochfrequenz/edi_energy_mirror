@@ -1,7 +1,6 @@
-#C:
-#cd C:/Users/Administrator/Documents/edi_energy_mirror/
+C:
+cd C:/Users/Administrator/Documents/edi_energy_mirror/
 git pull
-rm edi_energy_de/*.html
 rm edi_energy_de/future/*.pdf
 rm edi_energy_de/current/*.pdf
 rm edi_energy_de/past/*.pdf
