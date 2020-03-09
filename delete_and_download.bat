@@ -1,9 +1,9 @@
 C:
 cd C:/Users/Administrator/Documents/edi_energy_mirror/
 git pull
-rm edi_energy_de/future/*.pdf
-rm edi_energy_de/current/*.pdf
-rm edi_energy_de/past/*.pdf
+del edi_energy_de/future/*.pdf
+del edi_energy_de/current/*.pdf
+del edi_energy_de/past/*.pdf
 
 python download_and_post_process.py
 git add edi_energy_de/*.html
