@@ -1,12 +1,19 @@
-import requests
+"""
+Downloads import HTML and PDF files from edi-energy.de using beautiful soup to parse the mess.
+"""
+import datetime
+import re
 from random import randint
 from time import sleep
-import re
-import datetime
+
+import requests
 from bs4 import BeautifulSoup, Comment
 
 
 def remove_comments(soup):
+    """
+    Removes thes HTML comments from the given soup.
+    """
     for html_comment in soup.findAll(text=lambda text: isinstance(text, Comment)):
         html_comment.extract()
 
@@ -64,11 +71,11 @@ for doc_link in doc_links:
             vali_date = datetime.datetime.strptime(
                 table_cells[2].text.strip(), "%d.%m.%Y"
             )
-        except ValueError as ve:
+        except ValueError as value_error:
             if table_cells[2].text.strip() == "Offen":
                 vali_date = datetime.date(9999, 12, 31)
             else:
-                raise ve
+                raise value_error
         download_href = table_cells[3].find("a").attrs["href"]
         sleep(randint(1, 10))
         doc_response = requests.get(ROOT_URL + download_href)
