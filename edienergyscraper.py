@@ -158,7 +158,7 @@ class EdiEnergyScraper:
             )
             try:
                 # the "Gültig bis" column / valid to date describes on which date the document becomes legally binding.
-                # usually this is something like "   01.04.2020   " or "01.10.2019"
+                # usually this is something like "   31.03.2020   " or "30.09.2019"
                 valid_to_date = datetime.datetime.strptime(
                     table_cells[2].text.strip(), "%d.%m.%Y"
                 )
