@@ -165,7 +165,7 @@ class EdiEnergyScraper:
 
     def mirror(self):
         """
-        Main method of the scraper. Downloads all the files and pages.
+        Main method of the scraper. Downloads all the files and pages and stores them in the filesystem
         """
         index_soup = self.get_index()
         index_path: Path = Path(self._root_dir, "index.html")
@@ -178,3 +178,6 @@ class EdiEnergyScraper:
             epoch_path: Path = Path(self._root_dir, f"{epoch}.html")  # e.g. "future.html"
             with open(epoch_path, "w+", encoding="utf8") as outfile:
                 outfile.write(epoch_soup.prettify())
+            file_map = EdiEnergyScraper.get_epoch_file_map(epoch_soup)
+            for file_name, link in file_map.items():
+                self._download_and_save_pdf(file_name=file_name, link=link, epoch=epoch)
