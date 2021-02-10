@@ -1,6 +1,8 @@
 import time
+from pathlib import Path
 
 import pytest
+from bs4 import BeautifulSoup
 
 from edienergyscraper import EdiEnergyScraper
 
@@ -33,7 +35,7 @@ class TestEdiEnergyScraper:
         """
         with open("testfiles/index_20210208.html", "r", encoding="utf8") as infile:
             response_body = infile.read()
-        assert "<!--" in response_body
+        assert "<!--" in response_body  # original response contains comments, will be removed
         requests_mock.get("https://www.my_root_url.test", text=response_body)
         ees = EdiEnergyScraper("https://www.my_root_url.test", waiter=fast_waiter)
         actual_soup = ees.get_index()
@@ -50,8 +52,84 @@ class TestEdiEnergyScraper:
         """
         with open("testfiles/index_20210208.html", "r", encoding="utf8") as infile:
             response_body = infile.read()
-        assert "<!--" in response_body
         requests_mock.get("https://www.edi-energy.de", text=response_body)
         ees = EdiEnergyScraper("https://www.edi-energy.de", waiter=fast_waiter)
         actual_link = ees.get_documents_page_link(ees.get_index())
         assert actual_link == "https://www.edi-energy.de/index.php?id=38"
+
+    @pytest.mark.datafiles(
+        "testfiles/dokumente_20210208.html",
+    )
+    def test_epoch_links_extraction(self):
+        """
+        Tests that the links to past/current/future documents overview pages are extracted.
+        """
+        with open("testfiles/dokumente_20210208.html", "r", encoding="utf8") as infile:
+            response_body = infile.read()
+        soup = BeautifulSoup(response_body, "html.parser")
+        actual = EdiEnergyScraper.get_epoch_links(soup)
+        assert len(actual.keys()) == 3
+        assert actual[
+                   "current"] == "https://www.edi-energy.de/index.php?id=38&tx_bdew_bdew%5Bview%5D=now&tx_bdew_bdew%5Baction%5D=list&tx_bdew_bdew%5Bcontroller%5D=Dokument&cHash=5d1142e54d8f3a1913af8e4cc56c71b2"
+        assert actual[
+                   "past"] == "https://www.edi-energy.de/index.php?id=38&tx_bdew_bdew%5Bview%5D=archive&tx_bdew_bdew%5Baction%5D=list&tx_bdew_bdew%5Bcontroller%5D=Dokument&cHash=6dd9d237ef46f6eebe2f4ef385528382"
+        assert actual[
+                   "future"] == "https://www.edi-energy.de/index.php?id=38&tx_bdew_bdew%5Bview%5D=future&tx_bdew_bdew%5Baction%5D=list&tx_bdew_bdew%5Bcontroller%5D=Dokument&cHash=325de212fe24061e83e018a2223e6185"
+
+    @pytest.mark.datafiles(
+        "testfiles/future_20210210.html",
+    )
+    def test_epoch_file_map_future_20210210(self):
+        with open("testfiles/future_20210210.html", "r", encoding="utf8") as infile:
+            response_body = infile.read()
+        soup = BeautifulSoup(response_body, "html.parser")
+        actual = EdiEnergyScraper.get_epoch_file_map(soup)
+        assert len(actual.keys()) == 76
+        for file_name in actual.keys():
+            # all the future names should contain 99991231 as "valid to" date
+            assert "_99991231_" in file_name
+        assert actual[
+                   "UTILMDAHBWiM3.1bKonsolidierteLesefassungmitFehlerkorrekturenStand18.12.2020_99991231_20210401.pdf"] == "https://www.edi-energy.de/index.php?id=38&tx_bdew_bdew%5Buid%5D=1000&tx_bdew_bdew%5Baction%5D=download&tx_bdew_bdew%5Bcontroller%5D=Dokument&cHash=dbf7d932028aa2059c96b25a684d02ed"
+
+    @pytest.mark.datafiles(
+        "testfiles/current_20210210.html",
+    )
+    def test_epoch_file_map_current_20210210(self):
+        with open("testfiles/current_20210210.html", "r", encoding="utf8") as infile:
+            response_body = infile.read()
+        soup = BeautifulSoup(response_body, "html.parser")
+        actual = EdiEnergyScraper.get_epoch_file_map(soup)
+        assert len(actual.keys()) == 81
+        for file_name in actual.keys():
+            # all the current documents are either "open" or valid until April 2021
+            assert "_99991231_" in file_name or "_20210331_" in file_name
+        assert actual[
+                   "QUOTESMIG1.1aKonsolidierteLesefassungmitFehlerkorrekturenStand15.07.2019_20210331_20191201.pdf"] == "https://www.edi-energy.de/index.php?id=38&tx_bdew_bdew%5Buid%5D=738&tx_bdew_bdew%5Baction%5D=download&tx_bdew_bdew%5Bcontroller%5D=Dokument&cHash=f01ed973e9947ccf6b91181c93cd2a28"
+
+    @pytest.mark.datafiles(
+        "testfiles/past_20210210.html",
+    )
+    def test_epoch_file_map_past_20210210(self):
+        with open("testfiles/past_20210210.html", "r", encoding="utf8") as infile:
+            response_body = infile.read()
+        soup = BeautifulSoup(response_body, "html.parser")
+        actual = EdiEnergyScraper.get_epoch_file_map(soup)
+        assert len(actual.keys()) == 705
+
+    @pytest.mark.datafiles(
+        "testfiles/example_ahb.pdf",
+    )
+    def test_pdf_download(self, requests_mock, tmpdir_factory):
+        """
+        Tests that a PDF can be downloaded and is stored.
+        """
+        ees_dir = tmpdir_factory.mktemp("test_dir")
+        ees_dir.mkdir("future")
+        with open("testfiles/example_ahb.pdf", "rb") as pdf_file:
+            # Note that we do _not_ use pdf_file.read() here but provide the requests_mocker with a file handle.
+            # Otherwise you'd run into a "ValueError: Unable to determine whether fp is closed."
+            # docs: https://requests-mock.readthedocs.io/en/latest/response.html?highlight=file#registering-responses
+            requests_mock.get("https://my_file_link.inv/foo_bar.pdf", body=pdf_file)
+            ees = EdiEnergyScraper("https://my_file_link.inv/", waiter=fast_waiter, directory=ees_dir)
+            ees._download_and_save_pdf(epoch="future", file_name="my_favourite_ahb.pdf", link="foo_bar.pdf")
+        assert ees_dir.join(Path("future/my_favourite_ahb.pdf")).exists()
