@@ -3,7 +3,6 @@ from pathlib import Path
 
 import pytest
 from bs4 import BeautifulSoup
-
 from edienergyscraper import EdiEnergyScraper
 
 
@@ -133,3 +132,74 @@ class TestEdiEnergyScraper:
             ees = EdiEnergyScraper("https://my_file_link.inv/", waiter=fast_waiter, directory=ees_dir)
             ees._download_and_save_pdf(epoch="future", file_name="my_favourite_ahb.pdf", link="foo_bar.pdf")
         assert ees_dir.join(Path("future/my_favourite_ahb.pdf")).exists()
+
+    @staticmethod
+    def _get_soup_mocker(*args, **kwargs):
+        if args[0] == "current.html":
+            with open("testfiles/current_20210210.html", "r", encoding="utf8") as infile_current:
+                response_body = infile_current.read()
+        elif args[0] == "past.html":
+            with open("testfiles/past_20210210.html", "r", encoding="utf8") as infile_past:
+                response_body = infile_past.read()
+        elif args[0] == "future.html":
+            with open("testfiles/future_20210210.html", "r", encoding="utf8") as infile_future:
+                response_body = infile_future.read()
+        elif args[0] == "https://www.edi-energy.de":
+            with open("testfiles/index_20210208.html", "r", encoding="utf8") as infile_index:
+                response_body = infile_index.read()
+        elif args[0] == "https://www.edi-energy.de/index.php?id=38":
+            with open("testfiles/dokumente_20210208.html", "r", encoding="utf8") as infile_docs:
+                response_body = infile_docs.read()
+        else:
+            raise NotImplementedError(f"The soup for {args[0]} is not implemented in this test.")
+        soup = BeautifulSoup(response_body, "html.parser")
+        return soup
+
+    @staticmethod
+    def _get_efm_mocker(*args, **kwargs):
+        heading = args[0].find("h2").text
+        if heading == "Aktuell gültige Dokumente":
+            return {"xyz.pdf": "/a_current_ahb.pdf"}
+        if heading == "Zukünftige Dokumente":
+            return {"def.pdf": "/a_future_ahb.pdf"}
+        if heading == "Archivierte Dokumente":
+            return {"abc.pdf": "/a_past_ahb.pdf"}
+        raise NotImplementedError(f"The case '{heading}' is not implemented in this test.")
+
+    @pytest.mark.datafiles(
+        "testfiles/example_ahb.pdf",
+        "testfiles/dokumente_20210208.html",
+        "testfiles/index_20210208.html",
+        "testfiles/current_20210210.html"
+        "testfiles/past_20210210.html"
+        "testfiles/future_20210210.html"
+    )
+    def test_mirroring(self, mocker, requests_mock, tmpdir_factory):
+        """
+        Tests the overall process and mocks most of the already tested methods.
+        """
+        ees_dir = tmpdir_factory.mktemp("test_dir_mirror")
+        ees_dir.mkdir("future")
+        ees_dir.mkdir("current")
+        ees_dir.mkdir("past")
+        with open("testfiles/example_ahb.pdf", "rb") as pdf_file_current, \
+                open("testfiles/example_ahb.pdf", "rb") as pdf_file_future, \
+                open("testfiles/example_ahb.pdf", "rb") as pdf_file_past:
+            requests_mock.get("https://www.edi-energy.de/a_future_ahb.pdf", body=pdf_file_future)
+            requests_mock.get("https://www.edi-energy.de/a_current_ahb.pdf", body=pdf_file_current)
+            requests_mock.get("https://www.edi-energy.de/a_past_ahb.pdf", body=pdf_file_past)
+            mocker.patch("edienergyscraper.EdiEnergyScraper.get_epoch_links",
+                         return_value={"current": "current.html", "future": "future.html", "past": "past.html"})
+            mocker.patch("edienergyscraper.EdiEnergyScraper._get_soup",
+                         side_effect=TestEdiEnergyScraper._get_soup_mocker)
+            mocker.patch("edienergyscraper.EdiEnergyScraper.get_epoch_file_map",
+                         side_effect=TestEdiEnergyScraper._get_efm_mocker)
+            ees = EdiEnergyScraper(waiter=fast_waiter, directory=ees_dir)
+            ees.mirror()
+        assert ees_dir.join(Path("index.html")).exists()
+        assert ees_dir.join(Path("future.html")).exists()
+        assert ees_dir.join(Path("current.html")).exists()
+        assert ees_dir.join(Path("past.html")).exists()
+        assert ees_dir.join(Path("future")).join(Path("def.pdf")).exists()
+        assert ees_dir.join(Path("past")).join(Path("abc.pdf")).exists()
+        assert ees_dir.join(Path("current")).join(Path("xyz.pdf")).exists()
