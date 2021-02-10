@@ -17,8 +17,12 @@ class EdiEnergyScraper:
     A class that uses beautiful soup to extract and download data from edi-energy.de.
     """
 
-    def __init__(self, root_url: str = "https://www.edi-energy.de", directory: Path = Path("edi_energy_de"),
-                 waiter: Callable = lambda: sleep(randint(1, 10))):
+    def __init__(
+        self,
+        root_url: str = "https://www.edi-energy.de",
+        directory: Path = Path("edi_energy_de"),
+        waiter: Callable = lambda: sleep(randint(1, 10)),
+    ):
         """
         Initialize the Scaper by providing the URL, a path to save the files to and a function that prevents DOS.
         """
@@ -46,16 +50,22 @@ class EdiEnergyScraper:
         Returns the PDF.
         """
         if not file_name.endswith(".pdf"):
-            raise ValueError(f"This method is thought to save pdf files but the filename was {file_name}")
+            raise ValueError(
+                f"This method is thought to save pdf files but the filename was {file_name}"
+            )
         if "/" in file_name:
             raise ValueError(f"file names must not contain slashes: '{file_name}'")
         allowed_epochs = set(EdiEnergyScraper._docs_texts.values())
         if epoch not in allowed_epochs:
-            raise ValueError(f"The epoch '{epoch}' is invalid. Allowed values are: {', '.join(allowed_epochs)}")
+            raise ValueError(
+                f"The epoch '{epoch}' is invalid. Allowed values are: {', '.join(allowed_epochs)}"
+            )
         if not link.startswith("http"):
             link = f"{self._root_url}/{link.strip('/')}"  # remove trailing slashes from relative link
         response = requests.get(link)
-        file_path = Path(self._root_dir).joinpath(f"{epoch}/{file_name}")  # e.g "future/ahbmabis_99991231_20210401.pdf"
+        file_path = Path(self._root_dir).joinpath(
+            f"{epoch}/{file_name}"
+        )  # e.g "future/ahbmabis_99991231_20210401.pdf"
         with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
             outfile.write(response.content)
         return response.content
@@ -81,7 +91,7 @@ class EdiEnergyScraper:
         """
         documents_link = index_soup.find("a", {"title": "Dokumente"})
         if not documents_link:
-            raise ValueError("The soup did not contain a link called \"Dokumente\".")
+            raise ValueError('The soup did not contain a link called "Dokumente".')
         documents_url = documents_link.attrs["href"]
         if not documents_url.startswith("http"):
             documents_url = self._root_url + documents_link.attrs["href"]
@@ -135,7 +145,12 @@ class EdiEnergyScraper:
             # might cause problems in filenames (e.g. slash)
             # Looking back, this might not be the most readable format to store the files but by keeping it, it's way
             # easier to keep track of a file based history in our git archive.
-            doc_name = re.sub(r"\s{2,}", "", table_cells[0].text).replace(":", "").replace(" ", "").replace("/", "")
+            doc_name = (
+                re.sub(r"\s{2,}", "", table_cells[0].text)
+                .replace(":", "")
+                .replace(" ", "")
+                .replace("/", "")
+            )
             # try:
             # the "Gültig ab" column / publication date is the second column. e.g. "    17.12.2019    "
             # Spoiler: It's not the real publication date. They modify the files once in a while without updating it.
@@ -172,10 +187,14 @@ class EdiEnergyScraper:
         with open(index_path, "w+", encoding="utf8") as outfile:
             # save the index file as html
             outfile.write(index_soup.prettify())
-        epoch_links = EdiEnergyScraper.get_epoch_links(self._get_soup(self.get_documents_page_link(index_soup)))
+        epoch_links = EdiEnergyScraper.get_epoch_links(
+            self._get_soup(self.get_documents_page_link(index_soup))
+        )
         for epoch, epoch_link in epoch_links.items():
             epoch_soup = self._get_soup(epoch_link)
-            epoch_path: Path = Path(self._root_dir, f"{epoch}.html")  # e.g. "future.html"
+            epoch_path: Path = Path(
+                self._root_dir, f"{epoch}.html"
+            )  # e.g. "future.html"
             with open(epoch_path, "w+", encoding="utf8") as outfile:
                 outfile.write(epoch_soup.prettify())
             file_map = EdiEnergyScraper.get_epoch_file_map(epoch_soup)
