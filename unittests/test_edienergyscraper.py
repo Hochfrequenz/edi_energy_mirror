@@ -26,13 +26,13 @@ class TestEdiEnergyScraper:
         assert not instance._root_url.endswith("/")
 
     @pytest.mark.datafiles(
-        "testfiles/index_20210208.html",
+        "./unittests/testfiles/index_20210208.html",
     )
-    def test_index_retrieval(self, requests_mock):
+    def test_index_retrieval(self, requests_mock, datafiles):
         """
         Tests that the landing page is downloaded correctly
         """
-        with open("testfiles/index_20210208.html", "r", encoding="utf8") as infile:
+        with open(datafiles / "index_20210208.html", "r", encoding="utf8") as infile:
             response_body = infile.read()
         assert (
             "<!--" in response_body
@@ -47,13 +47,13 @@ class TestEdiEnergyScraper:
         ), "content should be returned"
 
     @pytest.mark.datafiles(
-        "testfiles/index_20210208.html",
+        "./unittests/testfiles/index_20210208.html",
     )
-    def test_dokumente_link(self, requests_mock):
+    def test_dokumente_link(self, requests_mock, datafiles):
         """
         Tests that the "Dokumente" link is extracted from the downloaded landing page.
         """
-        with open("testfiles/index_20210208.html", "r", encoding="utf8") as infile:
+        with open(datafiles / "index_20210208.html", "r", encoding="utf8") as infile:
             response_body = infile.read()
         requests_mock.get("https://www.edi-energy.de", text=response_body)
         ees = EdiEnergyScraper("https://www.edi-energy.de", waiter=fast_waiter)
@@ -61,13 +61,15 @@ class TestEdiEnergyScraper:
         assert actual_link == "https://www.edi-energy.de/index.php?id=38"
 
     @pytest.mark.datafiles(
-        "testfiles/dokumente_20210208.html",
+        "./unittests/testfiles/dokumente_20210208.html",
     )
-    def test_epoch_links_extraction(self):
+    def test_epoch_links_extraction(self, datafiles):
         """
         Tests that the links to past/current/future documents overview pages are extracted.
         """
-        with open("testfiles/dokumente_20210208.html", "r", encoding="utf8") as infile:
+        with open(
+            datafiles / "dokumente_20210208.html", "r", encoding="utf8"
+        ) as infile:
             response_body = infile.read()
         soup = BeautifulSoup(response_body, "html.parser")
         actual = EdiEnergyScraper.get_epoch_links(soup)
@@ -86,10 +88,10 @@ class TestEdiEnergyScraper:
         )
 
     @pytest.mark.datafiles(
-        "testfiles/future_20210210.html",
+        "./unittests/testfiles/future_20210210.html",
     )
-    def test_epoch_file_map_future_20210210(self):
-        with open("testfiles/future_20210210.html", "r", encoding="utf8") as infile:
+    def test_epoch_file_map_future_20210210(self, datafiles):
+        with open(datafiles / "future_20210210.html", "r", encoding="utf8") as infile:
             response_body = infile.read()
         soup = BeautifulSoup(response_body, "html.parser")
         actual = EdiEnergyScraper.get_epoch_file_map(soup)
@@ -105,10 +107,10 @@ class TestEdiEnergyScraper:
         )
 
     @pytest.mark.datafiles(
-        "testfiles/current_20210210.html",
+        "./unittests/testfiles/current_20210210.html",
     )
-    def test_epoch_file_map_current_20210210(self):
-        with open("testfiles/current_20210210.html", "r", encoding="utf8") as infile:
+    def test_epoch_file_map_current_20210210(self, datafiles):
+        with open(datafiles / "current_20210210.html", "r", encoding="utf8") as infile:
             response_body = infile.read()
         soup = BeautifulSoup(response_body, "html.parser")
         actual = EdiEnergyScraper.get_epoch_file_map(soup)
@@ -124,25 +126,25 @@ class TestEdiEnergyScraper:
         )
 
     @pytest.mark.datafiles(
-        "testfiles/past_20210210.html",
+        "./unittests/testfiles/past_20210210.html",
     )
-    def test_epoch_file_map_past_20210210(self):
-        with open("testfiles/past_20210210.html", "r", encoding="utf8") as infile:
+    def test_epoch_file_map_past_20210210(self, datafiles):
+        with open(datafiles / "past_20210210.html", "r", encoding="utf8") as infile:
             response_body = infile.read()
         soup = BeautifulSoup(response_body, "html.parser")
         actual = EdiEnergyScraper.get_epoch_file_map(soup)
         assert len(actual.keys()) == 705
 
     @pytest.mark.datafiles(
-        "testfiles/example_ahb.pdf",
+        "./unittests/testfiles/example_ahb.pdf",
     )
-    def test_pdf_download(self, requests_mock, tmpdir_factory):
+    def test_pdf_download(self, requests_mock, tmpdir_factory, datafiles):
         """
         Tests that a PDF can be downloaded and is stored.
         """
         ees_dir = tmpdir_factory.mktemp("test_dir")
         ees_dir.mkdir("future")
-        with open("testfiles/example_ahb.pdf", "rb") as pdf_file:
+        with open(datafiles / "example_ahb.pdf", "rb") as pdf_file:
             # Note that we do _not_ use pdf_file.read() here but provide the requests_mocker with a file handle.
             # Otherwise you'd run into a "ValueError: Unable to determine whether fp is closed."
             # docs: https://requests-mock.readthedocs.io/en/latest/response.html?highlight=file#registering-responses
@@ -159,27 +161,27 @@ class TestEdiEnergyScraper:
     def _get_soup_mocker(*args, **kwargs):
         if args[0] == "current.html":
             with open(
-                "testfiles/current_20210210.html", "r", encoding="utf8"
+                "./unittests/testfiles/current_20210210.html", "r", encoding="utf8"
             ) as infile_current:
                 response_body = infile_current.read()
         elif args[0] == "past.html":
             with open(
-                "testfiles/past_20210210.html", "r", encoding="utf8"
+                "./unittests/testfiles/past_20210210.html", "r", encoding="utf8"
             ) as infile_past:
                 response_body = infile_past.read()
         elif args[0] == "future.html":
             with open(
-                "testfiles/future_20210210.html", "r", encoding="utf8"
+                "./unittests/testfiles/future_20210210.html", "r", encoding="utf8"
             ) as infile_future:
                 response_body = infile_future.read()
         elif args[0] == "https://www.edi-energy.de":
             with open(
-                "testfiles/index_20210208.html", "r", encoding="utf8"
+                "./unittests/testfiles/index_20210208.html", "r", encoding="utf8"
             ) as infile_index:
                 response_body = infile_index.read()
         elif args[0] == "https://www.edi-energy.de/index.php?id=38":
             with open(
-                "testfiles/dokumente_20210208.html", "r", encoding="utf8"
+                "./unittests/testfiles/dokumente_20210208.html", "r", encoding="utf8"
             ) as infile_docs:
                 response_body = infile_docs.read()
         else:
@@ -203,14 +205,14 @@ class TestEdiEnergyScraper:
         )
 
     @pytest.mark.datafiles(
-        "testfiles/example_ahb.pdf",
-        "testfiles/dokumente_20210208.html",
-        "testfiles/index_20210208.html",
-        "testfiles/current_20210210.html"
-        "testfiles/past_20210210.html"
-        "testfiles/future_20210210.html",
+        "./unittests/testfiles/example_ahb.pdf",
+        "./unittests/testfiles/dokumente_20210208.html",
+        "./unittests/testfiles/index_20210208.html",
+        "./unittests/testfiles/current_20210210.html",
+        "./unittests/testfiles/past_20210210.html",
+        "./unittests/testfiles/future_20210210.html",
     )
-    def test_mirroring(self, mocker, requests_mock, tmpdir_factory):
+    def test_mirroring(self, mocker, requests_mock, tmpdir_factory, datafiles):
         """
         Tests the overall process and mocks most of the already tested methods.
         """
@@ -218,9 +220,11 @@ class TestEdiEnergyScraper:
         ees_dir.mkdir("future")
         ees_dir.mkdir("current")
         ees_dir.mkdir("past")
-        with open("testfiles/example_ahb.pdf", "rb") as pdf_file_current, open(
-            "testfiles/example_ahb.pdf", "rb"
-        ) as pdf_file_future, open("testfiles/example_ahb.pdf", "rb") as pdf_file_past:
+        with open(datafiles / "example_ahb.pdf", "rb") as pdf_file_current, open(
+            datafiles / "example_ahb.pdf", "rb"
+        ) as pdf_file_future, open(
+            datafiles / "example_ahb.pdf", "rb"
+        ) as pdf_file_past:
             requests_mock.get(
                 "https://www.edi-energy.de/a_future_ahb.pdf", body=pdf_file_future
             )
