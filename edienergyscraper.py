@@ -151,14 +151,11 @@ class EdiEnergyScraper:
                 .replace(" ", "")
                 .replace("/", "")
             )
-            # try:
             # the "Gültig ab" column / publication date is the second column. e.g. "    17.12.2019    "
             # Spoiler: It's not the real publication date. They modify the files once in a while without updating it.
             publication_date = datetime.datetime.strptime(
                 table_cells[1].text.strip(), "%d.%m.%Y"
             )
-            # except ValueError:
-            #    continue
             try:
                 # the "Gültig bis" column / valid to date describes on which date the document becomes legally binding.
                 # usually this is something like "   01.04.2020   " or "01.10.2019"
