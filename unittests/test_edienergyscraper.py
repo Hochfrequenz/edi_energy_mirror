@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pytest
 from bs4 import BeautifulSoup
+
 from edienergyscraper import EdiEnergyScraper, Epoch
 
 
@@ -45,6 +46,29 @@ class TestEdiEnergyScraper:
         assert (
             "Startseite: BDEW Forum Datenformate" in actual_html
         ), "content should be returned"
+
+    def test_get_soup(self, mocker):
+        """
+        Some of the links on edi-energy.de are relative. The call of _get_soup should automatically resolve the absolute
+        URL of a page if only the relative URL is given.
+        """
+        ees = EdiEnergyScraper(
+            root_url="https://my_favourite_website.inv/", dos_waiter=fast_waiter
+        )
+        self.has_been_called_correctly = (
+            False  # this is not the nicest test setup but hey. it's late.
+        )
+
+        def _request_get_sideffect(*args, **kwargs):
+            assert args[0] == "https://my_favourite_website.inv/some_relative_path"
+            self.has_been_called_correctly = True
+
+        mocker.patch("requests.get", side_effect=_request_get_sideffect)
+        try:
+            ees._get_soup(url="/some_relative_path")
+        except AttributeError:
+            pass
+        assert self.has_been_called_correctly  # that's all we care for in this test.
 
     @pytest.mark.datafiles(
         "./unittests/testfiles/index_20210208.html",
