@@ -15,6 +15,8 @@ from bs4 import BeautifulSoup, Comment
 class EdiEnergyScraper:
     """
     A class that uses beautiful soup to extract and download data from edi-energy.de.
+    Beautiful soup is a library that makes it easy to scrape information from web pages:
+    https://pypi.org/project/beautifulsoup4/
     """
 
     def __init__(
