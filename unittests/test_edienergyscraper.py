@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 from bs4 import BeautifulSoup
-from edienergyscraper import EdiEnergyScraper
+from edienergyscraper import EdiEnergyScraper, Epoch
 
 
 def fast_waiter():
@@ -75,15 +75,15 @@ class TestEdiEnergyScraper:
         actual = EdiEnergyScraper.get_epoch_links(soup)
         assert len(actual.keys()) == 3
         assert (
-            actual["current"]
+            actual[Epoch.CURRENT]
             == "https://www.edi-energy.de/index.php?id=38&tx_bdew_bdew%5Bview%5D=now&tx_bdew_bdew%5Baction%5D=list&tx_bdew_bdew%5Bcontroller%5D=Dokument&cHash=5d1142e54d8f3a1913af8e4cc56c71b2"
         )
         assert (
-            actual["past"]
+            actual[Epoch.PAST]
             == "https://www.edi-energy.de/index.php?id=38&tx_bdew_bdew%5Bview%5D=archive&tx_bdew_bdew%5Baction%5D=list&tx_bdew_bdew%5Bcontroller%5D=Dokument&cHash=6dd9d237ef46f6eebe2f4ef385528382"
         )
         assert (
-            actual["future"]
+            actual[Epoch.FUTURE]
             == "https://www.edi-energy.de/index.php?id=38&tx_bdew_bdew%5Bview%5D=future&tx_bdew_bdew%5Baction%5D=list&tx_bdew_bdew%5Bcontroller%5D=Dokument&cHash=325de212fe24061e83e018a2223e6185"
         )
 
@@ -153,7 +153,7 @@ class TestEdiEnergyScraper:
                 "https://my_file_link.inv/", waiter=fast_waiter, directory=ees_dir
             )
             ees._download_and_save_pdf(
-                epoch="future", file_name="my_favourite_ahb.pdf", link="foo_bar.pdf"
+                epoch=Epoch.FUTURE, file_name="my_favourite_ahb.pdf", link="foo_bar.pdf"
             )
         assert ees_dir.join(Path("future/my_favourite_ahb.pdf")).exists()
 

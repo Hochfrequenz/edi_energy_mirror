@@ -4,6 +4,8 @@
 #
 #    pip-compile requirements.in
 #
+aenum==3.0.0
+    # via -r requirements.in
 beautifulsoup4==4.9.3
     # via -r requirements.in
 certifi==2020.12.5

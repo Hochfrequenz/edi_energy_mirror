@@ -8,8 +8,29 @@ from random import randint
 from time import sleep
 from typing import Callable, Dict
 
+import aenum
 import requests
 from bs4 import BeautifulSoup, Comment
+
+
+class Epoch(aenum.Enum):  # pylint: disable=too-few-public-methods
+    """
+    An Epoch describes the time range in which documents are valid.
+    """
+
+    _init_ = "value string"
+    PAST = 1, "past"  # documents that are not valid anymore an have been archived
+    CURRENT = (
+        2,
+        "current",
+    )  # documents that are currently valid valid_from <= now < valid_to
+    FUTURE = (
+        3,
+        "future",
+    )  # documents that will become valid in the future (most likely with the next format version)
+
+    def __str__(self):
+        return self.string
 
 
 class EdiEnergyScraper:
@@ -45,7 +66,7 @@ class EdiEnergyScraper:
         self._dos_waiter()  # <-- DOS protection, usually a blocking method (e.g. time.sleep(...))
         return soup
 
-    def _download_and_save_pdf(self, epoch: str, file_name: str, link: str) -> bytes:
+    def _download_and_save_pdf(self, epoch: Epoch, file_name: str, link: str) -> bytes:
         """
         Downloads a PDF file from a given link and stores it under the file name in a folder that has the same name
         as the directory.
@@ -57,17 +78,12 @@ class EdiEnergyScraper:
             )
         if "/" in file_name:
             raise ValueError(f"file names must not contain slashes: '{file_name}'")
-        allowed_epochs = set(EdiEnergyScraper._docs_texts.values())
-        if epoch not in allowed_epochs:
-            raise ValueError(
-                f"The epoch '{epoch}' is invalid. Allowed values are: {', '.join(allowed_epochs)}"
-            )
         if not link.startswith("http"):
             link = f"{self._root_url}/{link.strip('/')}"  # remove trailing slashes from relative link
         response = requests.get(link)
         file_path = Path(self._root_dir).joinpath(
             f"{epoch}/{file_name}"  # e.g "{root_dir}/future/ahbmabis_99991231_20210401.pdf"
-        )  
+        )
         with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
             outfile.write(response.content)
         return response.content
@@ -101,14 +117,14 @@ class EdiEnergyScraper:
         return documents_url
 
     # a dictionary that maps link titles to short names.
-    _docs_texts: Dict[str, str] = {
-        "Aktuell gültige Dokumente": "current",
-        "Zukünftig gültige Dokumente": "future",
-        "Archivierte Dokumente": "past",
+    _docs_texts: Dict[str, Epoch] = {
+        "Aktuell gültige Dokumente": Epoch.CURRENT,
+        "Zukünftig gültige Dokumente": Epoch.FUTURE,
+        "Archivierte Dokumente": Epoch.PAST,
     }
 
     @staticmethod
-    def get_epoch_links(document_soup) -> Dict[str, str]:
+    def get_epoch_links(document_soup) -> Dict[Epoch, str]:
         """
         Extract the links to
         * "Aktuell gültige Dokumente"
@@ -116,7 +132,7 @@ class EdiEnergyScraper:
         * "Archivierte Dokumente"
         from the "Dokumente" sub page soup.
         """
-        result: Dict[str, str] = dict()
+        result: Dict[Epoch, str] = dict()
         for doc_text in EdiEnergyScraper._docs_texts:
             result[EdiEnergyScraper._docs_texts[doc_text]] = document_soup.find(
                 "a", string=re.compile(r"\s*" + doc_text + r"\s*")
