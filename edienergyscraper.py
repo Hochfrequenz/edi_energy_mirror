@@ -89,6 +89,7 @@ class EdiEnergyScraper:
         """
         Extracts the links for the "Dokumente" from a given index soup.
         """
+        # HTML links look like this <a href="url">...</a>; That's why we search for "a"
         documents_link = index_soup.find("a", {"title": "Dokumente"})
         if not documents_link:
             raise ValueError('The soup did not contain a link called "Dokumente".')
