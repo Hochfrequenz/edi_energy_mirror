@@ -150,7 +150,9 @@ class TestEdiEnergyScraper:
             # docs: https://requests-mock.readthedocs.io/en/latest/response.html?highlight=file#registering-responses
             requests_mock.get("https://my_file_link.inv/foo_bar.pdf", body=pdf_file)
             ees = EdiEnergyScraper(
-                "https://my_file_link.inv/", dos_waiter=fast_waiter, directory=ees_dir
+                "https://my_file_link.inv/",
+                dos_waiter=fast_waiter,
+                path_to_mirror_directory=ees_dir,
             )
             ees._download_and_save_pdf(
                 epoch=Epoch.FUTURE, file_name="my_favourite_ahb.pdf", link="foo_bar.pdf"
@@ -250,7 +252,9 @@ class TestEdiEnergyScraper:
                 "edienergyscraper.EdiEnergyScraper.get_epoch_file_map",
                 side_effect=TestEdiEnergyScraper._get_efm_mocker,
             )
-            ees = EdiEnergyScraper(dos_waiter=fast_waiter, directory=ees_dir)
+            ees = EdiEnergyScraper(
+                dos_waiter=fast_waiter, path_to_mirror_directory=ees_dir
+            )
             ees.mirror()
         assert ees_dir.join(Path("index.html")).exists()
         assert ees_dir.join(Path("future.html")).exists()

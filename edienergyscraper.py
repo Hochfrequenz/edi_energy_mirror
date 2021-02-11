@@ -43,7 +43,8 @@ class EdiEnergyScraper:
     def __init__(
         self,
         root_url: str = "https://www.edi-energy.de",
-        directory: Path = Path("edi_energy_de"),
+        path_to_mirror_directory: Path = Path("edi_energy_de"),
+        # HTML and PDF files will be stored relative to this
         dos_waiter: Callable = lambda: sleep(randint(1, 10)),
     ):
         """
@@ -53,7 +54,7 @@ class EdiEnergyScraper:
         if self._root_url.endswith("/"):
             # remove trailing slash if any
             self._root_url = self._root_url[:-1]
-        self._root_dir = directory
+        self._root_dir = path_to_mirror_directory
         self._dos_waiter = dos_waiter
 
     def _get_soup(self, url: str) -> BeautifulSoup:
