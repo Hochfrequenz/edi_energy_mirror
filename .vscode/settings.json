@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": ".tox\\dev\\Scripts\\python.exe",
+    "python.linting.pylintEnabled": true
+}
