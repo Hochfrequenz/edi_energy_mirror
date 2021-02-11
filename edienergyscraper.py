@@ -44,7 +44,7 @@ class EdiEnergyScraper:
         self,
         root_url: str = "https://www.edi-energy.de",
         directory: Path = Path("edi_energy_de"),
-        waiter: Callable = lambda: sleep(randint(1, 10)),
+        dos_waiter: Callable = lambda: sleep(randint(1, 10)),
     ):
         """
         Initialize the Scaper by providing the URL, a path to save the files to and a function that prevents DOS.
@@ -54,7 +54,7 @@ class EdiEnergyScraper:
             # remove trailing slash if any
             self._root_url = self._root_url[:-1]
         self._root_dir = directory
-        self._dos_waiter = waiter
+        self._dos_waiter = dos_waiter
 
     def _get_soup(self, url: str) -> BeautifulSoup:
         """

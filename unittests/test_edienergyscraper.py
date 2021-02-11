@@ -38,7 +38,7 @@ class TestEdiEnergyScraper:
             "<!--" in response_body
         )  # original response contains comments, will be removed
         requests_mock.get("https://www.my_root_url.test", text=response_body)
-        ees = EdiEnergyScraper("https://www.my_root_url.test", waiter=fast_waiter)
+        ees = EdiEnergyScraper("https://www.my_root_url.test", dos_waiter=fast_waiter)
         actual_soup = ees.get_index()
         actual_html = actual_soup.prettify()
         assert "<!--" not in actual_html, "comments should be ignored/removed"
@@ -56,7 +56,7 @@ class TestEdiEnergyScraper:
         with open(datafiles / "index_20210208.html", "r", encoding="utf8") as infile:
             response_body = infile.read()
         requests_mock.get("https://www.edi-energy.de", text=response_body)
-        ees = EdiEnergyScraper("https://www.edi-energy.de", waiter=fast_waiter)
+        ees = EdiEnergyScraper("https://www.edi-energy.de", dos_waiter=fast_waiter)
         actual_link = ees.get_documents_page_link(ees.get_index())
         assert actual_link == "https://www.edi-energy.de/index.php?id=38"
 
@@ -150,7 +150,7 @@ class TestEdiEnergyScraper:
             # docs: https://requests-mock.readthedocs.io/en/latest/response.html?highlight=file#registering-responses
             requests_mock.get("https://my_file_link.inv/foo_bar.pdf", body=pdf_file)
             ees = EdiEnergyScraper(
-                "https://my_file_link.inv/", waiter=fast_waiter, directory=ees_dir
+                "https://my_file_link.inv/", dos_waiter=fast_waiter, directory=ees_dir
             )
             ees._download_and_save_pdf(
                 epoch=Epoch.FUTURE, file_name="my_favourite_ahb.pdf", link="foo_bar.pdf"
@@ -250,7 +250,7 @@ class TestEdiEnergyScraper:
                 "edienergyscraper.EdiEnergyScraper.get_epoch_file_map",
                 side_effect=TestEdiEnergyScraper._get_efm_mocker,
             )
-            ees = EdiEnergyScraper(waiter=fast_waiter, directory=ees_dir)
+            ees = EdiEnergyScraper(dos_waiter=fast_waiter, directory=ees_dir)
             ees.mirror()
         assert ees_dir.join(Path("index.html")).exists()
         assert ees_dir.join(Path("future.html")).exists()
