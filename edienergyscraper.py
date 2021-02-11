@@ -66,7 +66,7 @@ class EdiEnergyScraper:
             link = f"{self._root_url}/{link.strip('/')}"  # remove trailing slashes from relative link
         response = requests.get(link)
         file_path = Path(self._root_dir).joinpath(
-            f"{epoch}/{file_name}"  # e.g "future/ahbmabis_99991231_20210401.pdf"
+            f"{epoch}/{file_name}"  # e.g "{root_dir}/future/ahbmabis_99991231_20210401.pdf"
         )  
         with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
             outfile.write(response.content)
