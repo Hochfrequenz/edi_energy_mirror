@@ -15,6 +15,8 @@ from bs4 import BeautifulSoup, Comment
 class EdiEnergyScraper:
     """
     A class that uses beautiful soup to extract and download data from edi-energy.de.
+    Beautiful soup is a library that makes it easy to scrape information from web pages:
+    https://pypi.org/project/beautifulsoup4/
     """
 
     def __init__(
@@ -64,8 +66,8 @@ class EdiEnergyScraper:
             link = f"{self._root_url}/{link.strip('/')}"  # remove trailing slashes from relative link
         response = requests.get(link)
         file_path = Path(self._root_dir).joinpath(
-            f"{epoch}/{file_name}"
-        )  # e.g "future/ahbmabis_99991231_20210401.pdf"
+            f"{epoch}/{file_name}"  # e.g "future/ahbmabis_99991231_20210401.pdf"
+        )  
         with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
             outfile.write(response.content)
         return response.content

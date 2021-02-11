@@ -8,7 +8,7 @@ from edienergyscraper import EdiEnergyScraper
 
 def fast_waiter():
     """
-    a helper method to prevent actual DOS waiting (up to 3 seconds per call.)
+    A helper method to prevent actual DOS waiting (up to 3 seconds per call.)
     """
     time.sleep(0)
 
