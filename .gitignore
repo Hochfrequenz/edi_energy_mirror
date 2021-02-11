@@ -4,3 +4,5 @@ venv
 __pycache__/
 
 .coverage
+
+debug.log
