@@ -75,7 +75,7 @@ class EdiEnergyScraper:
     def _download_and_save_pdf(self, epoch: Epoch, file_name: str, link: str) -> bytes:
         """
         Downloads a PDF file from a given link and stores it under the file name in a folder that has the same name
-        as the directory.
+        as the directory, if the pdf does not exist yet or if the metadata has changed since the last download.
         Returns the PDF.
         """
         if not file_name.endswith(".pdf"):
@@ -90,8 +90,19 @@ class EdiEnergyScraper:
         file_path = Path(self._root_dir).joinpath(
             f"{epoch}/{file_name}"  # e.g "{root_dir}/future/ahbmabis_99991231_20210401.pdf"
         )
-        with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
-            outfile.write(response.content)
+
+        if not os.path.isfile(file_path):
+            with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
+                outfile.write(response.content)
+            return response.content
+
+        # Check if metadata has changed
+        metadata_has_changed = self._compare_metadata(response.content, file_path)
+        if metadata_has_changed:  # delete old file and replace with new one
+            os.remove(file_path)
+            with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
+                outfile.write(response.content)
+
         return response.content
 
     @staticmethod
