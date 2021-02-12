@@ -232,6 +232,26 @@ class TestEdiEnergyScraper:
 
     @pytest.mark.datafiles(
         "./unittests/testfiles/example_ahb.pdf",
+        "./unittests/testfiles/example_ahb_2.pdf",
+    )
+    def test_compare_metadata(self, datafiles):
+        """ """
+        test_file = datafiles / "example_ahb.pdf"
+
+        # Test that metadata of the same pdf returns same metadata
+        with open(test_file, "rb") as same_pdf:
+            has_changed = EdiEnergyScraper._compare_metadata(same_pdf.read(), test_file)
+            assert has_changed
+
+        # Test that metadata of the a different pdf returns different metadata
+        with open(datafiles / "example_ahb_2.pdf", "rb") as different_pdf:
+            has_changed = EdiEnergyScraper._compare_metadata(
+                different_pdf.read(), test_file
+            )
+            assert not has_changed
+
+    @pytest.mark.datafiles(
+        "./unittests/testfiles/example_ahb.pdf",
         "./unittests/testfiles/dokumente_20210208.html",
         "./unittests/testfiles/index_20210208.html",
         "./unittests/testfiles/current_20210210.html",
