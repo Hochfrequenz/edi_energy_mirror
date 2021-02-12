@@ -7,9 +7,12 @@ from pathlib import Path
 from random import randint
 from time import sleep
 from typing import Callable, Dict
+import io
+import os
 
 import aenum
 import requests
+from PyPDF2 import PdfFileReader
 from bs4 import BeautifulSoup, Comment
 
 
@@ -90,6 +93,25 @@ class EdiEnergyScraper:
         with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
             outfile.write(response.content)
         return response.content
+
+    @staticmethod
+    def _compare_metadata(data_new_file: bytes, path_to_old_file: str) -> bool:
+        """
+        Compares the metadata of two pdf files.
+        :param data_new_file: bytes from response.content
+        :param path_to_old_file: str
+
+        """
+        pdf_new = PdfFileReader(io.BytesIO(data_new_file))
+        pdf_new_metadata = pdf_new.getDocumentInfo()
+
+        with open(path_to_old_file, "rb") as file_old:
+            pdf_old = PdfFileReader(file_old)
+            pdf_old_metadata = pdf_old.getDocumentInfo()
+
+        metadata_has_changed: bool = pdf_new_metadata == pdf_old_metadata
+
+        return metadata_has_changed
 
     def get_index(self) -> BeautifulSoup:
         """
