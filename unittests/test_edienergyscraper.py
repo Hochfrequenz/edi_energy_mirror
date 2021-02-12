@@ -162,12 +162,18 @@ class TestEdiEnergyScraper:
     @pytest.mark.datafiles(
         "./unittests/testfiles/example_ahb.pdf",
     )
-    def test_pdf_download(self, requests_mock, tmpdir_factory, datafiles):
+    def test_pdf_download_pdf_does_not_exists_yet(
+        self, mocker, requests_mock, tmpdir_factory, datafiles
+    ):
         """
-        Tests that a PDF can be downloaded and is stored.
+        Tests that a PDF can be downloaded and is stored if it does not exist before.
         """
         ees_dir = tmpdir_factory.mktemp("test_dir")
         ees_dir.mkdir("future")
+
+        isfile_mocker = mocker.patch(
+            "edienergyscraper.os.path.isfile", return_value=False
+        )
         with open(datafiles / "example_ahb.pdf", "rb") as pdf_file:
             # Note that we do _not_ use pdf_file.read() here but provide the requests_mocker with a file handle.
             # Otherwise you'd run into a "ValueError: Unable to determine whether fp is closed."
@@ -182,6 +188,74 @@ class TestEdiEnergyScraper:
                 epoch=Epoch.FUTURE, file_name="my_favourite_ahb.pdf", link="foo_bar.pdf"
             )
         assert ees_dir.join(Path("future/my_favourite_ahb.pdf")).exists()
+        isfile_mocker.assert_called_once_with(
+            ees_dir.join(Path("future/my_favourite_ahb.pdf"))
+        )
+
+    @pytest.mark.parametrize(
+        "metadata_has_changed",
+        [
+            pytest.param(
+                True,
+                id="metadata changed",
+            ),
+            pytest.param(
+                False,
+                id="metadata not changed",
+            ),
+        ],
+    )
+    @pytest.mark.datafiles(
+        "./unittests/testfiles/example_ahb.pdf",
+    )
+    def test_pdf_download_pdf_exists_already(
+        self,
+        mocker,
+        requests_mock,
+        tmpdir_factory,
+        datafiles,
+        metadata_has_changed: bool,
+    ):
+        """
+        Tests that a PDF can be downloaded and is stored but only if the metadata has changed.
+        """
+        ees_dir = tmpdir_factory.mktemp("test_dir")
+        ees_dir.mkdir("future")
+
+        isfile_mocker = mocker.patch(
+            "edienergyscraper.os.path.isfile", return_value=True
+        )
+        metadata_mocker = mocker.patch(
+            "edienergyscraper.EdiEnergyScraper._compare_metadata",
+            return_value=metadata_has_changed,
+        )
+        remove_mocker = mocker.patch("edienergyscraper.os.remove")
+
+        with open(datafiles / "example_ahb.pdf", "rb") as pdf_file:
+            # Note that we do _not_ use pdf_file.read() here but provide the requests_mocker with a file handle.
+            # Otherwise you'd run into a "ValueError: Unable to determine whether fp is closed."
+            # docs: https://requests-mock.readthedocs.io/en/latest/response.html?highlight=file#registering-responses
+            requests_mock.get("https://my_file_link.inv/foo_bar.pdf", body=pdf_file)
+            ees = EdiEnergyScraper(
+                "https://my_file_link.inv/",
+                dos_waiter=fast_waiter,
+                path_to_mirror_directory=ees_dir,
+            )
+            ees._download_and_save_pdf(
+                epoch=Epoch.FUTURE, file_name="my_favourite_ahb.pdf", link="foo_bar.pdf"
+            )
+        assert (
+            ees_dir.join(Path("future/my_favourite_ahb.pdf")).exists()
+            == metadata_has_changed
+        )
+        isfile_mocker.assert_called_once_with(
+            ees_dir.join(Path("future/my_favourite_ahb.pdf"))
+        )
+        metadata_mocker.assert_called_once()
+        if metadata_has_changed:
+            remove_mocker.assert_called_once_with(
+                ees_dir.join(Path("future/my_favourite_ahb.pdf"))
+            )
 
     @staticmethod
     def _get_soup_mocker(*args, **kwargs):
