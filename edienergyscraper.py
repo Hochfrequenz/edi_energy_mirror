@@ -97,7 +97,9 @@ class EdiEnergyScraper:
             return response.content
 
         # Check if metadata has changed
-        metadata_has_changed = self._compare_metadata(response.content, file_path)
+        metadata_has_changed = self._have_different_metadata(
+            response.content, file_path
+        )
         if metadata_has_changed:  # delete old file and replace with new one
             os.remove(file_path)
             with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
@@ -106,11 +108,13 @@ class EdiEnergyScraper:
         return response.content
 
     @staticmethod
-    def _compare_metadata(data_new_file: bytes, path_to_old_file: str) -> bool:
+    def _have_different_metadata(data_new_file: bytes, path_to_old_file: str) -> bool:
         """
         Compares the metadata of two pdf files.
         :param data_new_file: bytes from response.content
         :param path_to_old_file: str
+
+        :return: bool, if metadata of the two pdf files are different
 
         """
         pdf_new = PdfFileReader(io.BytesIO(data_new_file))

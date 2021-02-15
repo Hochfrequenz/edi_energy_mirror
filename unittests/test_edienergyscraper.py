@@ -226,7 +226,7 @@ class TestEdiEnergyScraper:
             "edienergyscraper.os.path.isfile", return_value=True
         )
         metadata_mocker = mocker.patch(
-            "edienergyscraper.EdiEnergyScraper._compare_metadata",
+            "edienergyscraper.EdiEnergyScraper._have_different_metadata",
             return_value=metadata_has_changed,
         )
         remove_mocker = mocker.patch("edienergyscraper.os.remove")
@@ -308,18 +308,20 @@ class TestEdiEnergyScraper:
         "./unittests/testfiles/example_ahb.pdf",
         "./unittests/testfiles/example_ahb_2.pdf",
     )
-    def test_compare_metadata(self, datafiles):
+    def test_have_different_metadata(self, datafiles):
         """ """
         test_file = datafiles / "example_ahb.pdf"
 
         # Test that metadata of the same pdf returns same metadata
         with open(test_file, "rb") as same_pdf:
-            has_changed = EdiEnergyScraper._compare_metadata(same_pdf.read(), test_file)
+            has_changed = EdiEnergyScraper._have_different_metadata(
+                same_pdf.read(), test_file
+            )
             assert has_changed
 
         # Test that metadata of the a different pdf returns different metadata
         with open(datafiles / "example_ahb_2.pdf", "rb") as different_pdf:
-            has_changed = EdiEnergyScraper._compare_metadata(
+            has_changed = EdiEnergyScraper._have_different_metadata(
                 different_pdf.read(), test_file
             )
             assert not has_changed
