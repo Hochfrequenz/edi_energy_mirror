@@ -184,10 +184,10 @@ class TestEdiEnergyScraper:
                 dos_waiter=fast_waiter,
                 path_to_mirror_directory=ees_dir,
             )
-            ees._download_and_save_pdf(
-                epoch=Epoch.FUTURE, file_name="my_favourite_ahb.pdf", link="foo_bar.pdf"
+            file_path = ees._get_file_path(
+                epoch=Epoch.FUTURE, file_name="my_favourite_ahb.pdf"
             )
-        assert ees_dir.join(Path("future/my_favourite_ahb.pdf")).exists()
+            ees._download_and_save_pdf(file_path=file_path, link="foo_bar.pdf")
         isfile_mocker.assert_called_once_with(
             ees_dir.join(Path("future/my_favourite_ahb.pdf"))
         )
@@ -241,9 +241,10 @@ class TestEdiEnergyScraper:
                 dos_waiter=fast_waiter,
                 path_to_mirror_directory=ees_dir,
             )
-            ees._download_and_save_pdf(
-                epoch=Epoch.FUTURE, file_name="my_favourite_ahb.pdf", link="foo_bar.pdf"
+            file_path = ees._get_file_path(
+                epoch=Epoch.FUTURE, file_name="my_favourite_ahb.pdf"
             )
+            ees._download_and_save_pdf(file_path=file_path, link="foo_bar.pdf")
         assert (
             ees_dir.join(Path("future/my_favourite_ahb.pdf")).exists()
             == metadata_has_changed

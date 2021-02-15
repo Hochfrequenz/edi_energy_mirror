@@ -72,24 +72,17 @@ class EdiEnergyScraper:
         self._dos_waiter()  # <-- DOS protection, usually a blocking method (e.g. time.sleep(...))
         return soup
 
-    def _download_and_save_pdf(self, epoch: Epoch, file_name: str, link: str) -> bytes:
+    def _download_and_save_pdf(self, file_path: Path, link: str) -> bytes:
         """
         Downloads a PDF file from a given link and stores it under the file name in a folder that has the same name
         as the directory, if the pdf does not exist yet or if the metadata has changed since the last download.
         Returns the PDF.
         """
-        if not file_name.endswith(".pdf"):
-            raise ValueError(
-                f"This method is thought to save pdf files but the filename was {file_name}"
-            )
-        if "/" in file_name:
-            raise ValueError(f"file names must not contain slashes: '{file_name}'")
+
         if not link.startswith("http"):
             link = f"{self._root_url}/{link.strip('/')}"  # remove trailing slashes from relative link
+
         response = requests.get(link)
-        file_path = Path(self._root_dir).joinpath(
-            f"{epoch}/{file_name}"  # e.g "{root_dir}/future/ahbmabis_99991231_20210401.pdf"
-        )
 
         if not os.path.isfile(file_path):
             with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
@@ -106,6 +99,19 @@ class EdiEnergyScraper:
                 outfile.write(response.content)
 
         return response.content
+
+    def _get_file_path(self, epoch: Epoch, file_name: str) -> Path:
+        if not file_name.endswith(".pdf"):
+            raise ValueError(
+                f"This method is thought to save pdf files but the filename was {file_name}"
+            )
+        if "/" in file_name:
+            raise ValueError(f"file names must not contain slashes: '{file_name}'")
+        file_path = Path(self._root_dir).joinpath(
+            f"{epoch}/{file_name}"  # e.g "{root_dir}/future/ahbmabis_99991231_20210401.pdf"
+        )
+
+        return file_path
 
     @staticmethod
     def _have_different_metadata(data_new_file: bytes, path_to_old_file: str) -> bool:
@@ -255,4 +261,5 @@ class EdiEnergyScraper:
                 outfile.write(epoch_soup.prettify())
             file_map = EdiEnergyScraper.get_epoch_file_map(epoch_soup)
             for file_name, link in file_map.items():
-                self._download_and_save_pdf(file_name=file_name, link=link, epoch=epoch)
+                file_path = self._get_file_path(epoch=epoch, file_name=file_name)
+                self._download_and_save_pdf(file_path=file_path, link=link)
