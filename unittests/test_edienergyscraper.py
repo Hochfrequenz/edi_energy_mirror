@@ -307,7 +307,7 @@ class TestEdiEnergyScraper:
         "./unittests/testfiles/example_ahb_2.pdf",
     )
     def test_have_different_metadata(self, datafiles):
-        """ """
+        """ Tests the function _have_different_metadata. """
         test_file = datafiles / "example_ahb.pdf"
 
         # Test that metadata of the same pdf returns same metadata
