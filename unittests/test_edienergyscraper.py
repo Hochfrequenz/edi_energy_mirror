@@ -217,7 +217,7 @@ class TestEdiEnergyScraper:
         metadata_has_changed: bool,
     ):
         """
-        Tests that a PDF can be downloaded and is stored but only if the metadata has changed.
+        Tests that a PDF can be downloaded and is stored iff the metadata has changed.
         """
         ees_dir = tmpdir_factory.mktemp("test_dir")
         ees_dir.mkdir("future")
