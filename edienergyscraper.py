@@ -241,11 +241,12 @@ class EdiEnergyScraper:
             result[file_name] = file_link
         return result
 
-    def remove_no_longer_online_files(self, online_files: Set[Path]):
+    def remove_no_longer_online_files(self, online_files: Set[Path]) -> Set[Path]:
         """
         Removes files that are no longer online. This could be due to being moved to another folder,
         e.g. from future to current.
         :param online_files: set, all the paths to the pdfs that were being downloaded and compared.
+        :return: Set[Path], Set of Paths that were removed
         """
         all_files_in_mirror_dir: Set = set(self._root_dir.glob("**/*.pdf"))
         no_longer_online_files = all_files_in_mirror_dir.symmetric_difference(
@@ -253,6 +254,8 @@ class EdiEnergyScraper:
         )
         for path in no_longer_online_files:
             os.remove(path)
+
+        return no_longer_online_files
 
     def mirror(self):
         """
