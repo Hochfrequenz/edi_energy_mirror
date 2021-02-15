@@ -188,9 +188,8 @@ class TestEdiEnergyScraper:
                 epoch=Epoch.FUTURE, file_name="my_favourite_ahb.pdf"
             )
             ees._download_and_save_pdf(file_path=file_path, link="foo_bar.pdf")
-        isfile_mocker.assert_called_once_with(
-            ees_dir.join(Path("future/my_favourite_ahb.pdf"))
-        )
+        assert (ees_dir / "future/my_favourite_ahb.pdf").exists()
+        isfile_mocker.assert_called_once_with(ees_dir / "future/my_favourite_ahb.pdf")
 
     @pytest.mark.parametrize(
         "metadata_has_changed",
@@ -246,16 +245,14 @@ class TestEdiEnergyScraper:
             )
             ees._download_and_save_pdf(file_path=file_path, link="foo_bar.pdf")
         assert (
-            ees_dir.join(Path("future/my_favourite_ahb.pdf")).exists()
-            == metadata_has_changed
-        )
-        isfile_mocker.assert_called_once_with(
-            ees_dir.join(Path("future/my_favourite_ahb.pdf"))
-        )
+            ees_dir / "future/my_favourite_ahb.pdf"
+        ).exists() == metadata_has_changed
+        isfile_mocker.assert_called_once_with((ees_dir / "future/my_favourite_ahb.pdf"))
         metadata_mocker.assert_called_once()
+
         if metadata_has_changed:
             remove_mocker.assert_called_once_with(
-                ees_dir.join(Path("future/my_favourite_ahb.pdf"))
+                (ees_dir / "future/my_favourite_ahb.pdf")
             )
 
     @staticmethod
@@ -343,6 +340,7 @@ class TestEdiEnergyScraper:
         ees_dir.mkdir("future")
         ees_dir.mkdir("current")
         ees_dir.mkdir("past")
+        ees_dir = Path(ees_dir)
         with open(datafiles / "example_ahb.pdf", "rb") as pdf_file_current, open(
             datafiles / "example_ahb.pdf", "rb"
         ) as pdf_file_future, open(
@@ -377,10 +375,10 @@ class TestEdiEnergyScraper:
                 dos_waiter=fast_waiter, path_to_mirror_directory=ees_dir
             )
             ees.mirror()
-        assert ees_dir.join(Path("index.html")).exists()
-        assert ees_dir.join(Path("future.html")).exists()
-        assert ees_dir.join(Path("current.html")).exists()
-        assert ees_dir.join(Path("past.html")).exists()
-        assert ees_dir.join(Path("future")).join(Path("def.pdf")).exists()
-        assert ees_dir.join(Path("past")).join(Path("abc.pdf")).exists()
-        assert ees_dir.join(Path("current")).join(Path("xyz.pdf")).exists()
+        assert (ees_dir / "index.html").exists()
+        assert (ees_dir / "future.html").exists()
+        assert (ees_dir / "current.html").exists()
+        assert (ees_dir / "past.html").exists()
+        assert (ees_dir / "future" / "def.pdf").exists()
+        assert (ees_dir / "past" / "abc.pdf").exists()
+        assert (ees_dir / "current" / "xyz.pdf").exists()

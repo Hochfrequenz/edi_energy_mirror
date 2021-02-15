@@ -115,7 +115,7 @@ class EdiEnergyScraper:
         return file_path
 
     @staticmethod
-    def _have_different_metadata(data_new_file: bytes, path_to_old_file: str) -> bool:
+    def _have_different_metadata(data_new_file: bytes, path_to_old_file: Path) -> bool:
         """
         Compares the metadata of two pdf files.
         :param data_new_file: bytes from response.content
