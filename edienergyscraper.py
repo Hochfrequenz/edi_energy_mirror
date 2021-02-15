@@ -6,10 +6,13 @@ import re
 from pathlib import Path
 from random import randint
 from time import sleep
-from typing import Callable, Dict
+from typing import Callable, Dict, Set
+import io
+import os
 
 import aenum
 import requests
+from PyPDF2 import PdfFileReader
 from bs4 import BeautifulSoup, Comment
 
 
@@ -69,27 +72,68 @@ class EdiEnergyScraper:
         self._dos_waiter()  # <-- DOS protection, usually a blocking method (e.g. time.sleep(...))
         return soup
 
-    def _download_and_save_pdf(self, epoch: Epoch, file_name: str, link: str) -> bytes:
+    def _download_and_save_pdf(self, file_path: Path, link: str) -> bytes:
         """
         Downloads a PDF file from a given link and stores it under the file name in a folder that has the same name
-        as the directory.
+        as the directory, if the pdf does not exist yet or if the metadata has changed since the last download.
         Returns the PDF.
         """
+
+        if not link.startswith("http"):
+            link = f"{self._root_url}/{link.strip('/')}"  # remove trailing slashes from relative link
+
+        response = requests.get(link)
+
+        # Save pdf if it does not exist yet
+        if not os.path.isfile(file_path):
+            with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
+                outfile.write(response.content)
+            return response.content
+
+        # Check if metadata has changed
+        metadata_has_changed = self._have_different_metadata(
+            response.content, file_path
+        )
+        if metadata_has_changed:  # delete old file and replace with new one
+            os.remove(file_path)
+            with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
+                outfile.write(response.content)
+
+        return response.content
+
+    def _get_file_path(self, epoch: Epoch, file_name: str) -> Path:
         if not file_name.endswith(".pdf"):
             raise ValueError(
                 f"This method is thought to save pdf files but the filename was {file_name}"
             )
         if "/" in file_name:
             raise ValueError(f"file names must not contain slashes: '{file_name}'")
-        if not link.startswith("http"):
-            link = f"{self._root_url}/{link.strip('/')}"  # remove trailing slashes from relative link
-        response = requests.get(link)
         file_path = Path(self._root_dir).joinpath(
             f"{epoch}/{file_name}"  # e.g "{root_dir}/future/ahbmabis_99991231_20210401.pdf"
         )
-        with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
-            outfile.write(response.content)
-        return response.content
+
+        return file_path
+
+    @staticmethod
+    def _have_different_metadata(data_new_file: bytes, path_to_old_file: Path) -> bool:
+        """
+        Compares the metadata of two pdf files.
+        :param data_new_file: bytes from response.content
+        :param path_to_old_file: str
+
+        :return: bool, if metadata of the two pdf files are different
+
+        """
+        pdf_new = PdfFileReader(io.BytesIO(data_new_file))
+        pdf_new_metadata = pdf_new.getDocumentInfo()
+
+        with open(path_to_old_file, "rb") as file_old:
+            pdf_old = PdfFileReader(file_old)
+            pdf_old_metadata = pdf_old.getDocumentInfo()
+
+        metadata_has_changed: bool = pdf_new_metadata == pdf_old_metadata
+
+        return metadata_has_changed
 
     def get_index(self) -> BeautifulSoup:
         """
@@ -197,6 +241,22 @@ class EdiEnergyScraper:
             result[file_name] = file_link
         return result
 
+    def remove_no_longer_online_files(self, online_files: Set[Path]) -> Set[Path]:
+        """
+        Removes files that are no longer online. This could be due to being moved to another folder,
+        e.g. from future to current.
+        :param online_files: set, all the paths to the pdfs that were being downloaded and compared.
+        :return: Set[Path], Set of Paths that were removed
+        """
+        all_files_in_mirror_dir: Set = set(self._root_dir.glob("**/*.pdf"))
+        no_longer_online_files = all_files_in_mirror_dir.symmetric_difference(
+            online_files
+        )
+        for path in no_longer_online_files:
+            os.remove(path)
+
+        return no_longer_online_files
+
     def mirror(self):
         """
         Main method of the scraper. Downloads all the files and pages and stores them in the filesystem
@@ -209,6 +269,7 @@ class EdiEnergyScraper:
         epoch_links = EdiEnergyScraper.get_epoch_links(
             self._get_soup(self.get_documents_page_link(index_soup))
         )
+        new_file_paths: Set = set()
         for epoch, epoch_link in epoch_links.items():
             epoch_soup = self._get_soup(epoch_link)
             epoch_path: Path = Path(
@@ -218,4 +279,7 @@ class EdiEnergyScraper:
                 outfile.write(epoch_soup.prettify())
             file_map = EdiEnergyScraper.get_epoch_file_map(epoch_soup)
             for file_name, link in file_map.items():
-                self._download_and_save_pdf(file_name=file_name, link=link, epoch=epoch)
+                file_path = self._get_file_path(epoch=epoch, file_name=file_name)
+                new_file_paths.add(file_path)
+                self._download_and_save_pdf(file_path=file_path, link=link)
+        self.remove_no_longer_online_files(new_file_paths)

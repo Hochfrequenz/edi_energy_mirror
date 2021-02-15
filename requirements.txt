@@ -14,6 +14,8 @@ chardet==4.0.0
     # via requests
 idna==2.10
     # via requests
+pypdf2==1.26.0
+    # via -r requirements.in
 requests==2.25.1
     # via -r requirements.in
 soupsieve==2.2
