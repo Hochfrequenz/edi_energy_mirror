@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 from random import randint
 from time import sleep
-from typing import Callable, Dict
+from typing import Callable, Dict, Set
 import io
 import os
 
@@ -241,6 +241,19 @@ class EdiEnergyScraper:
             result[file_name] = file_link
         return result
 
+    def remove_no_longer_online_files(self, online_files: Set[Path]):
+        """
+        Removes files that are no longer online. This could be due to being moved to another folder,
+        e.g. from future to current.
+        :param online_files: set, all the paths to the pdfs that were being downloaded and compared.
+        """
+        all_files_in_mirror_dir: Set = set(self._root_dir.glob("**/*.pdf"))
+        no_longer_online_files = all_files_in_mirror_dir.symmetric_difference(
+            online_files
+        )
+        for path in no_longer_online_files:
+            os.remove(path)
+
     def mirror(self):
         """
         Main method of the scraper. Downloads all the files and pages and stores them in the filesystem
@@ -253,6 +266,7 @@ class EdiEnergyScraper:
         epoch_links = EdiEnergyScraper.get_epoch_links(
             self._get_soup(self.get_documents_page_link(index_soup))
         )
+        set_of_new_file_paths: Set = set()
         for epoch, epoch_link in epoch_links.items():
             epoch_soup = self._get_soup(epoch_link)
             epoch_path: Path = Path(
@@ -263,4 +277,6 @@ class EdiEnergyScraper:
             file_map = EdiEnergyScraper.get_epoch_file_map(epoch_soup)
             for file_name, link in file_map.items():
                 file_path = self._get_file_path(epoch=epoch, file_name=file_name)
+                set_of_new_file_paths.add(file_path)
                 self._download_and_save_pdf(file_path=file_path, link=link)
+        self.remove_no_longer_online_files(set_of_new_file_paths)
