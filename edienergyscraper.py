@@ -84,6 +84,7 @@ class EdiEnergyScraper:
 
         response = requests.get(link)
 
+        # Save pdf if it does not exist yet
         if not os.path.isfile(file_path):
             with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
                 outfile.write(response.content)
