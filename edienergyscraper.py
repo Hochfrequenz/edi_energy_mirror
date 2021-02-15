@@ -266,7 +266,7 @@ class EdiEnergyScraper:
         epoch_links = EdiEnergyScraper.get_epoch_links(
             self._get_soup(self.get_documents_page_link(index_soup))
         )
-        set_of_new_file_paths: Set = set()
+        new_file_paths: Set = set()
         for epoch, epoch_link in epoch_links.items():
             epoch_soup = self._get_soup(epoch_link)
             epoch_path: Path = Path(
@@ -277,6 +277,6 @@ class EdiEnergyScraper:
             file_map = EdiEnergyScraper.get_epoch_file_map(epoch_soup)
             for file_name, link in file_map.items():
                 file_path = self._get_file_path(epoch=epoch, file_name=file_name)
-                set_of_new_file_paths.add(file_path)
+                new_file_paths.add(file_path)
                 self._download_and_save_pdf(file_path=file_path, link=link)
-        self.remove_no_longer_online_files(set_of_new_file_paths)
+        self.remove_no_longer_online_files(new_file_paths)
