@@ -324,6 +324,26 @@ class TestEdiEnergyScraper:
             )
             assert not has_changed
 
+    def test_remove_no_longer_online_files(self, mocker):
+        """ Tests function remove_no_longer_online_files. """
+        ees = EdiEnergyScraper(
+            dos_waiter=fast_waiter, path_to_mirror_directory=Path("unittests")
+        )
+        path_example_ahb = ees._get_file_path("testfiles", "example_ahb.pdf")
+        path_example_ahb_2 = ees._get_file_path("testfiles", "example_ahb_2.pdf")
+
+        # Test remove called
+        remove_mocker = mocker.patch("edienergyscraper.os.remove")
+        test_files_online = {path_example_ahb}
+        ees.remove_no_longer_online_files(test_files_online)
+        remove_mocker.assert_called_once_with(path_example_ahb_2)
+
+        # Test nothing to remove
+        remove_mocker_2 = mocker.patch("edienergyscraper.os.remove")
+        test_files_online.add(path_example_ahb_2)
+        ees.remove_no_longer_online_files(test_files_online)
+        remove_mocker_2.assert_not_called()
+
     @pytest.mark.datafiles(
         "./unittests/testfiles/example_ahb.pdf",
         "./unittests/testfiles/dokumente_20210208.html",
@@ -341,6 +361,9 @@ class TestEdiEnergyScraper:
         ees_dir.mkdir("current")
         ees_dir.mkdir("past")
         ees_dir = Path(ees_dir)
+        remove_no_longer_online_files_mocker = mocker.patch(
+            "edienergyscraper.EdiEnergyScraper.remove_no_longer_online_files"
+        )
         with open(datafiles / "example_ahb.pdf", "rb") as pdf_file_current, open(
             datafiles / "example_ahb.pdf", "rb"
         ) as pdf_file_future, open(
@@ -382,3 +405,12 @@ class TestEdiEnergyScraper:
         assert (ees_dir / "future" / "def.pdf").exists()
         assert (ees_dir / "past" / "abc.pdf").exists()
         assert (ees_dir / "current" / "xyz.pdf").exists()
+
+        test_new_file_paths: set = {
+            (ees_dir / "future" / "def.pdf"),
+            (ees_dir / "past" / "abc.pdf"),
+            (ees_dir / "current" / "xyz.pdf"),
+        }
+        remove_no_longer_online_files_mocker.assert_called_once_with(
+            test_new_file_paths
+        )
