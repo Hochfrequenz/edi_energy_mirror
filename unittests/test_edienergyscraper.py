@@ -332,7 +332,7 @@ class TestEdiEnergyScraper:
         path_example_ahb = ees._get_file_path("testfiles", "example_ahb.pdf")
         path_example_ahb_2 = ees._get_file_path("testfiles", "example_ahb_2.pdf")
 
-        # Test remove called
+        # Verify remove called
         remove_mocker = mocker.patch("edienergyscraper.os.remove")
         test_files_online = {path_example_ahb}
         ees.remove_no_longer_online_files(test_files_online)
