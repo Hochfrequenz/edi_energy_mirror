@@ -133,8 +133,7 @@ class EdiEnergyScraper:
         """ Extracts the extension of a file from a response header and add it to the file basename. """
         content_disposition = headers["Content-Disposition"]
         _, params = cgi.parse_header(content_disposition)
-        _, file_extension = os.path.splitext(params["filename"])
-
+        file_extension = Path(params["filename"]).suffix
         file_name = file_basename + file_extension
         return file_name
 
