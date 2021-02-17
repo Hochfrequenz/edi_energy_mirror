@@ -22,7 +22,7 @@ class Epoch(aenum.Enum):  # pylint: disable=too-few-public-methods
     """
 
     _init_ = "value string"
-    PAST = 1, "past"  # documents that are not valid anymore an have been archived
+    PAST = 1, "past"  # documents that are not valid anymore and have been archived
     CURRENT = (
         2,
         "current",
