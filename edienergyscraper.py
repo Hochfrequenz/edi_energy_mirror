@@ -143,14 +143,18 @@ class EdiEnergyScraper:
         :param data_new_file: bytes from response.content
         :param path_to_old_file: str
 
-        :return: bool, if metadata of the two pdf files are different
+        :return: bool, if metadata of the two pdf files are different or if at least one of the files is encrypted.
 
         """
         pdf_new = PdfFileReader(io.BytesIO(data_new_file))
+        if pdf_new.isEncrypted:
+            return True
         pdf_new_metadata = pdf_new.getDocumentInfo()
 
         with open(path_to_old_file, "rb") as file_old:
             pdf_old = PdfFileReader(file_old)
+            if pdf_old.isEncrypted:
+                return True
             pdf_old_metadata = pdf_old.getDocumentInfo()
 
         metadata_has_changed: bool = pdf_new_metadata == pdf_old_metadata
