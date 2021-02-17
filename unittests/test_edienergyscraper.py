@@ -120,9 +120,9 @@ class TestEdiEnergyScraper:
         soup = BeautifulSoup(response_body, "html.parser")
         actual = EdiEnergyScraper.get_epoch_file_map(soup)
         assert len(actual.keys()) == 76
-        for file_name in actual.keys():
+        for file_basename in actual.keys():
             # all the future names should contain 99991231 as "valid to" date
-            assert "_99991231_" in file_name
+            assert "_99991231_" in file_basename
         assert (
             actual[
                 "UTILMDAHBWiM3.1bKonsolidierteLesefassungmitFehlerkorrekturenStand18.12.2020_99991231_20210401"
@@ -139,9 +139,9 @@ class TestEdiEnergyScraper:
         soup = BeautifulSoup(response_body, "html.parser")
         actual = EdiEnergyScraper.get_epoch_file_map(soup)
         assert len(actual.keys()) == 81
-        for file_name in actual.keys():
+        for file_basename in actual.keys():
             # all the current documents are either "open" or valid until April 2021
-            assert "_99991231_" in file_name or "_20210331_" in file_name
+            assert "_99991231_" in file_basename or "_20210331_" in file_basename
         assert (
             actual[
                 "QUOTESMIG1.1aKonsolidierteLesefassungmitFehlerkorrekturenStand15.07.2019_20210331_20191201"
@@ -191,7 +191,7 @@ class TestEdiEnergyScraper:
                 path_to_mirror_directory=ees_dir,
             )
             ees._download_and_save_pdf(
-                epoch=Epoch.FUTURE, file_name="my_favourite_ahb", link="foo_bar.pdf"
+                epoch=Epoch.FUTURE, file_basename="my_favourite_ahb", link="foo_bar.pdf"
             )
         assert (ees_dir / "future/my_favourite_ahb.pdf").exists()
         isfile_mocker.assert_called_once_with(ees_dir / "future/my_favourite_ahb.pdf")
@@ -252,7 +252,7 @@ class TestEdiEnergyScraper:
                 path_to_mirror_directory=ees_dir,
             )
             ees._download_and_save_pdf(
-                epoch=Epoch.FUTURE, file_name="my_favourite_ahb", link="foo_bar.pdf"
+                epoch=Epoch.FUTURE, file_basename="my_favourite_ahb", link="foo_bar.pdf"
             )
         assert (
             ees_dir / "future/my_favourite_ahb.pdf"
@@ -355,7 +355,7 @@ class TestEdiEnergyScraper:
         remove_mocker_2.assert_not_called()
 
     @pytest.mark.parametrize(
-        "headers, file_name, expected_file_name",
+        "headers, file_basename, expected_file_name",
         [
             pytest.param(
                 {"Content-Disposition": 'attachment; filename="example_ahb.pdf"'},
@@ -371,11 +371,13 @@ class TestEdiEnergyScraper:
             ),
         ],
     )
-    def test_add_file_extension_to_file_name(
-        self, headers, file_name, expected_file_name
+    def test_add_file_extension_to_file_basename(
+        self, headers, file_basename, expected_file_name
     ):
-        file_name_with_extension = EdiEnergyScraper._add_file_extension_to_file_name(
-            headers=headers, file_name=file_name
+        file_name_with_extension = (
+            EdiEnergyScraper._add_file_extension_to_file_basename(
+                headers=headers, file_basename=file_basename
+            )
         )
         assert file_name_with_extension == expected_file_name
 

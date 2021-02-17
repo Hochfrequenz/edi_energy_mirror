@@ -74,7 +74,9 @@ class EdiEnergyScraper:
         self._dos_waiter()  # <-- DOS protection, usually a blocking method (e.g. time.sleep(...))
         return soup
 
-    def _download_and_save_pdf(self, epoch: Epoch, file_name: str, link: str) -> Path:
+    def _download_and_save_pdf(
+        self, epoch: Epoch, file_basename: str, link: str
+    ) -> Path:
         """
         Downloads a PDF file from a given link and stores it under the file name in a folder that has the same name
         as the directory, if the pdf does not exist yet or if the metadata has changed since the last download.
@@ -86,8 +88,8 @@ class EdiEnergyScraper:
 
         response = requests.get(link)
 
-        file_name = EdiEnergyScraper._add_file_extension_to_file_name(
-            headers=response.headers, file_name=file_name
+        file_name = EdiEnergyScraper._add_file_extension_to_file_basename(
+            headers=response.headers, file_basename=file_basename
         )
 
         file_path = self._get_file_path(file_name=file_name, epoch=epoch)
@@ -125,15 +127,15 @@ class EdiEnergyScraper:
         return file_path
 
     @staticmethod
-    def _add_file_extension_to_file_name(
-        headers: CaseInsensitiveDict, file_name: str
+    def _add_file_extension_to_file_basename(
+        headers: CaseInsensitiveDict, file_basename: str
     ) -> str:
         """ Extracts the extension of a file from a response header and add it to the filename. """
         content_disposition = headers["Content-Disposition"]
         _, params = cgi.parse_header(content_disposition)
         _, file_extension = os.path.splitext(params["filename"])
 
-        file_name = file_name + file_extension
+        file_name = file_basename + file_extension
         return file_name
 
     @staticmethod
@@ -218,8 +220,8 @@ class EdiEnergyScraper:
     @staticmethod
     def get_epoch_file_map(epoch_soup: BeautifulSoup) -> Dict[str, str]:
         """
-        Extracts a dictionary from the epoch soup (e.g. soup of "future.html") that maps filenames as keys
-        (e.g. "APERAKCONTRLAHB2.3h_99993112_20210104.pdf") to URLs of the documents as value.
+        Extracts a dictionary from the epoch soup (e.g. soup of "future.html") that maps file basenames as keys
+        (e.g. "APERAKCONTRLAHB2.3h_99993112_20210104") to URLs of the documents as value.
         """
         download_table = epoch_soup.find(
             "table", {"class": "table table-responsive table-condensed"}
@@ -263,8 +265,8 @@ class EdiEnergyScraper:
             # the 4th column contains a download link for the PDF.
             file_link = table_cells[3].find("a").attrs["href"]
             # there was a bug until 2021-02-10 where I used a weird %Y%d%m instead of %Y%m%d format.
-            file_name = f"{doc_name}_{valid_to_date.strftime('%Y%m%d')}_{publication_date.strftime('%Y%m%d')}"
-            result[file_name] = file_link
+            file_basename = f"{doc_name}_{valid_to_date.strftime('%Y%m%d')}_{publication_date.strftime('%Y%m%d')}"
+            result[file_basename] = file_link
         return result
 
     def remove_no_longer_online_files(self, online_files: Set[Path]) -> Set[Path]:
@@ -308,9 +310,9 @@ class EdiEnergyScraper:
             with open(epoch_path, "w+", encoding="utf8") as outfile:
                 outfile.write(epoch_soup.prettify())
             file_map = EdiEnergyScraper.get_epoch_file_map(epoch_soup)
-            for file_name, link in file_map.items():
+            for file_basename, link in file_map.items():
                 file_path = self._download_and_save_pdf(
-                    epoch=epoch, file_name=file_name, link=link
+                    epoch=epoch, file_basename=file_basename, link=link
                 )
                 new_file_paths.add(file_path)
         self.remove_no_longer_online_files(new_file_paths)
