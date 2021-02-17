@@ -275,11 +275,8 @@ class EdiEnergyScraper:
         :param online_files: set, all the paths to the pdfs that were being downloaded and compared.
         :return: Set[Path], Set of Paths that were removed
         """
-        all_files_in_mirror_dir: Set = set()
-        for epoch in Epoch:
-            all_files_in_mirror_dir.update(
-                set((self._root_dir / str(epoch)).glob("**/*"))
-            )
+
+        all_files_in_mirror_dir: Set = set((self._root_dir).glob("**/*.*[!html]"))
         no_longer_online_files = all_files_in_mirror_dir.symmetric_difference(
             online_files
         )
