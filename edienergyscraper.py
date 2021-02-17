@@ -130,7 +130,7 @@ class EdiEnergyScraper:
     def _add_file_extension_to_file_basename(
         headers: CaseInsensitiveDict, file_basename: str
     ) -> str:
-        """ Extracts the extension of a file from a response header and add it to the filename. """
+        """ Extracts the extension of a file from a response header and add it to the file basename. """
         content_disposition = headers["Content-Disposition"]
         _, params = cgi.parse_header(content_disposition)
         _, file_extension = os.path.splitext(params["filename"])
