@@ -125,7 +125,7 @@ class TestEdiEnergyScraper:
             assert "_99991231_" in file_name
         assert (
             actual[
-                "UTILMDAHBWiM3.1bKonsolidierteLesefassungmitFehlerkorrekturenStand18.12.2020_99991231_20210401.pdf"
+                "UTILMDAHBWiM3.1bKonsolidierteLesefassungmitFehlerkorrekturenStand18.12.2020_99991231_20210401"
             ]
             == "https://www.edi-energy.de/index.php?id=38&tx_bdew_bdew%5Buid%5D=1000&tx_bdew_bdew%5Baction%5D=download&tx_bdew_bdew%5Bcontroller%5D=Dokument&cHash=dbf7d932028aa2059c96b25a684d02ed"
         )
@@ -144,7 +144,7 @@ class TestEdiEnergyScraper:
             assert "_99991231_" in file_name or "_20210331_" in file_name
         assert (
             actual[
-                "QUOTESMIG1.1aKonsolidierteLesefassungmitFehlerkorrekturenStand15.07.2019_20210331_20191201.pdf"
+                "QUOTESMIG1.1aKonsolidierteLesefassungmitFehlerkorrekturenStand15.07.2019_20210331_20191201"
             ]
             == "https://www.edi-energy.de/index.php?id=38&tx_bdew_bdew%5Buid%5D=738&tx_bdew_bdew%5Baction%5D=download&tx_bdew_bdew%5Bcontroller%5D=Dokument&cHash=f01ed973e9947ccf6b91181c93cd2a28"
         )
@@ -178,16 +178,21 @@ class TestEdiEnergyScraper:
             # Note that we do _not_ use pdf_file.read() here but provide the requests_mocker with a file handle.
             # Otherwise you'd run into a "ValueError: Unable to determine whether fp is closed."
             # docs: https://requests-mock.readthedocs.io/en/latest/response.html?highlight=file#registering-responses
-            requests_mock.get("https://my_file_link.inv/foo_bar.pdf", body=pdf_file)
+            requests_mock.get(
+                "https://my_file_link.inv/foo_bar.pdf",
+                body=pdf_file,
+                headers={
+                    "Content-Disposition": 'attachment; filename="example_ahb.pdf"'
+                },
+            )
             ees = EdiEnergyScraper(
                 "https://my_file_link.inv/",
                 dos_waiter=fast_waiter,
                 path_to_mirror_directory=ees_dir,
             )
-            file_path = ees._get_file_path(
-                epoch=Epoch.FUTURE, file_name="my_favourite_ahb.pdf"
+            ees._download_and_save_pdf(
+                epoch=Epoch.FUTURE, file_name="my_favourite_ahb", link="foo_bar.pdf"
             )
-            ees._download_and_save_pdf(file_path=file_path, link="foo_bar.pdf")
         assert (ees_dir / "future/my_favourite_ahb.pdf").exists()
         isfile_mocker.assert_called_once_with(ees_dir / "future/my_favourite_ahb.pdf")
 
@@ -234,20 +239,25 @@ class TestEdiEnergyScraper:
             # Note that we do _not_ use pdf_file.read() here but provide the requests_mocker with a file handle.
             # Otherwise you'd run into a "ValueError: Unable to determine whether fp is closed."
             # docs: https://requests-mock.readthedocs.io/en/latest/response.html?highlight=file#registering-responses
-            requests_mock.get("https://my_file_link.inv/foo_bar.pdf", body=pdf_file)
+            requests_mock.get(
+                "https://my_file_link.inv/foo_bar.pdf",
+                body=pdf_file,
+                headers={
+                    "Content-Disposition": 'attachment; filename="example_ahb.pdf"'
+                },
+            )
             ees = EdiEnergyScraper(
                 "https://my_file_link.inv/",
                 dos_waiter=fast_waiter,
                 path_to_mirror_directory=ees_dir,
             )
-            file_path = ees._get_file_path(
-                epoch=Epoch.FUTURE, file_name="my_favourite_ahb.pdf"
+            ees._download_and_save_pdf(
+                epoch=Epoch.FUTURE, file_name="my_favourite_ahb", link="foo_bar.pdf"
             )
-            ees._download_and_save_pdf(file_path=file_path, link="foo_bar.pdf")
         assert (
             ees_dir / "future/my_favourite_ahb.pdf"
         ).exists() == metadata_has_changed
-        isfile_mocker.assert_called_once_with((ees_dir / "future/my_favourite_ahb.pdf"))
+        isfile_mocker.assert_called_once_with(ees_dir / "future/my_favourite_ahb.pdf")
         metadata_mocker.assert_called_once()
 
         if metadata_has_changed:
@@ -293,11 +303,11 @@ class TestEdiEnergyScraper:
     def _get_efm_mocker(*args, **kwargs):
         heading = args[0].find("h2").text
         if heading == "Aktuell gültige Dokumente":
-            return {"xyz.pdf": "/a_current_ahb.pdf"}
+            return {"xyz": "/a_current_ahb.pdf"}
         if heading == "Zukünftige Dokumente":
-            return {"def.pdf": "/a_future_ahb.pdf"}
+            return {"def": "/a_future_ahb.pdf"}
         if heading == "Archivierte Dokumente":
-            return {"abc.pdf": "/a_past_ahb.pdf"}
+            return {"abc": "/a_past_ahb.pdf"}
         raise NotImplementedError(
             f"The case '{heading}' is not implemented in this test."
         )
@@ -395,13 +405,25 @@ class TestEdiEnergyScraper:
             datafiles / "example_ahb.pdf", "rb"
         ) as pdf_file_past:
             requests_mock.get(
-                "https://www.edi-energy.de/a_future_ahb.pdf", body=pdf_file_future
+                "https://www.edi-energy.de/a_future_ahb.pdf",
+                body=pdf_file_future,
+                headers={
+                    "Content-Disposition": 'attachment; filename="example_ahb.pdf"'
+                },
             )
             requests_mock.get(
-                "https://www.edi-energy.de/a_current_ahb.pdf", body=pdf_file_current
+                "https://www.edi-energy.de/a_current_ahb.pdf",
+                body=pdf_file_current,
+                headers={
+                    "Content-Disposition": 'attachment; filename="example_ahb.pdf"'
+                },
             )
             requests_mock.get(
-                "https://www.edi-energy.de/a_past_ahb.pdf", body=pdf_file_past
+                "https://www.edi-energy.de/a_past_ahb.pdf",
+                body=pdf_file_past,
+                headers={
+                    "Content-Disposition": 'attachment; filename="example_ahb.pdf"'
+                },
             )
             mocker.patch(
                 "edienergyscraper.EdiEnergyScraper.get_epoch_links",
