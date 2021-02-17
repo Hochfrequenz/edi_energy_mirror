@@ -159,14 +159,36 @@ class TestEdiEnergyScraper:
         actual = EdiEnergyScraper.get_epoch_file_map(soup)
         assert len(actual.keys()) == 705
 
+    @pytest.mark.parametrize(
+        "file_name, expected_file_name",
+        [
+            pytest.param(
+                "example_ahb.pdf",
+                "my_favourite_ahb.pdf",
+                id="pdf",
+            ),
+            pytest.param(
+                "Aenderungsantrag_EBD.xlsx",
+                "my_favourite_ahb.xlsx",
+                id="xlsx",
+            ),
+        ],
+    )
     @pytest.mark.datafiles(
         "./unittests/testfiles/example_ahb.pdf",
+        "./unittests/testfiles/Aenderungsantrag_EBD.xlsx",
     )
-    def test_pdf_download_pdf_does_not_exists_yet(
-        self, mocker, requests_mock, tmpdir_factory, datafiles
+    def test_file_download_file_does_not_exists_yet(
+        self,
+        mocker,
+        requests_mock,
+        tmpdir_factory,
+        datafiles,
+        file_name,
+        expected_file_name,
     ):
         """
-        Tests that a PDF can be downloaded and is stored if it does not exist before.
+        Tests that a file can be downloaded and is stored if it does not exist before.
         """
         ees_dir = tmpdir_factory.mktemp("test_dir")
         ees_dir.mkdir("future")
@@ -174,16 +196,14 @@ class TestEdiEnergyScraper:
         isfile_mocker = mocker.patch(
             "edienergyscraper.os.path.isfile", return_value=False
         )
-        with open(datafiles / "example_ahb.pdf", "rb") as pdf_file:
+        with open(datafiles / file_name, "rb") as pdf_file:
             # Note that we do _not_ use pdf_file.read() here but provide the requests_mocker with a file handle.
             # Otherwise you'd run into a "ValueError: Unable to determine whether fp is closed."
             # docs: https://requests-mock.readthedocs.io/en/latest/response.html?highlight=file#registering-responses
             requests_mock.get(
-                "https://my_file_link.inv/foo_bar.pdf",
+                "https://my_file_link.inv/foo_bar",
                 body=pdf_file,
-                headers={
-                    "Content-Disposition": 'attachment; filename="example_ahb.pdf"'
-                },
+                headers={"Content-Disposition": f"attachment; filename={file_name}"},
             )
             ees = EdiEnergyScraper(
                 "https://my_file_link.inv/",
@@ -191,10 +211,10 @@ class TestEdiEnergyScraper:
                 path_to_mirror_directory=ees_dir,
             )
             ees._download_and_save_pdf(
-                epoch=Epoch.FUTURE, file_basename="my_favourite_ahb", link="foo_bar.pdf"
+                epoch=Epoch.FUTURE, file_basename="my_favourite_ahb", link="foo_bar"
             )
-        assert (ees_dir / "future/my_favourite_ahb.pdf").exists()
-        isfile_mocker.assert_called_once_with(ees_dir / "future/my_favourite_ahb.pdf")
+        assert (ees_dir / "future" / expected_file_name).exists()
+        isfile_mocker.assert_called_once_with(ees_dir / "future" / expected_file_name)
 
     @pytest.mark.parametrize(
         "metadata_has_changed",
@@ -305,7 +325,7 @@ class TestEdiEnergyScraper:
         if heading == "Aktuell gültige Dokumente":
             return {"xyz": "/a_current_ahb.pdf"}
         if heading == "Zukünftige Dokumente":
-            return {"def": "/a_future_ahb.pdf"}
+            return {"def": "/a_future_ahb.xlsx"}
         if heading == "Archivierte Dokumente":
             return {"abc": "/a_past_ahb.pdf"}
         raise NotImplementedError(
@@ -383,6 +403,7 @@ class TestEdiEnergyScraper:
 
     @pytest.mark.datafiles(
         "./unittests/testfiles/example_ahb.pdf",
+        "./unittests/testfiles/Aenderungsantrag_EBD.xlsx",
         "./unittests/testfiles/dokumente_20210208.html",
         "./unittests/testfiles/index_20210208.html",
         "./unittests/testfiles/current_20210210.html",
@@ -402,15 +423,13 @@ class TestEdiEnergyScraper:
             "edienergyscraper.EdiEnergyScraper.remove_no_longer_online_files"
         )
         with open(datafiles / "example_ahb.pdf", "rb") as pdf_file_current, open(
-            datafiles / "example_ahb.pdf", "rb"
-        ) as pdf_file_future, open(
-            datafiles / "example_ahb.pdf", "rb"
-        ) as pdf_file_past:
+            datafiles / "Aenderungsantrag_EBD.xlsx", "rb"
+        ) as file_future, open(datafiles / "example_ahb.pdf", "rb") as file_past:
             requests_mock.get(
-                "https://www.edi-energy.de/a_future_ahb.pdf",
-                body=pdf_file_future,
+                "https://www.edi-energy.de/a_future_ahb.xlsx",
+                body=file_future,
                 headers={
-                    "Content-Disposition": 'attachment; filename="example_ahb.pdf"'
+                    "Content-Disposition": 'attachment; filename="Aenderungsantrag_EBD.xlsx"'
                 },
             )
             requests_mock.get(
@@ -422,7 +441,7 @@ class TestEdiEnergyScraper:
             )
             requests_mock.get(
                 "https://www.edi-energy.de/a_past_ahb.pdf",
-                body=pdf_file_past,
+                body=file_past,
                 headers={
                     "Content-Disposition": 'attachment; filename="example_ahb.pdf"'
                 },
@@ -451,12 +470,12 @@ class TestEdiEnergyScraper:
         assert (ees_dir / "future.html").exists()
         assert (ees_dir / "current.html").exists()
         assert (ees_dir / "past.html").exists()
-        assert (ees_dir / "future" / "def.pdf").exists()
+        assert (ees_dir / "future" / "def.xlsx").exists()
         assert (ees_dir / "past" / "abc.pdf").exists()
         assert (ees_dir / "current" / "xyz.pdf").exists()
 
         test_new_file_paths: set = {
-            (ees_dir / "future" / "def.pdf"),
+            (ees_dir / "future" / "def.xlsx"),
             (ees_dir / "past" / "abc.pdf"),
             (ees_dir / "current" / "xyz.pdf"),
         }
