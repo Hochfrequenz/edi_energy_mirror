@@ -344,6 +344,31 @@ class TestEdiEnergyScraper:
         ees.remove_no_longer_online_files(test_files_online)
         remove_mocker_2.assert_not_called()
 
+    @pytest.mark.parametrize(
+        "headers, file_name, expected_file_name",
+        [
+            pytest.param(
+                {"Content-Disposition": 'attachment; filename="example_ahb.pdf"'},
+                "my_favourite_ahb",
+                "my_favourite_ahb.pdf",
+                id="pdf",
+            ),
+            pytest.param(
+                {"Content-Disposition": 'attachment; filename="antrag.xlsx"'},
+                "my_favourite_ahb",
+                "my_favourite_ahb.xlsx",
+                id="xlsx",
+            ),
+        ],
+    )
+    def test_add_file_extension_to_file_name(
+        self, headers, file_name, expected_file_name
+    ):
+        file_name_with_extension = EdiEnergyScraper._add_file_extension_to_file_name(
+            headers=headers, file_name=file_name
+        )
+        assert file_name_with_extension == expected_file_name
+
     @pytest.mark.datafiles(
         "./unittests/testfiles/example_ahb.pdf",
         "./unittests/testfiles/dokumente_20210208.html",
