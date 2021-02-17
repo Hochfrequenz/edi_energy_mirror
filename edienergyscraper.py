@@ -80,7 +80,7 @@ class EdiEnergyScraper:
         """
         Downloads a PDF file from a given link and stores it under the file name in a folder that has the same name
         as the directory, if the pdf does not exist yet or if the metadata has changed since the last download.
-        Returns the PDF.
+        Returns the path to the downloaded pdf.
         """
 
         if not link.startswith("http"):
