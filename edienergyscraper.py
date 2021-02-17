@@ -9,11 +9,13 @@ from time import sleep
 from typing import Callable, Dict, Set
 import io
 import os
+import cgi
 
 import aenum
 import requests
 from PyPDF2 import PdfFileReader
 from bs4 import BeautifulSoup, Comment
+from requests.models import CaseInsensitiveDict
 
 
 class Epoch(aenum.Enum):  # pylint: disable=too-few-public-methods
@@ -22,7 +24,7 @@ class Epoch(aenum.Enum):  # pylint: disable=too-few-public-methods
     """
 
     _init_ = "value string"
-    PAST = 1, "past"  # documents that are not valid anymore an have been archived
+    PAST = 1, "past"  # documents that are not valid anymore and have been archived
     CURRENT = (
         2,
         "current",
@@ -72,11 +74,13 @@ class EdiEnergyScraper:
         self._dos_waiter()  # <-- DOS protection, usually a blocking method (e.g. time.sleep(...))
         return soup
 
-    def _download_and_save_pdf(self, file_path: Path, link: str) -> bytes:
+    def _download_and_save_pdf(
+        self, epoch: Epoch, file_basename: str, link: str
+    ) -> Path:
         """
         Downloads a PDF file from a given link and stores it under the file name in a folder that has the same name
         as the directory, if the pdf does not exist yet or if the metadata has changed since the last download.
-        Returns the PDF.
+        Returns the path to the downloaded pdf.
         """
 
         if not link.startswith("http"):
@@ -84,11 +88,23 @@ class EdiEnergyScraper:
 
         response = requests.get(link)
 
-        # Save pdf if it does not exist yet
+        file_name = EdiEnergyScraper._add_file_extension_to_file_basename(
+            headers=response.headers, file_basename=file_basename
+        )
+
+        file_path = self._get_file_path(file_name=file_name, epoch=epoch)
+
+        # Save file if it does not exist yet
         if not os.path.isfile(file_path):
             with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
                 outfile.write(response.content)
-            return response.content
+            return file_path
+
+        # First fix, different file types do just the same as before, only with correct file extension
+        if not file_name.endswith(".pdf"):
+            with open(file_path, "wb+") as outfile:
+                outfile.write(response.content)
+            return file_path
 
         # Check if metadata has changed
         metadata_has_changed = self._have_different_metadata(
@@ -99,13 +115,9 @@ class EdiEnergyScraper:
             with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
                 outfile.write(response.content)
 
-        return response.content
+        return file_path
 
     def _get_file_path(self, epoch: Epoch, file_name: str) -> Path:
-        if not file_name.endswith(".pdf"):
-            raise ValueError(
-                f"This method is thought to save pdf files but the filename was {file_name}"
-            )
         if "/" in file_name:
             raise ValueError(f"file names must not contain slashes: '{file_name}'")
         file_path = Path(self._root_dir).joinpath(
@@ -115,20 +127,35 @@ class EdiEnergyScraper:
         return file_path
 
     @staticmethod
+    def _add_file_extension_to_file_basename(
+        headers: CaseInsensitiveDict, file_basename: str
+    ) -> str:
+        """ Extracts the extension of a file from a response header and add it to the file basename. """
+        content_disposition = headers["Content-Disposition"]
+        _, params = cgi.parse_header(content_disposition)
+        file_extension = Path(params["filename"]).suffix
+        file_name = file_basename + file_extension
+        return file_name
+
+    @staticmethod
     def _have_different_metadata(data_new_file: bytes, path_to_old_file: Path) -> bool:
         """
         Compares the metadata of two pdf files.
         :param data_new_file: bytes from response.content
         :param path_to_old_file: str
 
-        :return: bool, if metadata of the two pdf files are different
+        :return: bool, if metadata of the two pdf files are different or if at least one of the files is encrypted.
 
         """
         pdf_new = PdfFileReader(io.BytesIO(data_new_file))
+        if pdf_new.isEncrypted:
+            return True
         pdf_new_metadata = pdf_new.getDocumentInfo()
 
         with open(path_to_old_file, "rb") as file_old:
             pdf_old = PdfFileReader(file_old)
+            if pdf_old.isEncrypted:
+                return True
             pdf_old_metadata = pdf_old.getDocumentInfo()
 
         metadata_has_changed: bool = pdf_new_metadata == pdf_old_metadata
@@ -192,8 +219,8 @@ class EdiEnergyScraper:
     @staticmethod
     def get_epoch_file_map(epoch_soup: BeautifulSoup) -> Dict[str, str]:
         """
-        Extracts a dictionary from the epoch soup (e.g. soup of "future.html") that maps filenames as keys
-        (e.g. "APERAKCONTRLAHB2.3h_99993112_20210104.pdf") to URLs of the documents as value.
+        Extracts a dictionary from the epoch soup (e.g. soup of "future.html") that maps file basenames as keys
+        (e.g. "APERAKCONTRLAHB2.3h_99993112_20210104") to URLs of the documents as value.
         """
         download_table = epoch_soup.find(
             "table", {"class": "table table-responsive table-condensed"}
@@ -237,8 +264,8 @@ class EdiEnergyScraper:
             # the 4th column contains a download link for the PDF.
             file_link = table_cells[3].find("a").attrs["href"]
             # there was a bug until 2021-02-10 where I used a weird %Y%d%m instead of %Y%m%d format.
-            file_name = f"{doc_name}_{valid_to_date.strftime('%Y%m%d')}_{publication_date.strftime('%Y%m%d')}.pdf"
-            result[file_name] = file_link
+            file_basename = f"{doc_name}_{valid_to_date.strftime('%Y%m%d')}_{publication_date.strftime('%Y%m%d')}"
+            result[file_basename] = file_link
         return result
 
     def remove_no_longer_online_files(self, online_files: Set[Path]) -> Set[Path]:
@@ -248,7 +275,8 @@ class EdiEnergyScraper:
         :param online_files: set, all the paths to the pdfs that were being downloaded and compared.
         :return: Set[Path], Set of Paths that were removed
         """
-        all_files_in_mirror_dir: Set = set(self._root_dir.glob("**/*.pdf"))
+
+        all_files_in_mirror_dir: Set = set((self._root_dir).glob("**/*.*[!html]"))
         no_longer_online_files = all_files_in_mirror_dir.symmetric_difference(
             online_files
         )
@@ -278,8 +306,9 @@ class EdiEnergyScraper:
             with open(epoch_path, "w+", encoding="utf8") as outfile:
                 outfile.write(epoch_soup.prettify())
             file_map = EdiEnergyScraper.get_epoch_file_map(epoch_soup)
-            for file_name, link in file_map.items():
-                file_path = self._get_file_path(epoch=epoch, file_name=file_name)
+            for file_basename, link in file_map.items():
+                file_path = self._download_and_save_pdf(
+                    epoch=epoch, file_basename=file_basename, link=link
+                )
                 new_file_paths.add(file_path)
-                self._download_and_save_pdf(file_path=file_path, link=link)
         self.remove_no_longer_online_files(new_file_paths)
