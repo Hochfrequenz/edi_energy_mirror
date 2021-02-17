@@ -74,7 +74,7 @@ class EdiEnergyScraper:
         self._dos_waiter()  # <-- DOS protection, usually a blocking method (e.g. time.sleep(...))
         return soup
 
-    def _download_and_save_pdf(self, file_path: Path, link: str) -> bytes:
+    def _download_and_save_pdf(self, epoch: Epoch, file_name: str, link: str) -> Path:
         """
         Downloads a PDF file from a given link and stores it under the file name in a folder that has the same name
         as the directory, if the pdf does not exist yet or if the metadata has changed since the last download.
@@ -86,11 +86,23 @@ class EdiEnergyScraper:
 
         response = requests.get(link)
 
-        # Save pdf if it does not exist yet
+        file_name = EdiEnergyScraper._add_file_extension_to_file_name(
+            headers=response.headers, file_name=file_name
+        )
+
+        file_path = self._get_file_path(file_name=file_name, epoch=epoch)
+
+        # Save file if it does not exist yet
         if not os.path.isfile(file_path):
             with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
                 outfile.write(response.content)
-            return response.content
+            return file_path
+
+        # First fix, different file types do just the same as before, only with correct file extension
+        if not file_name.endswith(".pdf"):
+            with open(file_path, "wb+") as outfile:
+                outfile.write(response.content)
+            return file_path
 
         # Check if metadata has changed
         metadata_has_changed = self._have_different_metadata(
@@ -101,7 +113,7 @@ class EdiEnergyScraper:
             with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
                 outfile.write(response.content)
 
-        return response.content
+        return file_path
 
     def _get_file_path(self, epoch: Epoch, file_name: str) -> Path:
         if "/" in file_name:
@@ -289,7 +301,8 @@ class EdiEnergyScraper:
                 outfile.write(epoch_soup.prettify())
             file_map = EdiEnergyScraper.get_epoch_file_map(epoch_soup)
             for file_name, link in file_map.items():
-                file_path = self._get_file_path(epoch=epoch, file_name=file_name)
+                file_path = self._download_and_save_pdf(
+                    epoch=epoch, file_name=file_name, link=link
+                )
                 new_file_paths.add(file_path)
-                self._download_and_save_pdf(file_path=file_path, link=link)
         self.remove_no_longer_online_files(new_file_paths)
