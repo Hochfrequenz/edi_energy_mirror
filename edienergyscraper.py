@@ -237,7 +237,7 @@ class EdiEnergyScraper:
             # the 4th column contains a download link for the PDF.
             file_link = table_cells[3].find("a").attrs["href"]
             # there was a bug until 2021-02-10 where I used a weird %Y%d%m instead of %Y%m%d format.
-            file_name = f"{doc_name}_{valid_to_date.strftime('%Y%m%d')}_{publication_date.strftime('%Y%m%d')}.pdf"
+            file_name = f"{doc_name}_{valid_to_date.strftime('%Y%m%d')}_{publication_date.strftime('%Y%m%d')}"
             result[file_name] = file_link
         return result
 
