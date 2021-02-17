@@ -9,11 +9,13 @@ from time import sleep
 from typing import Callable, Dict, Set
 import io
 import os
+import cgi
 
 import aenum
 import requests
 from PyPDF2 import PdfFileReader
 from bs4 import BeautifulSoup, Comment
+from requests.models import CaseInsensitiveDict
 
 
 class Epoch(aenum.Enum):  # pylint: disable=too-few-public-methods
@@ -113,6 +115,18 @@ class EdiEnergyScraper:
         )
 
         return file_path
+
+    @staticmethod
+    def _add_file_extension_to_file_name(
+        headers: CaseInsensitiveDict, file_name: str
+    ) -> str:
+        """ Extracts the extension of a file from a response header and add it to the filename. """
+        content_disposition = headers["Content-Disposition"]
+        _, params = cgi.parse_header(content_disposition)
+        _, file_extension = os.path.splitext(params["filename"])
+
+        file_name = file_name + file_extension
+        return file_name
 
     @staticmethod
     def _have_different_metadata(data_new_file: bytes, path_to_old_file: Path) -> bool:
