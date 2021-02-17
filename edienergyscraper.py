@@ -104,10 +104,6 @@ class EdiEnergyScraper:
         return response.content
 
     def _get_file_path(self, epoch: Epoch, file_name: str) -> Path:
-        if not file_name.endswith(".pdf"):
-            raise ValueError(
-                f"This method is thought to save pdf files but the filename was {file_name}"
-            )
         if "/" in file_name:
             raise ValueError(f"file names must not contain slashes: '{file_name}'")
         file_path = Path(self._root_dir).joinpath(
