@@ -357,7 +357,8 @@ class TestEdiEnergyScraper:
     def test_remove_no_longer_online_files(self, mocker):
         """ Tests function remove_no_longer_online_files. """
         ees = EdiEnergyScraper(
-            dos_waiter=fast_waiter, path_to_mirror_directory=Path("unittests/testfiles")
+            dos_waiter=fast_waiter,
+            path_to_mirror_directory=Path("unittests/testfiles/removetest"),
         )
         path_example_ahb = ees._get_file_path("future", "example_ahb.pdf")
         path_example_ahb_2 = ees._get_file_path("future", "example_ahb_2.pdf")
