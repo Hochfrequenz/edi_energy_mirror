@@ -360,6 +360,9 @@ class TestEdiEnergyScraper:
             dos_waiter=fast_waiter,
             path_to_mirror_directory=Path("unittests/testfiles/removetest"),
         )
+        assert (
+            ees._root_dir / "future_20210210.html"
+        ).exists()  # in general html wont be removed by the function under test
         path_example_ahb = ees._get_file_path("future", "example_ahb.pdf")
         path_example_ahb_2 = ees._get_file_path("future", "example_ahb_2.pdf")
 
@@ -373,7 +376,7 @@ class TestEdiEnergyScraper:
         remove_mocker_2 = mocker.patch("edienergyscraper.os.remove")
         test_files_online.add(path_example_ahb_2)
         ees.remove_no_longer_online_files(test_files_online)
-        remove_mocker_2.assert_not_called() # this also asserts that the lonely html file in removetest is not removed
+        remove_mocker_2.assert_not_called()  # this also asserts that the lonely html file in removetest is not removed
 
     @pytest.mark.parametrize(
         "headers, file_basename, expected_file_name",
