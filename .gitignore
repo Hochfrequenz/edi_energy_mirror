@@ -6,3 +6,12 @@ __pycache__/
 .coverage
 
 debug.log
+
+# Temporary office files
+~$*  
+
+# Word Auto Backup File
+Backup of *.doc*
+
+# Excel Backup File
+*.xlk
