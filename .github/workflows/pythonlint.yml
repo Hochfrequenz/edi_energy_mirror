@@ -1,4 +1,4 @@
-name: "Python Linter"
+name: "Linting"
 on: [push]
 jobs:
   wim-bee-backend-lint:

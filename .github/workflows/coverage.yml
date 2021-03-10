@@ -1,4 +1,4 @@
-name: "EDI@Energy Mirror Coverage"
+name: "Coverage"
 
 on: [push]
 jobs:
