@@ -1,5 +1,5 @@
 # edi_energy_mirror
-![Pytest status badge](https://github.com/Hochfrequenz/edi_energy_mirror/workflows/Pytest/badge.svg)
+![Pytest status badge](https://github.com/Hochfrequenz/edi_energy_mirror/workflows/Unittests/badge.svg)
 ![Coverage status badge](https://github.com/Hochfrequenz/edi_energy_mirror/workflows/Coverage/badge.svg)
 ![Pylint status badge](https://github.com/Hochfrequenz/edi_energy_mirror/workflows/Pylint/badge.svg)
 ![Black status badge](https://github.com/Hochfrequenz/edi_energy_mirror/workflows/Black%20Code%20Formatter/badge.svg)
