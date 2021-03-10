@@ -1,4 +1,4 @@
-name: "EDI@Energy Mirror Unittests"
+name: "Unittests"
 
 on: [push]
 jobs:
