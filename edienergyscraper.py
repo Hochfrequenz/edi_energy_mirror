@@ -206,7 +206,7 @@ class EdiEnergyScraper:
         * "Archivierte Dokumente"
         from the "Dokumente" sub page soup.
         """
-        result: Dict[Epoch, str] = dict()
+        result: Dict[Epoch, str] = {}
         for (doc_text, doc_epoch) in EdiEnergyScraper._docs_texts.items():
             result[doc_epoch] = document_soup.find(
                 "a", string=re.compile(r"\s*" + doc_text + r"\s*")
@@ -225,7 +225,7 @@ class EdiEnergyScraper:
         download_table = epoch_soup.find(
             "table", {"class": "table table-responsive table-condensed"}
         )  # a table that contains all the documents
-        result: Dict[str, str] = dict()
+        result: Dict[str, str] = {}
         for table_row in download_table.find_all("tr"):
             table_cells = list(table_row.find_all("td"))
             if len(table_cells) < 4:
