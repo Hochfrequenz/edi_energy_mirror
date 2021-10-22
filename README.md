@@ -4,7 +4,7 @@
 ![Pylint status badge](https://github.com/Hochfrequenz/edi_energy_mirror/workflows/Linting/badge.svg)
 ![Black status badge](https://github.com/Hochfrequenz/edi_energy_mirror/workflows/Black%20Code%20Formatter/badge.svg)
 
-Diese Repository spiegelt die Dokumente, die auf edi-energy.de veröffentlicht werden. Weil der BDEW keine saubere Änderungshistorie pflegt lädt ein cronjob auf unserem Berliner Server regelmäßig die Übersichtsseiten der aktuell- und zukünftig gültigen Dokumente herunter und speichert sie in diesem Repository. So werden Änderungen als Diffs einzelner git commits sichtbar und still/heimlich gepflegte Änderungen sind leichter aufzufinden. 
+Diese Repository spiegelt die Dokumente, die auf edi-energy.de veröffentlicht werden. Weil der BDEW keine saubere Änderungshistorie pflegt lädt ein cronjob auf unserem [Berliner Server](https://wiki.hochfrequenz.de/index.php/Berlin_Server) regelmäßig die Übersichtsseiten der aktuell- und zukünftig gültigen Dokumente herunter und speichert sie in diesem Repository. So werden Änderungen als Diffs einzelner git commits sichtbar und still/heimlich gepflegte Änderungen sind leichter aufzufinden. 
 
 ## Benutzung
 Um Änderungen auf edi-energy.de zu monitoren schaut man sich die [Commit-Historie](https://github.com/Hochfrequenz/edi_energy_mirror/commits/master) an. Oder die "zuletzt geändert" Datümer im Verzeichnis [edi_energy_de](/edi_energy_de).
