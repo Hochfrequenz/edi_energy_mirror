@@ -29,9 +29,6 @@ class Epoch(str, Enum):  # pylint: disable=too-few-public-methods
     )
     FUTURE = "future"  #: documents that will become valid in the future (most likely with the next format version)
 
-    def __str__(self):
-        return self.string
-
 
 class EdiEnergyScraper:
     """
