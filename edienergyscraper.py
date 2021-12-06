@@ -1,38 +1,33 @@
 """
 A module to scrape data from edi-energy.de.
 """
+import cgi
 import datetime
+import io
+import os
 import re
+from enum import Enum
 from pathlib import Path
 from random import randint
 from time import sleep
 from typing import Callable, Dict, Set
-import io
-import os
-import cgi
 
-import aenum
 import requests
-from PyPDF2 import PdfFileReader
 from bs4 import BeautifulSoup, Comment
+from PyPDF2 import PdfFileReader
 from requests.models import CaseInsensitiveDict
 
 
-class Epoch(aenum.Enum):  # pylint: disable=too-few-public-methods
+class Epoch(str, Enum):  # pylint: disable=too-few-public-methods
     """
     An Epoch describes the time range in which documents are valid.
     """
 
-    _init_ = "value string"
-    PAST = 1, "past"  # documents that are not valid anymore and have been archived
+    PAST = "past"  #: documents that are not valid anymore and have been archived
     CURRENT = (
-        2,
-        "current",
-    )  # documents that are currently valid valid_from <= now < valid_to
-    FUTURE = (
-        3,
-        "future",
-    )  # documents that will become valid in the future (most likely with the next format version)
+        "current"  #: documents that are currently valid valid_from <= now < valid_to
+    )
+    FUTURE = "future"  #: documents that will become valid in the future (most likely with the next format version)
 
     def __str__(self):
         return self.string
