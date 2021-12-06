@@ -13,8 +13,8 @@ from time import sleep
 from typing import Callable, Dict, Set
 
 import requests
-from bs4 import BeautifulSoup, Comment
-from PyPDF2 import PdfFileReader
+from bs4 import BeautifulSoup, Comment# type:ignore[import]
+from PyPDF2 import PdfFileReader# type:ignore[import]
 from requests.models import CaseInsensitiveDict
 
 
@@ -250,7 +250,7 @@ class EdiEnergyScraper:
             except ValueError as value_error:
                 # there's a special case: "Offen" means the document is valid until further notice.
                 if table_cells[2].text.strip() == "Offen":
-                    valid_to_date = datetime.date(9999, 12, 31)
+                    valid_to_date = datetime.datetime(9999, 12, 31)
                 else:
                     raise value_error
             # the 4th column contains a download link for the PDF.
