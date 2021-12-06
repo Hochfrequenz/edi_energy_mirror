@@ -13,8 +13,8 @@ from time import sleep
 from typing import Callable, Dict, Set
 
 import requests
-from bs4 import BeautifulSoup, Comment# type:ignore[import]
-from PyPDF2 import PdfFileReader# type:ignore[import]
+from bs4 import BeautifulSoup, Comment  # type:ignore[import]
+from PyPDF2 import PdfFileReader  # type:ignore[import]
 from requests.models import CaseInsensitiveDict
 
 
