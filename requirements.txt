@@ -14,7 +14,7 @@ idna==2.10
     # via requests
 pypdf2==1.26.0
     # via -r requirements.in
-requests==2.27.0
+requests==2.27.1
     # via -r requirements.in
 soupsieve==2.2
     # via beautifulsoup4
