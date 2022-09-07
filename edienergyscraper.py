@@ -60,7 +60,7 @@ class EdiEnergyScraper:
         """
         if not url.startswith("http"):
             url = f"{self._root_url}/{url.strip('/')}"  # remove trailing slashes from relative link
-        response = requests.get(url)
+        response = requests.get(url, timeout=5)
         soup = BeautifulSoup(response.content, "html.parser")
         EdiEnergyScraper.remove_comments(soup)
         self._dos_waiter()  # <-- DOS protection, usually a blocking method (e.g. time.sleep(...))
@@ -78,7 +78,7 @@ class EdiEnergyScraper:
         if not link.startswith("http"):
             link = f"{self._root_url}/{link.strip('/')}"  # remove trailing slashes from relative link
 
-        response = requests.get(link)
+        response = requests.get(link, timeout=5)
 
         file_name = EdiEnergyScraper._add_file_extension_to_file_basename(
             headers=response.headers, file_basename=file_basename
