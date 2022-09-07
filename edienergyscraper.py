@@ -24,9 +24,7 @@ class Epoch(str, Enum):  # pylint: disable=too-few-public-methods
     """
 
     PAST = "past"  #: documents that are not valid anymore and have been archived
-    CURRENT = (
-        "current"  #: documents that are currently valid valid_from <= now < valid_to
-    )
+    CURRENT = "current"  #: documents that are currently valid valid_from <= now < valid_to
     FUTURE = "future"  #: documents that will become valid in the future (most likely with the next format version)
 
 
@@ -60,15 +58,13 @@ class EdiEnergyScraper:
         """
         if not url.startswith("http"):
             url = f"{self._root_url}/{url.strip('/')}"  # remove trailing slashes from relative link
-        response = requests.get(url)
+        response = requests.get(url, timeout=5)
         soup = BeautifulSoup(response.content, "html.parser")
         EdiEnergyScraper.remove_comments(soup)
         self._dos_waiter()  # <-- DOS protection, usually a blocking method (e.g. time.sleep(...))
         return soup
 
-    def _download_and_save_pdf(
-        self, epoch: Epoch, file_basename: str, link: str
-    ) -> Path:
+    def _download_and_save_pdf(self, epoch: Epoch, file_basename: str, link: str) -> Path:
         """
         Downloads a PDF file from a given link and stores it under the file name in a folder that has the same name
         as the directory, if the pdf does not exist yet or if the metadata has changed since the last download.
@@ -78,7 +74,7 @@ class EdiEnergyScraper:
         if not link.startswith("http"):
             link = f"{self._root_url}/{link.strip('/')}"  # remove trailing slashes from relative link
 
-        response = requests.get(link)
+        response = requests.get(link, timeout=5)
 
         file_name = EdiEnergyScraper._add_file_extension_to_file_basename(
             headers=response.headers, file_basename=file_basename
@@ -99,9 +95,7 @@ class EdiEnergyScraper:
             return file_path
 
         # Check if metadata has changed
-        metadata_has_changed = self._have_different_metadata(
-            response.content, file_path
-        )
+        metadata_has_changed = self._have_different_metadata(response.content, file_path)
         if metadata_has_changed:  # delete old file and replace with new one
             os.remove(file_path)
             with open(file_path, "wb+") as outfile:  # pdfs are written as binaries
@@ -119,9 +113,7 @@ class EdiEnergyScraper:
         return file_path
 
     @staticmethod
-    def _add_file_extension_to_file_basename(
-        headers: CaseInsensitiveDict, file_basename: str
-    ) -> str:
+    def _add_file_extension_to_file_basename(headers: CaseInsensitiveDict, file_basename: str) -> str:
         """Extracts the extension of a file from a response header and add it to the file basename."""
         content_disposition = headers["Content-Disposition"]
         _, params = cgi.parse_header(content_disposition)
@@ -200,9 +192,7 @@ class EdiEnergyScraper:
         """
         result: Dict[Epoch, str] = {}
         for (doc_text, doc_epoch) in EdiEnergyScraper._docs_texts.items():
-            result[doc_epoch] = document_soup.find(
-                "a", string=re.compile(r"\s*" + doc_text + r"\s*")
-            ).attrs["href"]
+            result[doc_epoch] = document_soup.find("a", string=re.compile(r"\s*" + doc_text + r"\s*")).attrs["href"]
         # result now looks like this:
         # { "past": "link_to_vergangene_dokumente.html", "current": "link_to_active_docs.html", "future": ...}
         # see the unittest
@@ -230,23 +220,14 @@ class EdiEnergyScraper:
             # might cause problems in filenames (e.g. slash)
             # Looking back, this might not be the most readable format to store the files but by keeping it, it's way
             # easier to keep track of a file based history in our git archive.
-            doc_name = (
-                re.sub(r"\s{2,}", "", table_cells[0].text)
-                .replace(":", "")
-                .replace(" ", "")
-                .replace("/", "")
-            )
+            doc_name = re.sub(r"\s{2,}", "", table_cells[0].text).replace(":", "").replace(" ", "").replace("/", "")
             # the "Gültig ab" column / publication date is the second column. e.g. "    17.12.2019    "
             # Spoiler: It's not the real publication date. They modify the files once in a while without updating it.
-            publication_date = datetime.datetime.strptime(
-                table_cells[1].text.strip(), "%d.%m.%Y"
-            )
+            publication_date = datetime.datetime.strptime(table_cells[1].text.strip(), "%d.%m.%Y")
             try:
                 # the "Gültig bis" column / valid to date describes on which date the document becomes legally binding.
                 # usually this is something like "   31.03.2020   " or "30.09.2019"
-                valid_to_date = datetime.datetime.strptime(
-                    table_cells[2].text.strip(), "%d.%m.%Y"
-                )
+                valid_to_date = datetime.datetime.strptime(table_cells[2].text.strip(), "%d.%m.%Y")
             except ValueError as value_error:
                 # there's a special case: "Offen" means the document is valid until further notice.
                 if table_cells[2].text.strip() == "Offen":
@@ -269,9 +250,7 @@ class EdiEnergyScraper:
         """
 
         all_files_in_mirror_dir: Set = set((self._root_dir).glob("**/*.*[!html]"))
-        no_longer_online_files = all_files_in_mirror_dir.symmetric_difference(
-            online_files
-        )
+        no_longer_online_files = all_files_in_mirror_dir.symmetric_difference(online_files)
         for path in no_longer_online_files:
             os.remove(path)
 
@@ -286,21 +265,15 @@ class EdiEnergyScraper:
         with open(index_path, "w+", encoding="utf8") as outfile:
             # save the index file as html
             outfile.write(index_soup.prettify())
-        epoch_links = EdiEnergyScraper.get_epoch_links(
-            self._get_soup(self.get_documents_page_link(index_soup))
-        )
+        epoch_links = EdiEnergyScraper.get_epoch_links(self._get_soup(self.get_documents_page_link(index_soup)))
         new_file_paths: Set = set()
         for epoch, epoch_link in epoch_links.items():
             epoch_soup = self._get_soup(epoch_link)
-            epoch_path: Path = Path(
-                self._root_dir, f"{epoch}.html"
-            )  # e.g. "future.html"
+            epoch_path: Path = Path(self._root_dir, f"{epoch}.html")  # e.g. "future.html"
             with open(epoch_path, "w+", encoding="utf8") as outfile:
                 outfile.write(epoch_soup.prettify())
             file_map = EdiEnergyScraper.get_epoch_file_map(epoch_soup)
             for file_basename, link in file_map.items():
-                file_path = self._download_and_save_pdf(
-                    epoch=epoch, file_basename=file_basename, link=link
-                )
+                file_path = self._download_and_save_pdf(epoch=epoch, file_basename=file_basename, link=link)
                 new_file_paths.add(file_path)
         self.remove_no_longer_online_files(new_file_paths)
