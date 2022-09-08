@@ -14,13 +14,11 @@ edi-energy-scraper==0.0.4
     # via -r requirements.in
 idna==2.10
     # via requests
-pypdf2==2.10.3
+pypdf2==2.10.5
     # via edi-energy-scraper
 requests==2.28.0
     # via edi-energy-scraper
 soupsieve==2.2
     # via beautifulsoup4
-typing-extensions==4.3.0
-    # via pypdf2
 urllib3==1.26.5
     # via requests
