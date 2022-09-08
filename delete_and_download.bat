@@ -1,6 +1,7 @@
 C:
 cd C:/Users/Administrator/Documents/edi_energy_mirror/
 git pull
+python -m pip install -r requirements.txt
 python download_and_post_process.py
 git add edi_energy_de/*.html
 git add --no-ignore-removal edi_energy_de/future/*
