@@ -14,7 +14,7 @@ edi-energy-scraper==0.0.6
     # via -r requirements.in
 idna==2.10
     # via requests
-pypdf2==2.10.3
+pypdf2==2.10.5
     # via edi-energy-scraper
 requests==2.28.0
     # via edi-energy-scraper
