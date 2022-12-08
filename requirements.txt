@@ -6,7 +6,7 @@
 #
 beautifulsoup4==4.11.1
     # via edi-energy-scraper
-certifi==2020.12.5
+certifi==2022.12.7
     # via requests
 charset-normalizer==2.0.9
     # via requests
