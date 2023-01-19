@@ -20,7 +20,7 @@ jobs:
           pip install -r requirements.txt
       - name: Run Extraction
         run: |
-          python download_and_postprocess.py
+          python download_and_post_process.py
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         
