@@ -1,10 +1,12 @@
+<!-- Diese XSD-Datei dient als informatorische Lesefassung und baut auf den konsultierten Formatbeschreibungen und Anwendungstabellen der XML-Datenformate für den Redispatch 2.0 auf. 
+Diese XSD-Datei wird bis auf Weiteres rein informatorisch und ergänzend veröffentlicht. Der BDEW behält sich vor, in Zukunft eine kostenpflichtige Veröffentlichung der XSD-Datei einzuführen. -->
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:ecc="urn:entsoe.eu:wgedi:components"
     elementFormDefault="qualified"
     attributeFormDefault="unqualified">
-  <xsd:import namespace="urn:entsoe.eu:wgedi:components" schemaLocation="../00_Ressourcenschemas_v72/urn-entsoe-eu-wgedi-components.xsd"/>
-  <xsd:element name="PlannedResourceScheduleDocument">
+  <xsd:import namespace="urn:entsoe.eu:wgedi:components" schemaLocation="../../20211001_Ver%F6ffentlichung/00_Ressourcenschemas_v72/urn-entsoe-eu-wgedi-components.xsd"/>
+  <xsd:element name="Kostenblatt">
     <xsd:annotation>
       <xsd:documentation source="Dokumentation">Ausgabe</xsd:documentation>
     </xsd:annotation>
@@ -12,7 +14,7 @@
       <xsd:sequence>
         <xsd:element name="DocumentIdentification" type="ecc:IdentificationType">
           <xsd:annotation>
-            <xsd:documentation xml:lang="DE" source="Desc">Die Identifikation des Dokuments (DocumentIdentification) hat je Absender und je Dokumententyp eindeutig zu sein. Bei der Bildung der Identifikation ist auf Groß- und Kleinschreibung zu achten (case-sensitive).</xsd:documentation>
+            <xsd:documentation xml:lang="DE" source="Desc">Die DocumentIdentification hat je Absender und je Dokumententyp eindeutig zu sein. </xsd:documentation>
             <xsd:documentation source="Layout">Layout</xsd:documentation>
           </xsd:annotation>
         </xsd:element>
@@ -20,9 +22,10 @@
           <xsd:annotation>
             <xsd:documentation xml:lang="DE" source="Desc">Die DocumentVersion (auch als Meldungsversion bezeichnet) gibt die Version eines Dokumentes an, welches über die DocumentIdentification identifiziert wird. Mit jeder Aktualisierung wird die Versionsangabe kontinuierlich, mit 1  beginnend, hochgezählt. Die jeweils höchste DocumentVersion kennzeichnet die aktuelle Version.</xsd:documentation>
             <xsd:documentation source="Layout">Layout</xsd:documentation>
+            <xsd:documentation xml:lang="DE" source="Remark">Maximum 999 gemäß Pattern</xsd:documentation>
           </xsd:annotation>
         </xsd:element>
-        <xsd:element name="DocumentType" type="ecc:MessageType">
+        <xsd:element name="DocumentType" type="ecc:DocumentType">
           <xsd:annotation>
             <xsd:documentation xml:lang="DE" source="Desc">Der DocumentType dient zur eindeutigen Kennzeichnung des Dokumenttyps.</xsd:documentation>
             <xsd:documentation source="Layout">Layout</xsd:documentation>
@@ -82,9 +85,7 @@ Z Verweis auf UTC
         <xsd:element name="TimePeriodCovered" type="ecc:TimeIntervalType">
           <xsd:annotation>
             <xsd:documentation xml:lang="DE" source="Desc">
-Der Zeitraum entspricht immer dem Erfüllungstag (ein Kalendertag von 0:00 Uhr lokaler deutscher Zeit des Erfüllungstages bis 0:00 Uhr lokaler deutscher Zeit des unmittelbar auf den Erfüllungstag folgenden Tages), für den die Daten gesendet werden. 
-
-Das Zeitintervall (von Beginn des Erfüllungstages bis Ende des Erfüllungstages) ist im UTC-Format yyyy-mm-ddThh:mmZ/yyyy-mmddThh:mmZ wie folgt anzugeben:
+Das Zeitintervall (von Beginn des Erfüllungszeitraums bis Ende des Erfüllungszeitraums) ist im UTC-Format yyyy-mm-ddThh:mmZ/ yyyy-mmddThh:mmZ wie folgt anzugeben:
 
 yyyy vier Ziffern für die Jahresangabe
 mm zwei Ziffern für die Monatsangabe
@@ -95,59 +96,47 @@ T Trennzeichen zwischen Datum und Uhrzeit
 Z Verweis auf UTC
 / Trennzeichen zwischen beiden Zeitangaben
             </xsd:documentation>
-            <xsd:documentation xml:lang="DE" source="Remark">Tag in UTC gemäß Pattern</xsd:documentation>
+            <xsd:documentation xml:lang="DE" source="Remark">Zeitintervall in UTC gemäß Pattern</xsd:documentation>
             <xsd:documentation source="Layout">Layout</xsd:documentation>
           </xsd:annotation>
         </xsd:element>
-        <xsd:element name="PlannedResourceTimeSeries" type="PlannedResourceTimeSeries_Type" minOccurs="1" maxOccurs="unbounded">
+        <xsd:element name="CostTimeSeries" type="CostTimeSeries" minOccurs="1" maxOccurs="unbounded">
           <xsd:annotation>
-            <xsd:documentation xml:lang="DE" source="Desc">Der Absender kann so viele Zeitreihen wie nötig zur Erfüllung seiner Datenlieferpflichten in einem Dokument übertragen. Einmal enthaltene Zeitreihen dürfen bei Aktualisierungen nicht entfernt werden. Sofern eine Zeitreihe irrtümlich übertragen wurde, kann diese ab der nächsten höheren Version mit Nullwerten aktualisiert werden.</xsd:documentation>
+            <xsd:documentation xml:lang="DE" source="Desc">Der Absender kann so viele Zeitreihen wie nötig zur Erfüllung seiner Datenlieferpflichten in einem Dokument übertragen. Einmal enthaltene Zeitreihen dürfen bei Aktualisierungen nicht entfernt werden. Sofern eine Zeitreihe irrtümlich übertragen wurde, kann diese ab der nächsten höheren Version mit Nullwerten aktualisiert werden. Rückwirkende Änderungen sind nicht möglich. Muss ein Wert geändert werden, sind in der korrigierten Version die Werte aller Viertelstundenzeitintervalle, bei denen der Zeitpunkt des Beginns der Viertelstunde vor dem Zeitpunkt liegen, zu dem das Dokument beim Empfänger eintrifft, nicht mehr anzupassen. Es können/dürfen lediglich die Werte der vollen Viertelstunden angepasst werden, bei denen der Zeitpunkt des Beginns der Viertelstunde nach dem Zeitpunkt liegen, zu dem das Dokument beim Empfänger eintrifft.</xsd:documentation>
             <xsd:documentation source="Dokumentation">Ausgabe</xsd:documentation>
+            <xsd:documentation xml:lang="DE" source="Remark">Zeitreihe für die Übermittlung von Kosten</xsd:documentation>
           </xsd:annotation>
         </xsd:element>
       </xsd:sequence>
-      <xsd:attribute name="DtdVersion" type="xsd:string" fixed="4" use="required"/>
-      <xsd:attribute name="DtdRelease" type="xsd:string" fixed="1" use="required"/>
-      <xsd:attribute name="DtdBDEWNachrichtenVersion" type="xsd:string" fixed="1.0"/>
+      <xsd:attribute name="DtdBDEWNachrichtenVersion" type="xsd:string" fixed="1.0b" use="required"/>
     </xsd:complexType>
   </xsd:element>
-  <xsd:simpleType name="GridElementCodingSchemeTypeList">
-    <xsd:annotation>
-      <xsd:documentation source="Uid">ET0004</xsd:documentation>
-      <xsd:documentation source="Definition">Codification scheme used to identify the coding scheme used for the set of coded values to identify specific objects.</xsd:documentation>
-    </xsd:annotation>
-    <xsd:restriction base="xsd:NMTOKEN">
-      <xsd:enumeration value="A01">
+  <xsd:complexType name="CostTimeSeries">
+    <xsd:sequence minOccurs="1">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="DE" source="Desc">Zeitreihe für die Übermittlung von Kosten</xsd:documentation>
+      </xsd:annotation>
+      <xsd:element name="TimeSeriesIdentification" type="ecc:IdentificationType"/>
+      <xsd:element name="BusinessType" type="ecc:BusinessType"/>
+      <xsd:element name="Direction" type="ecc:DirectionType" minOccurs="0"/>
+      <xsd:element name="Product" type="ecc:EnergyProductType" minOccurs="1"/>
+      <xsd:element name="ConnectingArea" type="ecc:AreaType" minOccurs="0"/>
+      <xsd:element name="ResourceObject" type="ecc:ResourceObjectType"/>
+      <xsd:element name="ResourceProvider" type="ecc:PartyType" minOccurs="0"/>
+      <xsd:element name="CurveType" type="ecc:CurveType" minOccurs="1"/>
+      <xsd:element name="MeasurementUnit" type="ecc:UnitOfMeasureType"/>
+      <xsd:element name="Status" type="ecc:StatusType" minOccurs="0"/>
+      <xsd:element name="OriginalSenderIdentification" type="ecc:PartyType" minOccurs="0"/>
+      <xsd:element name="OriginalDocumentIdentification" type="ecc:IdentificationType" minOccurs="0"/>
+      <xsd:element name="OriginalDocumentVersion" type="ecc:VersionType" minOccurs="0">
         <xsd:annotation>
-          <xsd:documentation xml:lang="DE" source="Name">EIC-T-Code; The coding scheme is the Energy Identification Coding Scheme (EIC)</xsd:documentation>
+          <xsd:documentation xml:lang="DE" source="Desc">Die DocumentVersion (auch als Meldungsversion bezeichnet) gibt die Version eines Dokumentes an, welches über die DocumentIdentification identifiziert wird. Mit jeder Aktualisierung wird die Versionsangabe kontinuierlich, mit 1 beginnend, hochgezählt. Die jeweils höchste DocumentVersion kennzeichnet die aktuelle Version.</xsd:documentation>
         </xsd:annotation>
-      </xsd:enumeration>
-      <xsd:enumeration value="A02">
-        <xsd:annotation>
-          <xsd:documentation xml:lang="DE" source="Name">The coding scheme used for Common Grid Model Exchange Standard (CGMES)</xsd:documentation>
-        </xsd:annotation>
-      </xsd:enumeration>
-      <xsd:enumeration value="NDE">
-        <xsd:annotation>
-          <xsd:documentation xml:lang="DE" source="Name">Germany National Coding Scheme</xsd:documentation>
-        </xsd:annotation>
-      </xsd:enumeration>
-      <xsd:enumeration value="Z01">
-        <xsd:annotation>
-          <xsd:documentation xml:lang="DE" source="Name">UUID</xsd:documentation>
-        </xsd:annotation>
-      </xsd:enumeration>
-    </xsd:restriction>
-  </xsd:simpleType>
-  <xsd:complexType name="GridElementType">
-    <xsd:attribute name="v" use="required">
-      <xsd:simpleType>
-        <xsd:restriction base="xsd:string">
-          <xsd:maxLength value="36"/>
-        </xsd:restriction>
-      </xsd:simpleType>
-    </xsd:attribute>
-    <xsd:attribute name="codingScheme" type="GridElementCodingSchemeTypeList" use="required"/>
+      </xsd:element>
+      <xsd:element name="OriginalDocumentDateTime" type="ecc:DocumentDateTimeType" minOccurs="0"/>
+      <xsd:element name="OriginalTimeSeriesIdentification" type="ecc:IdentificationType" minOccurs="0"/>
+      <xsd:element name="Period" type="Period_Type"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="Interval_Type">
     <xsd:sequence>
@@ -159,33 +148,7 @@ Z Verweis auf UTC
     <xsd:sequence>
       <xsd:element name="TimeInterval" type="ecc:TimeIntervalType"/>
       <xsd:element name="Resolution" type="ecc:ResolutionType"/>
-      <xsd:element name="Interval" type="Interval_Type" minOccurs="1" maxOccurs="100"/>
-    </xsd:sequence>
-  </xsd:complexType>
-  <xsd:complexType name="PlannedResourceTimeSeries_Type">
-    <xsd:sequence>
-      <xsd:element name="TimeSeriesIdentification" type="ecc:IdentificationType"/>
-      <xsd:element name="BusinessType" type="ecc:BusinessType"/>
-      <xsd:element name="Direction" type="ecc:DirectionType" minOccurs="0"/>
-      <xsd:element name="Product" type="ecc:EnergyProductType"/>
-      <xsd:element name="ConnectingArea" type="ecc:AreaType"/>
-      <xsd:element name="ResourceObject" type="ecc:ResourceObjectType"/>
-      <xsd:element name="ResourceProvider" type="ecc:PartyType" minOccurs="0"/>
-      <xsd:element name="RequestingGridOperator" type="ecc:PartyType" minOccurs="0"/>
-      <xsd:element name="AcquiringArea" type="ecc:AreaType" minOccurs="0">
-        <xsd:annotation>
-          <xsd:documentation xml:lang="DE" source="Desc">Angabe des Gebietes, für welches die Regelleistung vorbehalten wird.</xsd:documentation>
-        </xsd:annotation>
-      </xsd:element>
-      <xsd:element name="GridElement" type="GridElementType" minOccurs="0"/>
-      <xsd:element name="MeasurementUnit" type="ecc:UnitOfMeasureType"/>
-      <xsd:element name="Status" type="ecc:StatusType" minOccurs="0"/>
-      <xsd:element name="OriginalSenderIdentification" type="ecc:PartyType" minOccurs="0"/>
-      <xsd:element name="OriginalDocumentIdentification" type="ecc:IdentificationType" minOccurs="0"/>
-      <xsd:element name="OriginalDocumentVersion" type="ecc:VersionType" minOccurs="0"/>
-      <xsd:element name="OriginalDocumentDateTime" type="ecc:DocumentDateTimeType" minOccurs="0"/>
-      <xsd:element name="OriginalTimeSeriesIdentification" type="ecc:IdentificationType" minOccurs="0"/>
-      <xsd:element name="Period" type="Period_Type"/>
+      <xsd:element name="Interval" type="Interval_Type" minOccurs="1" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
 </xsd:schema>
