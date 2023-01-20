@@ -1,17 +1,36 @@
 # edi_energy_mirror
-![Pytest status badge](https://github.com/Hochfrequenz/edi_energy_mirror/workflows/Unittests/badge.svg)
-![Coverage status badge](https://github.com/Hochfrequenz/edi_energy_mirror/workflows/Coverage/badge.svg)
-![Pylint status badge](https://github.com/Hochfrequenz/edi_energy_mirror/workflows/Linting/badge.svg)
-![Black status badge](https://github.com/Hochfrequenz/edi_energy_mirror/workflows/Black%20Code%20Formatter/badge.svg)
 
-Diese Repository spiegelt die Dokumente, die auf edi-energy.de veröffentlicht werden. Weil der BDEW keine saubere Änderungshistorie pflegt lädt ein cronjob auf unserem [Berliner Server](https://wiki.hochfrequenz.de/index.php/Berlin_Server) regelmäßig die Übersichtsseiten der aktuell- und zukünftig gültigen Dokumente herunter und speichert sie in diesem Repository. So werden Änderungen als Diffs einzelner git commits sichtbar und still/heimlich gepflegte Änderungen sind leichter aufzufinden. 
+Diese Repository spiegelt die Dokumente, die auf edi-energy.de veröffentlicht werden.
 
 ## Benutzung
-Um Änderungen auf edi-energy.de zu monitoren schaut man sich die [Commit-Historie](https://github.com/Hochfrequenz/edi_energy_mirror/commits/master) an. Oder die "zuletzt geändert" Datümer im Verzeichnis [edi_energy_de](/edi_energy_de).
 
-## Technische Details
-Der Großteil des Codes lebt im öffentlichen [edi_energy_scraper](https://github.com/Hochfrequenz/edi_energy_scraper) -Repository.
+Um Änderungen auf edi-energy.de zu betrachten kann man sich die [Commit-Historie](https://github.com/Hochfrequenz/edi_energy_mirror/commits/master) ansehen.
+Oder die "zuletzt geändert" Datümer im Verzeichnis [edi_energy_de](/edi_energy_de).
+
+## Updates abbonieren
+
+edi-energy.de bietet keinen Service bei dem Interessierte per Push benachrichtigt würden, wenn sich Dokumente ändern.
+Dieses Repository schafft Abhilfe:
+
+- Es gibt ein [Atom-Feed](https://github.com/Hochfrequenz/edi_energy_mirror/commits/master.atom) `https://github.com/Hochfrequenz/edi_energy_mirror/commits/master.atom`.
+- Per "Watch"/Beobachten (oben rechts) können angemeldete Github-User sich z.B. per Email informieren lassen, wenn Dokumente geändert wurden.
+
+## Technische Grundlagen
+
+Eine [periodisch eingeplante Github Action](https://github.com/Hochfrequenz/edi_energy_mirror/blob/main/.github/workflows/mirror.yml) lädt regelmäßig die Übersichtsseiten der aktuell- und zukünftig gültigen Dokumente herunter und speichert sie in diesem Repository.
+
+Der Großteil des dazu notwendigen Codes lebt im [edi_energy_scraper](https://github.com/Hochfrequenz/edi_energy_scraper)-Repository.
 
 Das Skript [download_and_post_process.py](/download_and_post_process.py) lädt die Startseite von edi-energy.de, die Seiten für aktuell und zukünftig gültige sowie archivierte Dokumente und die jeweils verlinkten PDFs herunter und speichert sie in den drei Verzeichnissen [current](/edi_energy_de/current) (aktuell), [future](/edi_energy_de/future) (zukünftig), [past](/edi_energy_de/past) (archiviert).
 
-Das Skript [delete_and_download.bat](/delete_and_download.bat) löscht erst alle gespiegelten Dateien, stößt dann das o.g. Python-Skript an und erzeugt daraus einen git commit.
+So werden Änderungen an MIGs, AHBs und weiteren Dokumenten als Diffs einzelner git commits sichtbar und Änderungen sind leichter aufzufinden und auszuwerten.
+
+## Urheberrecht
+
+Das Urheberrecht der hier versionierten Daten liegt bei EDI@energy bzw. den Autor\*innen der jeweiligen Dokumente selbst.
+Dieses Repository macht die Daten und deren Änderungen lediglich leichter zugänglich.
+Hochfrequenz garantiert weder für die Korrektheit noch die Vollständigkeit der hier bereitgestellten Daten, stellt aber auch keine Bedingungen an deren Nutzung.
+
+## Weiterführendes Tooling
+
+Dieses Repository ist Teil der [Hochfrequenz Libraries und Tool für eine echte Digitalisierung der Marktkommunikation](https://github.com/Hochfrequenz/digital_market_communication/).
