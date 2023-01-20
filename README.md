@@ -3,16 +3,20 @@
 Diese Repository spiegelt die Dokumente, die auf edi-energy.de veröffentlicht werden.
 
 ## Benutzung
+
 Um Änderungen auf edi-energy.de zu betrachten kann man sich die [Commit-Historie](https://github.com/Hochfrequenz/edi_energy_mirror/commits/master) ansehen.
 Oder die "zuletzt geändert" Datümer im Verzeichnis [edi_energy_de](/edi_energy_de).
 
 ## Updates abbonieren
+
 edi-energy.de bietet keinen Service bei dem Interessierte per Push benachrichtigt würden, wenn sich Dokumente ändern.
 Dieses Repository schafft Abhilfe:
+
 - Es gibt ein [Atom-Feed](https://github.com/Hochfrequenz/edi_energy_mirror/commits/master.atom) `https://github.com/Hochfrequenz/edi_energy_mirror/commits/master.atom`.
 - Per "Watch"/Beobachten (oben rechts) können angemeldete Github-User sich z.B. per Email informieren lassen, wenn Dokumente geändert wurden.
 
 ## Technische Grundlagen
+
 Eine [periodisch eingeplante Github Action](https://github.com/Hochfrequenz/edi_energy_mirror/blob/main/.github/workflows/mirror.yml) lädt regelmäßig die Übersichtsseiten der aktuell- und zukünftig gültigen Dokumente herunter und speichert sie in diesem Repository.
 
 Der Großteil des dazu notwendigen Codes lebt im [edi_energy_scraper](https://github.com/Hochfrequenz/edi_energy_scraper)-Repository.
