@@ -1,0 +1,5 @@
+*.xsd	text	eol=crlf
+*.xml text  eol=crlf
+*.html text eol=crlf
+*.pdf binary
+*.docx  binary
