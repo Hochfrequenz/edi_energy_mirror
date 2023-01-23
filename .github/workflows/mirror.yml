@@ -1,7 +1,7 @@
 name: Pull Documents from edi@energy
 on:
   schedule:
-    - cron: '12 12 * * *'
+    - cron: '45 11 * * *'
 jobs:
   check:
     name: Read all AHBs and Extract Conditions
@@ -29,5 +29,7 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           title: EDI@Energy Changes ${{ steps.current-time.outputs.formattedTime }}
-          base: master
+          token: ${{ secrets.PUSH_TOKEN }} # expires 2024-01-15
+          # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/PUSH_TOKEN
+          # Github Token with repo scope
         
