@@ -1,8 +1,7 @@
 name: Pull Documents from edi@energy
 on:
   schedule:
-    - cron: '45 11 * * *'
-  push: {}
+    - cron: '45 11,17 * * *'
 jobs:
   check:
     name: Read all AHBs and Extract Conditions
