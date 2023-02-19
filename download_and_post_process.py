@@ -1,5 +1,8 @@
 import asyncio
+import logging
+import sys
 
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)  # global log config: write everything to stdout
 from edi_energy_scraper import EdiEnergyScraper
 
 
