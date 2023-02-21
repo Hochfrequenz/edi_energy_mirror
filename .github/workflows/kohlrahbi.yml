@@ -31,6 +31,9 @@ jobs:
       - name: Run Extraction
         run: |
           kohlrahbi --input_path edi_energy_mirror --output_path ./machine-readable_anwendungshandbuecher/FV2210/UTILMD/ --pruefis 11039
+      - name: Switch into machine-readable_anwendungshandbuecher directory and start a PR from there
+        run: |
+          cd machine-readable_anwendungshandbuecher
       - name: Push flat AHBs to machine-readable_anwendungshandbuecher
         uses: peter-evans/create-pull-request@v4
         with:
