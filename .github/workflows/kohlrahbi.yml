@@ -29,16 +29,13 @@ jobs:
         run: |
           kohlrahbi --input_path ../edi_energy_mirror/ --output_path ./output/ --pruefis 11039
       - name: Push flat AHBs to machine-readable_anwendungshandbuecher
-        uses: cpina/github-action-push-to-another-repository@v1.5.1
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2024-02-15
+        uses: peter-evans/create-pull-request@v4
+        with:
+          repository: Hochfrequenz/machine-readable_anwendungshandbuecher
+          title: EDI@Energy KohlrAHBi Changes ${{ steps.current-time.outputs.formattedTime }}
+          token: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2024-02-15
           # token with repo scope
           # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/MRAHB_PUSH_TOKEN
-        with:
-          source-directory: "output"
-          target-directory: "/"
-          destination-github-username: "Hochfrequenz"
-          destination-repository-name: "machine-readable_anwendungshandbuecher"
-          user-email: edi_energy_mirror@hochfrequenz.de
-          target-branch: update-${{ steps.current-time.outputs.formattedTime }}
+          branch: update-${{ steps.current-time.outputs.formattedTime }}
+      
           
