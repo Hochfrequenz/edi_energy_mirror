@@ -25,13 +25,16 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install kohlrahbi
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.MRAHB_PUSH_TOKEN }}
+          repository: Hochfrequenz/machine-readable_anwendungshandbuecher
       - name: Run Extraction
         run: |
           kohlrahbi --input_path ../edi_energy_mirror/ --output_path ./output/ --pruefis 11039
       - name: Push flat AHBs to machine-readable_anwendungshandbuecher
         uses: peter-evans/create-pull-request@v4
         with:
-          repository: Hochfrequenz/machine-readable_anwendungshandbuecher
           title: EDI@Energy KohlrAHBi Changes ${{ steps.current-time.outputs.formattedTime }}
           token: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2024-02-15
           # token with repo scope
