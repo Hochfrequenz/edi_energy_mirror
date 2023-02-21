@@ -1,0 +1,40 @@
+name: Run kohlrAHBi
+on:
+  push: {}
+jobs:
+  check:
+    name: Parse the Docx Files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Get current time
+        uses: srfrnk/current-time@master
+        id: current-time
+        with:
+          format: YYYY-MM-DD
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install kohlrahbi
+      - name: Run Extraction
+        run: |
+          kohlrahbi --input_path ../edi_energy_mirror/ --output_path ./output/ --pruefi 11039
+      - name: Push flat AHBs to machine-readable_anwendungshandbuecher
+        uses: cpina/github-action-push-to-another-repository@v1.5.1
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2024-02-15
+          # token with repo scope
+          # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/MRAHB_PUSH_TOKEN
+        with:
+          source-directory: "output"
+          target-directory: "/"
+          destination-github-username: "Hochfrequenz"
+          destination-repository-name: "machine-readable_anwendungshandbuecher"
+          user-email: edi_energy_mirror@hochfrequenz.de
+          target-branch: update-${{ steps.current-time.outputs.formattedTime }}
+          
