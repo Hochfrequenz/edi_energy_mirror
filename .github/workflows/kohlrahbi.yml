@@ -30,7 +30,7 @@ jobs:
           path: machine-readable_anwendungshandbuecher
       - name: Run Extraction
         run: |
-          kohlrahbi --input_path edi_energy_mirror --output_path ./machine-readable_anwendungshandbuecher/FV2210/UTILMD/ --pruefis 11039
+          kohlrahbi --input_path edi_energy_mirror/edi_energy_de/current --output_path ./machine-readable_anwendungshandbuecher/FV2210/UTILMD/ --pruefis 11039
       - name: Push flat AHBs to machine-readable_anwendungshandbuecher
         uses: peter-evans/create-pull-request@v4
         with:
