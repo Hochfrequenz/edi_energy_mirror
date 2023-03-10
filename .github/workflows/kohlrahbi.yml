@@ -10,6 +10,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: edi_energy_mirror
+          lfs: true
       - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
