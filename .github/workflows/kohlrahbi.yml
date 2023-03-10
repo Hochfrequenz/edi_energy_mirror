@@ -34,11 +34,26 @@ jobs:
         run: |
           kohlrahbi --input_path edi_energy_mirror/edi_energy_de/current --output_path ./machine-readable_anwendungshandbuecher/FV2210/UTILMD/ --pruefis 11039
       - name: Push flat AHBs to machine-readable_anwendungshandbuecher
-        uses: peter-evans/create-pull-request@v4
+        uses: actions/github-script@v6
         with:
-          path: machine-readable_anwendungshandbuecher
-          title: EDI@Energy KohlrAHBi Changes ${{ steps.current-time.outputs.formattedTime }}
-          token: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2024-02-15
-          # token with repo scope
-          # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/MRAHB_PUSH_TOKEN
-          branch: update-${{ steps.current-time.outputs.formattedTime }}
+          github-token: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2024-02-15
+          repository: Hochfrequenz/machine-readable_anwendungshandbuecher
+          script: |
+            const { data } = await github.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'My Pull Request',
+              head: 'my-feature-branch',
+              base: 'main',
+              body: 'This is my pull request description.'
+            });
+            console.log(`Created pull request #${data.number}: ${data.html_url}`);
+
+        # uses: peter-evans/create-pull-request@v4
+        # with:
+        #   path: machine-readable_anwendungshandbuecher
+        #   title: EDI@Energy KohlrAHBi Changes ${{ steps.current-time.outputs.formattedTime }}
+        #   token: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2024-02-15
+        #   # token with repo scope
+        #   # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/MRAHB_PUSH_TOKEN
+        #   branch: update-${{ steps.current-time.outputs.formattedTime }}
