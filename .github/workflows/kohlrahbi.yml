@@ -28,6 +28,7 @@ jobs:
           token: ${{ secrets.MRAHB_PUSH_TOKEN }}
           repository: Hochfrequenz/machine-readable_anwendungshandbuecher
           path: machine-readable_anwendungshandbuecher
+          lfs: true
       - name: Run Extraction
         run: |
           kohlrahbi --input_path edi_energy_mirror/edi_energy_de/current --output_path ./machine-readable_anwendungshandbuecher/FV2210/UTILMD/ --pruefis 11039
