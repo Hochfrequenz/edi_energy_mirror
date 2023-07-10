@@ -33,6 +33,12 @@ jobs:
       - name: Run Extraction
         run: |
           kohlrahbi --input_path edi_energy_mirror/edi_energy_de/current --output_path ./machine-readable_anwendungshandbuecher/FV2210/UTILMD/ --pruefis 11039
+      - name: Commit changes
+        run: |
+          git config --global user.name "automatic update"
+          git config --global user.email "your-email@example.inv"
+          git add .
+          git commit -m "EDI@Energy KohlrAHBi Changes ${{ steps.current-time.outputs.formattedTime }}"
       - name: Push flat AHBs to machine-readable_anwendungshandbuecher
         uses: actions/github-script@v6
         with:
