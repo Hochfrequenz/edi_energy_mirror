@@ -39,7 +39,7 @@ jobs:
           github-token: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2024-02-15
           script: |
             // Push the branch to the repository
-            await github.git.createRef({
+            await github.rest.git.createRef({
                owner: 'Hochfrequenz',
                repo: 'machine-readable_anwendungshandbuecher',
                ref: 'refs/heads/my-feature-branch',
