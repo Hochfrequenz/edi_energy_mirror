@@ -37,7 +37,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2024-02-15
-          repository: Hochfrequenz/machine-readable_anwendungshandbuecher
+          repo: Hochfrequenz/machine-readable_anwendungshandbuecher
           script: |
             const { data } = await github.pulls.create({
               owner: context.repo.owner,
