@@ -33,12 +33,12 @@ jobs:
       - name: Run Extraction
         run: |
           kohlrahbi --input_path edi_energy_mirror/edi_energy_de/current --output_path ./machine-readable_anwendungshandbuecher/FV2210/UTILMD/ --pruefis 11039
-      - name: Commit changes
-        run: |
-          git config --global user.name "automatic update"
-          git config --global user.email "your-email@example.inv"
-          git add .
-          git commit -m "EDI@Energy KohlrAHBi Changes ${{ steps.current-time.outputs.formattedTime }}"
+      #- name: Commit changes
+      #  run: |
+      #    git config --global user.name "automatic update"
+      #    git config --global user.email "your-email@example.inv"
+      #    git add .
+      #    git commit -m "EDI@Energy KohlrAHBi Changes ${{ steps.current-time.outputs.formattedTime }}"
       - name: Push flat AHBs to machine-readable_anwendungshandbuecher
         #uses: actions/github-script@v6
         #with:
@@ -63,6 +63,7 @@ jobs:
 
         uses: peter-evans/create-pull-request@v4
         with:
+           working-directory: machine-readable_anwendungshandbuecher
            path: Hochfrequenz/machine-readable_anwendungshandbuecher
            title: EDI@Energy KohlrAHBi Changes ${{ steps.current-time.outputs.formattedTime }}
            token: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2024-02-15
