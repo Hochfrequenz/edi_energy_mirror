@@ -63,8 +63,7 @@ jobs:
 
         uses: peter-evans/create-pull-request@v4
         with:
-           working-directory: machine-readable_anwendungshandbuecher
-           path: Hochfrequenz/machine-readable_anwendungshandbuecher
+           path:  machine-readable_anwendungshandbuecher
            title: EDI@Energy KohlrAHBi Changes ${{ steps.current-time.outputs.formattedTime }}
            token: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2024-02-15
            # token with repo scope
