@@ -38,7 +38,7 @@ jobs:
         with:
           github-token: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2024-02-15
           script: |
-            const { data } = await github.pulls.create({
+            const { data } = await github.rest.pulls.create({
               owner: 'Hochfrequenz',
               repo: 'machine-readable_anwendungshandbuecher',
               title: 'My Pull Request',
