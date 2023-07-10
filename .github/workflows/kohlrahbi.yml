@@ -32,7 +32,7 @@ jobs:
           lfs: true
       - name: Run Extraction
         run: |
-          kohlrahbi --input_path edi_energy_mirror/edi_energy_de/current --output_path ./machine-readable_anwendungshandbuecher/FV2210/UTILMD/ --pruefis 11039
+          kohlrahbi --input_path edi_energy_mirror/edi_energy_de/current --output_path ./machine-readable_anwendungshandbuecher/FV2304/UTILMD/
       #- name: Commit changes
       #  run: |
       #    git config --global user.name "automatic update"
