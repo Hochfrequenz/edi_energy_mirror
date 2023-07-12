@@ -25,6 +25,10 @@ Das Skript [download_and_post_process.py](/download_and_post_process.py) lädt d
 
 So werden Änderungen an MIGs, AHBs und weiteren Dokumenten als Diffs einzelner git commits sichtbar und Änderungen sind leichter aufzufinden und auszuwerten.
 
+## Weiterverarbeitung der Rohdaten
+Die in diesem Repository abgelegten Rohdaten (genauer die AHB-Worddateien), werden automatisiert von [kohlrahbi](github.com/Hochfrequenz/kohlrahbi) weiterverarbeitet.
+Eine [weitere Github Action](/.github/workflows/mirror.yml) spiegelt jegliche Änderungen in den Rohdaten in das Repository [machine-readable_anwendungshandbuecher](https://github.com/Hochfrequenz/machine-readable_anwendungshandbuecher).
+
 ## Urheberrecht
 
 Das Urheberrecht der hier versionierten Daten liegt bei EDI@energy bzw. den Autor\*innen der jeweiligen Dokumente selbst.
