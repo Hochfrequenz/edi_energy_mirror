@@ -32,10 +32,10 @@ jobs:
           lfs: true
       - name: Run Extraction (Current)
         run: |
-          kohlrahbi --input_path edi_energy_mirror/edi_energy_de/current --output_path ./machine-readable_anwendungshandbuecher/FV2304 --file-type flatahb --file-type csv --file-type xlsx --pruefis 11001 --pruefis 11002 --pruefis 11003
+          kohlrahbi --input_path edi_energy_mirror/edi_energy_de/current --output_path ./machine-readable_anwendungshandbuecher/FV2304 --file-type flatahb --file-type csv --file-type xlsx
       - name: Run Extraction (Future)
         run: |
-          kohlrahbi --input_path edi_energy_mirror/edi_energy_de/future --output_path ./machine-readable_anwendungshandbuecher/FV2310 --file-type flatahb --file-type csv --file-type xlsx --pruefis 44001 --pruefis 44002 --pruefis 44003 --pruefis 55001 --pruefis 55002 --pruefis 55003
+          kohlrahbi --input_path edi_energy_mirror/edi_energy_de/future --output_path ./machine-readable_anwendungshandbuecher/FV2310 --file-type flatahb --file-type csv --file-type xlsx
       - name: Push flat AHBs to machine-readable_anwendungshandbuecher
         uses: peter-evans/create-pull-request@v4
         with:
