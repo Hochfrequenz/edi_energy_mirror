@@ -35,7 +35,7 @@ jobs:
           lfs: true
       - name: Run Extraction
         run: |
-          kohlrahbi ${{ matrix.scrape-path }} --file-type flatahb --file-type csv --file-type xlsx
+          kohlrahbi ${{ matrix.scrapepath }} --file-type flatahb --file-type csv --file-type xlsx
       - name: Push flat AHBs to machine-readable_anwendungshandbuecher
         uses: peter-evans/create-pull-request@v4
         with:
