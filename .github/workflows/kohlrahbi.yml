@@ -3,8 +3,8 @@ on:
   push:
     branches:
       - master
-    #paths:
-    #  - 'edi_energy_de/**'
+    paths:
+      - 'edi_energy_de/**'
 jobs:
   check:
     name: Parse the Docx Files
