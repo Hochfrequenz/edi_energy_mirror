@@ -6,7 +6,7 @@
 #
 aiodns==3.0.0
     # via aiohttp-requests
-aiohttp==3.8.4
+aiohttp==3.8.5
     # via
     #   aiohttp-requests
     #   edi-energy-scraper
