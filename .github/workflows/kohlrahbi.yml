@@ -28,6 +28,7 @@ jobs:
         with:
           format: YYYY-MM-DD
       - name: Install dependencies
+        working-directory: "edi_energy_mirror"
         run: |
           python -m pip install --upgrade pip
           pip install -r dependencies/kohlrahbi-requirements.txt
