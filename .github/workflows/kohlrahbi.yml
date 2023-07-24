@@ -1,10 +1,7 @@
 name: Run kohlrAHBi
 on:
   push:
-    branches:
-      - master
-    paths:
-      - 'edi_energy_de/**'
+    branches: {}
 jobs:
   check:
     name: Parse the Docx Files
