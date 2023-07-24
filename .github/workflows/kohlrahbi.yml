@@ -1,7 +1,6 @@
 name: Run kohlrAHBi
 on:
-  push:
-    branches: {}
+  push: {}
 jobs:
   check:
     name: Parse the Docx Files
