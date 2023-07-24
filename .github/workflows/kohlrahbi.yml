@@ -26,7 +26,7 @@ jobs:
         uses: srfrnk/current-time@master
         id: current-time
         with:
-          format: YYYY-MM-DD
+          format: YYYY-MM-DDTHH-mm-ssZ
       - name: Install dependencies
         working-directory: "edi_energy_mirror"
         run: |
