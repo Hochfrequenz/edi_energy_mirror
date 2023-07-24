@@ -20,7 +20,7 @@ colorlog==6.7.0
     # via kohlrahbi
 et-xmlfile==1.1.0
     # via openpyxl
-kohlrahbi==0.0.6a1
+kohlrahbi==0.0.6
     # via -r kohlrahbi-requirements.in
 lxml==4.9.3
     # via python-docx
