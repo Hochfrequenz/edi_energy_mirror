@@ -36,7 +36,7 @@ jobs:
         uses: srfrnk/current-time@master
         id: current-time
         with:
-          format: YYYY-MM-DDTHH-mm-ssZ
+          format: YYYY-MM-DDTHH-mm-ss
       - name: Push flat AHBs to machine-readable_anwendungshandbuecher
         uses: peter-evans/create-pull-request@v5
         with:
