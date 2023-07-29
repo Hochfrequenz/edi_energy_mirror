@@ -5,6 +5,7 @@ on:
       - master
     paths:
       - 'edi_energy_de/**'
+      - 'dependencies/kohlrahbi-requirements.txt'
 jobs:
   check:
     name: Parse the Docx Files
