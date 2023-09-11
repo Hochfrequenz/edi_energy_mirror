@@ -15,7 +15,7 @@ jobs:
         scrapepath: ["--input_path edi_energy_mirror/edi_energy_de/current --output_path ./machine-readable_anwendungshandbuecher/FV2304", "--input_path edi_energy_mirror/edi_energy_de/future --output_path ./machine-readable_anwendungshandbuecher/FV2310"]
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: edi_energy_mirror
           lfs: true
@@ -28,7 +28,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r dependencies/kohlrahbi-requirements.txt
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.MRAHB_PUSH_TOKEN }}
           repository: Hochfrequenz/machine-readable_anwendungshandbuecher
