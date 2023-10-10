@@ -33,4 +33,6 @@ jobs:
           # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/PUSH_TOKEN
           # Github Token with repo scope
           branch: update-${{ steps.current-time.outputs.formattedTime }}
+          reviewers: hf-krechan
+          assignees: hf-krechan
           
