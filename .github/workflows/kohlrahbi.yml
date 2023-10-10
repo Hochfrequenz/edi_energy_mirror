@@ -51,3 +51,5 @@ jobs:
            # token with repo scope
            # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/MRAHB_PUSH_TOKEN
            branch: update-${{ steps.current-time.outputs.formattedTime }}
+           reviewers: hf-krechan
+           assignees: hf-krechan
