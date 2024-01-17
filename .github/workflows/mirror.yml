@@ -29,7 +29,7 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           title: EDI@Energy Changes ${{ steps.current-time.outputs.formattedTime }}
-          token: ${{ secrets.PUSH_TOKEN }} # expires 2024-01-15
+          token: ${{ secrets.PUSH_TOKEN }} # expires 2025-01-16
           # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/PUSH_TOKEN
           # Github Token with repo scope
           branch: update-${{ steps.current-time.outputs.formattedTime }}
