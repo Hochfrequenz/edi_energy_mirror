@@ -10,17 +10,21 @@ attrs==23.1.0
     #   maus
 click==8.1.6
     # via kohlrahbi
+colorama==0.4.6
+    # via
+    #   click
+    #   colorlog
 colorlog==6.7.0
     # via kohlrahbi
 et-xmlfile==1.1.0
     # via openpyxl
-kohlrahbi==0.2.0
+kohlrahbi==0.3.1
     # via -r kohlrahbi-requirements.in
 lxml==4.9.3
     # via python-docx
 marshmallow==3.20.1
     # via maus
-maus==0.3.43
+maus==0.4.0
     # via kohlrahbi
 more-itertools==9.1.0
     # via maus
