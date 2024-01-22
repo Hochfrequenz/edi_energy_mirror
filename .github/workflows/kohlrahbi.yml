@@ -2,7 +2,7 @@ name: Run kohlrAHBi
 on:
   push:
     branches:
-      - master
+      - Use_optimized_kohlrahbi
     paths:
       - 'edi_energy_de/**/*.docx'
       - 'dependencies/kohlrahbi-requirements.txt'
