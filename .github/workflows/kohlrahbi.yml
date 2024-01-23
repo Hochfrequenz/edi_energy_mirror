@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        scrapepath: ["--input_path edi_energy_mirror/edi_energy_de/current --output_path ./machine-readable_anwendungshandbuecher/FV2310", "--input_path edi_energy_mirror/edi_energy_de/future --output_path ./machine-readable_anwendungshandbuecher/FV2404"]
+        scrapepath: ["--input_path edi_energy_mirror/edi_energy_de/current --output_path ./machine-readable_anwendungshandbuecher/FV2310"]
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
