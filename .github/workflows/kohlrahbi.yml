@@ -43,7 +43,7 @@ jobs:
         with:
           format: YYYY-MM-DDTHH-mm-ss
       - name: Push flat AHBs to machine-readable_anwendungshandbuecher
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v6
         with:
            path:  machine-readable_anwendungshandbuecher
            title: EDI@Energy KohlrAHBi Changes ${{ steps.current-time.outputs.formattedTime }}

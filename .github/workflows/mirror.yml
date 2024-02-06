@@ -26,7 +26,7 @@ jobs:
         run: |
           python download_and_post_process.py
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v6
         with:
           title: EDI@Energy Changes ${{ steps.current-time.outputs.formattedTime }}
           token: ${{ secrets.PUSH_TOKEN }} # expires 2025-01-16
