@@ -6,7 +6,6 @@
 #
 aiohttp[speedups]==3.9.3
     # via
-    #   -r mirror-requirements.in
     #   aiohttp-requests
     #   edi-energy-scraper
 aiohttp-requests==0.2.2
@@ -47,5 +46,7 @@ pytz==2024.1
     # via edi-energy-scraper
 soupsieve==2.2
     # via beautifulsoup4
-yarl==1.8.2
-    # via aiohttp
+yarl==1.9.4
+    # via
+    #   -r mirror-requirements.in
+    #   aiohttp
