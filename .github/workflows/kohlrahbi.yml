@@ -47,7 +47,7 @@ jobs:
         with:
            path:  machine-readable_anwendungshandbuecher
            title: EDI@Energy KohlrAHBi Changes ${{ steps.current-time.outputs.formattedTime }}
-           token: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2024-02-15
+           token: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2025-02-13
            # token with repo scope
            # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/MRAHB_PUSH_TOKEN
            branch: update-${{ steps.current-time.outputs.formattedTime }}
