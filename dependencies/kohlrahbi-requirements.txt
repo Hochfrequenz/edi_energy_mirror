@@ -4,53 +4,53 @@
 #
 #    pip-compile kohlrahbi-requirements.in
 #
-attrs==23.1.0
+attrs==23.2.0
     # via
     #   kohlrahbi
     #   maus
-click==8.1.6
+click==8.1.7
     # via kohlrahbi
 colorama==0.4.6
     # via
     #   click
     #   colorlog
-colorlog==6.7.0
+colorlog==6.8.2
     # via kohlrahbi
 et-xmlfile==1.1.0
     # via openpyxl
 kohlrahbi==0.4.0
     # via -r kohlrahbi-requirements.in
-lxml==4.9.3
+lxml==5.1.0
     # via python-docx
-marshmallow==3.20.1
+marshmallow==3.21.1
     # via maus
-maus==0.4.0
+maus==0.4.2
     # via kohlrahbi
-more-itertools==9.1.0
+more-itertools==10.2.0
     # via maus
-numpy==1.25.1
+numpy==1.26.4
     # via pandas
 openpyxl==3.1.2
     # via kohlrahbi
-packaging==23.1
+packaging==24.0
     # via marshmallow
-pandas==2.0.3
+pandas==2.2.1
     # via kohlrahbi
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via pandas
 python-docx==1.1.0
     # via kohlrahbi
-pytz==2023.3
+pytz==2024.1
     # via
     #   kohlrahbi
     #   pandas
 six==1.16.0
     # via python-dateutil
-tomlkit==0.11.8
+tomlkit==0.12.4
     # via kohlrahbi
-typing-extensions==4.9.0
+typing-extensions==4.10.0
     # via python-docx
-tzdata==2023.3
+tzdata==2024.1
     # via pandas
-xlsxwriter==3.1.2
+xlsxwriter==3.2.0
     # via kohlrahbi
