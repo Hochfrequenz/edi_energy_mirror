@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        scrapepath: ["--input-path edi_energy_mirror/edi_energy_de/current --output-path ./machine-readable_anwendungshandbuecher/FV2310", "--input-path edi_energy_mirror/edi_energy_de/future --output-path ./machine-readable_anwendungshandbuecher/FV2404"]
+        format_version: ["FV2104", "FV2110", "FV2210", "FV2304", "FV2310", "FV2404", "FV2410"]
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
@@ -37,7 +37,7 @@ jobs:
           lfs: true
       - name: Run Extraction
         run: |
-          kohlrahbi ${{ matrix.scrapepath }} --file-type flatahb --file-type csv --file-type xlsx
+          kohlrahbi --input-path edi_energy_mirror/edi_energy_de/${{ matrix.format_version }} --output-path ./machine-readable_anwendungshandbuecher/${{ matrix.format_version }} --file-type flatahb --file-type csv --file-type xlsx
       - name: Get current time
         uses: srfrnk/current-time@master
         id: current-time
