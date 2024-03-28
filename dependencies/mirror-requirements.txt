@@ -20,11 +20,10 @@ beautifulsoup4==4.11.1
     # via edi-energy-scraper
 brotli==1.1.0
     # via aiohttp
-edi-energy-scraper==0.4.1
+edi-energy-scraper==0.5.0
     # via -r mirror-requirements.in
 frozenlist==1.4.1
     # via
-    #   -r mirror-requirements.in
     #   aiohttp
     #   aiosignal
 idna==2.10
