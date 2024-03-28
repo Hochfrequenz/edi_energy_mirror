@@ -51,6 +51,6 @@ jobs:
            token: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2025-02-13
            # token with repo scope
            # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/MRAHB_PUSH_TOKEN
-           branch: update-${{ steps.current-time.outputs.formattedTime }}
+           branch: update-${{ matrix.format_version }}-${{ steps.current-time.outputs.formattedTime }}
            reviewers: hf-krechan
            assignees: hf-krechan
