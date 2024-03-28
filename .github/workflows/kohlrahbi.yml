@@ -6,6 +6,7 @@ on:
     paths:
       - 'edi_energy_de/**/*.docx'
       - 'dependencies/kohlrahbi-requirements.txt'
+      - '.github/workflows/kohlrahbi.yml'
 jobs:
   check:
     name: Parse the Docx Files
