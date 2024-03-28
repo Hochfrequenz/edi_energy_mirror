@@ -21,7 +21,7 @@ Eine [periodisch eingeplante Github Action](https://github.com/Hochfrequenz/edi_
 
 Der Großteil des dazu notwendigen Codes lebt im [edi_energy_scraper](https://github.com/Hochfrequenz/edi_energy_scraper)-Repository.
 
-Das Skript [download_and_post_process.py](/download_and_post_process.py) lädt die Startseite von edi-energy.de, die Seiten für aktuell und zukünftig gültige sowie archivierte Dokumente und die jeweils verlinkten PDFs herunter und speichert sie in den drei Verzeichnissen [current](/edi_energy_de/current) (aktuell), [future](/edi_energy_de/future) (zukünftig), [past](/edi_energy_de/past) (archiviert).
+Das Skript [download_and_post_process.py](/download_and_post_process.py) lädt die Startseite von edi-energy.de, die Seiten für aktuell und zukünftig gültige sowie archivierte Dokumente und die jeweils verlinkten PDFs herunter und speichert sie in den für den jeweiligen Gültigkeitszeitraum passenden Ordner; z.B. [`FV2310`](edi_energy_de/FV2310) für Dokumente, die seit 01. Oktober 2023 gültig waren.
 
 So werden Änderungen an MIGs, AHBs und weiteren Dokumenten als Diffs einzelner git commits sichtbar und Änderungen sind leichter aufzufinden und auszuwerten.
 
