@@ -2,6 +2,9 @@ name: Pull Documents from edi@energy
 on:
   schedule:
     - cron: '01 8,11,17 * * *'
+  push:
+    branches:
+      - new-folder-structure
 jobs:
   check:
     name: Read all AHBs and Extract Conditions
