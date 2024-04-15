@@ -1,0 +1,825 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified">
+		<!-- Diese XSD-Datei baut auf den konsultierten Formatbeschreibungen der XML-Datenformate für den Redispatch 2.0 auf. Der BDEW übernimmt keinerlei Gewähr für die Aktualität, Korrektheit, Vollständigkeit, Qualität oder wettbewerbsrechtliche Zulässigkeit der bereitgestellten Informationen.
+	Der BDEW behält sich vor, in Zukunft eine kostenpflichtige Veröffentlichung der XSD-Datei einzuführen. -->
+  <xs:element name="AcknowledgementDocument">
+    <xs:annotation>
+      <xs:documentation></xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="DocumentIdentification">
+          <xs:annotation>
+            <xs:documentation></xs:documentation>
+            <xs:documentation xml:lang="DE">Die DocumentIdentification hat je Absender und je Dokumententyp eindeutig zu sein. Bei der Bildung der Identifikation ist auf Groß- und Kleinschreibung zu achten (case-sensitive).</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:attribute name="v" use="required">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:maxLength value="35"/>
+                  <xs:whiteSpace value="preserve"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="DocumentDateTime">
+          <xs:annotation>
+            <xs:documentation></xs:documentation>
+            <xs:documentation xml:lang="DE">
+Hier ist der Erzeugungszeitpunkt des Dokuments anzugeben. Die Zeitangabe erfolgt in UTC. 
+Der Zeitpunkt ist immer im Format 
+yyyy-mm-ddThh:mm:ssZ anzugeben, mit: 
+
+yyyy vier Ziffern für die Jahresangabe
+mm zwei Ziffern für die Monatsangabe
+dd zwei Ziffern für die Tagesangabe
+hh zwei Ziffern für die Stundenangabe
+mm zwei Ziffern für die Minutenangabe
+ss zwei Ziffern für die Sekundenangabe
+T, Z Zeichen, die an den entsprechenden Stellen zwingend anzugeben sind.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:attribute name="v" use="required">
+              <xs:simpleType>
+                <xs:restriction base="xs:dateTime">
+                  <xs:pattern value="20(\d{2}(\-(0[13578]|1[02])\-(0[1-9]|[12]\d|3[01])|\-02\-(0[1-9]|1\d|2[0-8])|\-(0[469]|11)\-(0[1-9]|[12]\d|30))|([02468][048]|[13579][26])\-02\-(29))T([01]\d|2[0-3]):[0-5]\d:[0-5]\dZ"/>
+                  <xs:whiteSpace value="collapse"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="SenderIdentification">
+          <xs:annotation>
+            <xs:documentation></xs:documentation>
+            <xs:documentation xml:lang="DE">Dieses Element dient zur eindeutigen Identifikation des Senders über seine Marktpartner-ID, die zu einer vordefinierten Codeliste einer vergebenden Organisation gehören muss.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:attribute name="v" use="required">
+              <xs:annotation>
+                <xs:documentation xml:lang="DE">Unter dem Redispatch 2.0 ist die 13-stellige MP-ID einzutragen.</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:maxLength value="16"/>
+                  <xs:pattern value="\d{13}"/>
+                  <xs:whiteSpace value="preserve"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="codingScheme" use="required">
+              <xs:annotation>
+                <xs:documentation xml:lang="DE">Das codingScheme definiert die vergebende Organisation der Marktpartner-ID.</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:NMTOKEN">
+                  <xs:enumeration value="A10">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>GS1</xs:documentation>
+                      <xs:documentation>The coding scheme for the preceding attribute is the Global Location Number (GLN 13) or Global Service Relation Number (GSRN 18), maintained by GS1.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="NDE">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Germany National coding scheme</xs:documentation>
+                      <xs:documentation>The National coding scheme of the country in question.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="SenderRole">
+          <xs:annotation>
+            <xs:documentation></xs:documentation>
+            <xs:documentation xml:lang="DE">Dieses Element dient zur Angabe der Marktrolle des Absenders.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:attribute name="v" use="required">
+              <xs:simpleType>
+                <xs:restriction base="xs:NMTOKEN">
+                  <xs:enumeration value="A08">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Balance responsible party</xs:documentation>
+                      <xs:documentation>Refer to role model definitions in the ENTSO-E Harmonised Role Model Document.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="A18">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Grid operator</xs:documentation>
+                      <xs:documentation>Refer to role model definitions in the ENTSO-E Harmonised Role Model Document.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="A21">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Producer</xs:documentation>
+                      <xs:documentation>Refer to role model definitions in the ENTSO-E Harmonised Role Model Document.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="A27">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Resource provider</xs:documentation>
+                      <xs:documentation>Refer to role model definitions in the ENTSO-E Harmonised Role Model Document.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="A39">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Data provider</xs:documentation>
+                      <xs:documentation>A party that is responsible for providing information to a central authority.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="Z01">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="DE">Lieferant</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ReceiverIdentification">
+          <xs:annotation>
+            <xs:documentation></xs:documentation>
+            <xs:documentation xml:lang="DE">Dieses Element dient zur eindeutigen Identifikation des Empfängers über seine Marktpartner-ID, die zu einer vordefinierten Codeliste einer vergebenden Organisation gehören muss.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:attribute name="v" use="required">
+              <xs:annotation>
+                <xs:documentation xml:lang="DE">Unter dem Redispatch 2.0 ist die 13-stellige MP-ID einzutragen.</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:maxLength value="16"/>
+                  <xs:pattern value="\d{13}"/>
+                  <xs:whiteSpace value="preserve"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="codingScheme" use="required">
+              <xs:annotation>
+                <xs:documentation xml:lang="DE">Das codingScheme definiert die vergebende Organisation der Marktpartner-ID.</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:NMTOKEN">
+                  <xs:enumeration value="A10">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>GS1</xs:documentation>
+                      <xs:documentation>The coding scheme for the preceding attribute is the Global Location Number (GLN 13) or Global Service Relation Number (GSRN 18), maintained by GS1.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="NDE">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Germany National coding scheme</xs:documentation>
+                      <xs:documentation>The National coding scheme of the country in question.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ReceiverRole">
+          <xs:annotation>
+            <xs:documentation></xs:documentation>
+            <xs:documentation xml:lang="DE">Dieses Element dient zur Angabe der Marktrolle des Empfängers.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:attribute name="v" use="required">
+              <xs:simpleType>
+                <xs:restriction base="xs:NMTOKEN">
+                  <xs:enumeration value="A18">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Grid operator</xs:documentation>
+                      <xs:documentation>Refer to role model definitions in the ENTSO-E Harmonised Role Model Document.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="A27">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Resource provider</xs:documentation>
+                      <xs:documentation>Refer to role model definitions in the ENTSO-E Harmonised Role Model Document.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="A39">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Data provider</xs:documentation>
+                      <xs:documentation>A party that is responsible for providing information to a central authority.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="Z01">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="DE">Lieferant</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ReceivingDocumentIdentification" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation></xs:documentation>
+            <xs:documentation xml:lang="DE">
+In diesem Element wird die Identifikation des Dokuments(DocumentIdentification) angegeben, auf das sich das AcknowledgementDocument bezieht. Die Eindeutigkeit des Dokuments, auf das Bezug genommen wird, ergibt sich für den
+Empfänger des AcknowledgementDocuments (ACK) erst durch die Angaben (ReceivingDocumentIdentification; ReceivingDocumentVersion; ReceivingDocumentType; Receiver (des AcknowledgementDocument), Absender (des
+AcknowledgementDocument)). Dieses Feld wird nur verwendet, wenn die originäre Nachricht, auf Grund derer das AcknowledgementDocument gesendet wird, eine gültige und lesbare XML-Nachricht ist. Im Falle eines sog. technischen AcknowledgementDocuments (Datei nicht lesbar, da keine gültige XML-Datei) wird dieses Element nicht verwendet.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:attribute name="v" use="required">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:maxLength value="35"/>
+                  <xs:whiteSpace value="preserve"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ReceivingDocumentVersion" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation xml:lang="DE">In diesem Element wird die Documentversion (DocumentVersion) des Dokuments angegeben, auf das sich das AcknowledgementDocument bezieht. Dieses Feld wird nur verwendet, wenn die originäre Nachricht, auf Grund derer das AcknowledgementDocument gesendet wird, eine gültige und lesbare XML-Nachricht ist. Im Falle eines sog. technischen AcknowledgementDocuments (originäre Nachricht, auf die Bezug genommen wird, war nicht lesbar, da keine gültige XML-Datei) wird dieses Element nicht verwendet.</xs:documentation>
+            <xs:documentation></xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:attribute name="v" use="required">
+              <xs:annotation>
+                <xs:documentation xml:lang="DE">Versionsnummer</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:integer">
+                  <xs:whiteSpace value="collapse"/>
+                  <xs:minInclusive value="1"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ReceivingDocumentType" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation></xs:documentation>
+            <xs:documentation xml:lang="DE">In diesem Element wird der Dokumenttyp (DocumentType) des Dokuments angegeben, auf das sich das AcknowledgementDocument bezieht. Dieses Feld wird nur verwendet, wenn die originäre Nachricht, auf Grund derer das AcknowledgementDocument gesendet wird, eine gültige und lesbare XML-Nachricht ist. Im Falle eines sog. technischen AcknowledgementDocuments (originäre Nachricht nicht lesbar, da keine gültige XML-Datei) wird dieses Element nicht verwendet.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:attribute name="v" use="required">
+              <xs:simpleType>
+                <xs:restriction base="xs:NMTOKEN">
+                  <xs:enumeration value="A14">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Resource Provider Resource Schedule</xs:documentation>
+                      <xs:documentation>A document providing the schedules for resource objects submitted by a resource provider.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="A41">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Activation response</xs:documentation>
+                      <xs:documentation>The document is used to provide a response to a request to activate reserves.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="A42">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Tender reduction</xs:documentation>
+                      <xs:documentation>The document is used to provide information concerning the reduction of a previously submitted tender.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="A60">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>status request for a position independently from a specific process</xs:documentation>
+                      <xs:documentation>A status request concerning the position of an object independently of any ongoing processes.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="A67">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Resource Provider Schedule for production/consumption</xs:documentation>
+                      <xs:documentation>A document providing the schedules for production/consumption for resource objects submitted by a resource provider.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="A76">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Load unavailability</xs:documentation>
+                      <xs:documentation>A document providing the unavailability of units providing load on the network.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="A80">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Generation unavailability</xs:documentation>
+                      <xs:documentation>A document providing the unavailability of generation units providing energy to the network.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="A96">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Redispatch activation document</xs:documentation>
+                      <xs:documentation>A document enabling the activation of a redispatch notice.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="B15">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Network constraint document</xs:documentation>
+                      <xs:documentation>A document providing the network constraint situations used for the load flow studies. A network constraint situation includes contingencies, monitored elements and remedial actions.</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="Z01">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>SOGL-Stammdaten-Meldung</xs:documentation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation xml:lang="DE">SOGL-Stammdaten-Meldung</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="Z02">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>reduzierte Stammdaten</xs:documentation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation xml:lang="DE">reduzierte Stammdaten</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="Z03">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>angereicherte Stammdaten</xs:documentation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation xml:lang="DE">angereicherte Stammdaten</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="Z04">
+                    <xs:annotation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation>Netzbetreiber-Aggregat-Stammdaten</xs:documentation>
+                      <xs:documentation></xs:documentation>
+                      <xs:documentation xml:lang="DE">Netzbetreiber-Aggregat-Stammdaten</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="Z05">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="DE">Kostenblatt</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="Z06">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="DE">Beschaffungsvorbehalt</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="Z07">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="DE">Beschaffungsanforderung energetischer Ausgleich</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="Z08">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="DE">Sensitivitätendokument</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="Z09">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="DE">Abrufinformationsdokument</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="Z11">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="DE">Probeplanungsdaten</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="Z12">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="DE">Prognosezeitreihendaten</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="Z14">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="DE">Bilanzkreisstammdaten</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ReceivingPayloadName" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation></xs:documentation>
+            <xs:documentation xml:lang="DE">In diesem Element wird der Dateiname des Dokuments angegeben, auf das sich die Empfangs- und Prüfbestätigung bezieht. Dieses Feld wird nur in einer sog. technischen Empfangs- und Prüfbestätigung verwendet, d. h., wenn die originäre Nachricht, auf Grund derer die Empfangs- und Prüfbestätigung gesendet wird, keine gültige und lesbare XML-Nachricht ist. Im Falle einer technischen Empfangs- und Prüfbestätigung werden die Felder ReceivingDocumentIdentification, ReceivingDocumentVersion und ReceivingDocumentType nicht verwendet. Der Empfänger muss an Hand des Absenders und des Dateinamens die Zuordnung zur Nachricht durchführen.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:attribute name="v" use="required">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:maxLength value="150"/>
+                  <xs:whiteSpace value="preserve"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="DateTimeReceivingDocument" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation></xs:documentation>
+            <xs:documentation xml:lang="DE">
+Hier ist der Erzeugungszeitpunkt aus dem Dokument einzutragen, auf das mit diesem ACK geantwortet wird. Die Angabe des Zeitpunktes erfolgt in UTC im Format yyyy-mm-ddThh:mm:ssZ, wobei
+yyyy vier Ziffern für die Jahresangabe
+mm zwei Ziffern für die Monatsangabe
+dd zwei Ziffern für die Tagesangabe
+hh zwei Ziffern für die Stundenangabe
+mm zwei Ziffern für die Minutenangabe
+ss zwei Ziffern für die Sekundenangabe sind.
+T Trennzeichen zwischen Datum und Uhrzeit
+Z Zeichen weist auf Angabe in UTC hin.
+
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:attribute name="v" use="required">
+              <xs:simpleType>
+                <xs:restriction base="xs:dateTime">
+                  <xs:pattern value="20(\d{2}(\-(0[13578]|1[02])\-(0[1-9]|[12]\d|3[01])|\-02\-(0[1-9]|1\d|2[0-8])|\-(0[469]|11)\-(0[1-9]|[12]\d|30))|([02468][048]|[13579][26])\-02\-(29))T([01]\d|2[0-3]):[0-5]\d:[0-5]\dZ"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="TimeSeriesRejection" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation></xs:documentation>
+            <xs:documentation xml:lang="DE">Das Element wird derzeit für Redispatch 2.0 nicht genutzt.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="SendersTimeSeriesIdentification">
+                <xs:annotation>
+                  <xs:documentation></xs:documentation>
+                  <xs:documentation xml:lang="DE">Das Element wird derzeit für Redispatch 2.0 nicht genutzt.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:attribute name="v" use="required">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="35"/>
+                        <xs:whiteSpace value="preserve"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="TimeIntervalError" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                  <xs:documentation></xs:documentation>
+                  <xs:documentation xml:lang="DE">Das Element wird derzeit für Redispatch 2.0 nicht genutzt.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="QuantityTimeInterval">
+                      <xs:annotation>
+                        <xs:documentation></xs:documentation>
+                        <xs:documentation xml:lang="DE">Angabe des Zeitintervalls, in dem ein Fehler aufgetreten ist, gemäß Pattern.</xs:documentation>
+                        <xs:documentation xml:lang="DE">
+Hier erfolgt die Angabe des Zeitintervalls für den Fehler in der Zeitreihe. Die Angabe erfolgt im UTC-Format yyyy-mmddThh: mmZ/yyyy-mm-ddThh:mmZ:
+yyyy vier Ziffern für die Jahresangabe
+mm zwei Ziffern für die Monatsangabe
+dd zwei Ziffern für die Tagesangabe
+hh zwei Ziffern für die Stundenangabe
+mm zwei Ziffern für die Minutenangabe
+T Trennzeichen zwischen Datum und Uhrzeit
+Z Verweis auf UTC
+/ Trennzeichen zwischen beiden Zeitangaben
+                        </xs:documentation>
+                        <xs:documentation xml:lang="DE">Das Element wird derzeit für Redispatch 2.0 nicht genutzt.</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:attribute name="v" use="required">
+                          <xs:annotation>
+                            <xs:documentation>
+ISO 8601 time intervals are always expressed in the form 
+			yyyy-mm-ddThh:mmZ/yyyy-mm-ddThh:mmZ
+			Note: The minimum XML form of dateTime is yyyy-mm-ddThh:mm:ssZ
+                            </xs:documentation>
+                          </xs:annotation>
+                          <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                              <xs:pattern value="20(\d{2}(\-(0[13578]|1[02])\-(0[1-9]|[12]\d|3[01])|\-02\-(0[1-9]|1\d|2[0-8])|\-(0[469]|11)\-(0[1-9]|[12]\d|30))|([02468][048]|[13579][26])\-02\-(29))T([01]\d|2[0-3]):[0-5]\dZ/20(\d{2}(\-(0[13578]|1[02])\-(0[1-9]|[12]\d|3[01])|\-02\-(0[1-9]|1\d|2[0-8])|\-(0[469]|11)\-(0[1-9]|[12]\d|30))|([02468][048]|[13579][26])\-02\-(29))T([01]\d|2[0-3]):[0-5]\dZ"/>
+                              <xs:whiteSpace value="preserve"/>
+                            </xs:restriction>
+                          </xs:simpleType>
+                        </xs:attribute>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Reason" maxOccurs="unbounded">
+                      <xs:annotation>
+                        <xs:documentation></xs:documentation>
+                        <xs:documentation xml:lang="DE">Über ReasonCode und den ggf. auch enthaltenen ReasonText wird der Fehler beschrieben, der in einem Zeitintervall einer Zeitreihe festgestellt wurde.</xs:documentation>
+                        <xs:documentation xml:lang="DE">Das Element wird derzeit für Redispatch 2.0 nicht genutzt.</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="ReasonCode">
+                            <xs:annotation>
+                              <xs:documentation></xs:documentation>
+                              <xs:documentation xml:lang="DE">Hier werden die Codes für einen Fehler auf Intervallebene angegeben.</xs:documentation>
+                              <xs:documentation xml:lang="DE">Das Element wird derzeit für Redispatch 2.0 nicht genutzt.</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                              <xs:attribute name="v" use="required">
+                                <xs:simpleType>
+                                  <xs:restriction base="xs:NMTOKEN">
+                                    <xs:enumeration value="Z99">
+                                      <xs:annotation>
+                                        <xs:documentation xml:lang="DE">Platzhalter</xs:documentation>
+                                      </xs:annotation>
+                                    </xs:enumeration>
+                                  </xs:restriction>
+                                </xs:simpleType>
+                              </xs:attribute>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="ReasonText" minOccurs="0">
+                            <xs:annotation>
+                              <xs:documentation></xs:documentation>
+                              <xs:documentation xml:lang="DE">Hier kann erläuternder Text zur detaillierten Fehlerbeschreibung stehen.</xs:documentation>
+                              <xs:documentation xml:lang="DE">Das Element wird derzeit für Redispatch 2.0 nicht genutzt.</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                              <xs:attribute name="v" use="required">
+                                <xs:simpleType>
+                                  <xs:restriction base="xs:string">
+                                    <xs:maxLength value="512"/>
+                                    <xs:whiteSpace value="preserve"/>
+                                  </xs:restriction>
+                                </xs:simpleType>
+                              </xs:attribute>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Reason" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                  <xs:documentation></xs:documentation>
+                  <xs:documentation xml:lang="DE">Das Element wird derzeit für Redispatch 2.0 nicht genutzt.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="ReasonCode">
+                      <xs:annotation>
+                        <xs:documentation></xs:documentation>
+                        <xs:documentation xml:lang="DE">Das Element wird derzeit für Redispatch 2.0 nicht genutzt.</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:attribute name="v" use="required">
+                          <xs:simpleType>
+                            <xs:restriction base="xs:NMTOKEN">
+                              <xs:enumeration value="Z99">
+                                <xs:annotation>
+                                  <xs:documentation xml:lang="DE">Platzhalter</xs:documentation>
+                                </xs:annotation>
+                              </xs:enumeration>
+                            </xs:restriction>
+                          </xs:simpleType>
+                        </xs:attribute>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="ReasonText" minOccurs="0">
+                      <xs:annotation>
+                        <xs:documentation></xs:documentation>
+                        <xs:documentation xml:lang="DE">Das Element wird derzeit für Redispatch 2.0 nicht genutzt.</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:attribute name="v" use="required">
+                          <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                              <xs:maxLength value="512"/>
+                            </xs:restriction>
+                          </xs:simpleType>
+                        </xs:attribute>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Reason" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation></xs:documentation>
+            <xs:documentation xml:lang="DE">Über ReasonCode und den ggf. auch enthaltenen ReasonText wird der Fehler beschrieben, der in der Datei festgestellt wurde. Zusätzlich wird hier die Information übermittelt, ob die Datei akzeptiert (ReasonCode A01) oder abgelehnt wurde (ReasonCode A02).</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ReasonCode">
+                <xs:annotation>
+                  <xs:documentation></xs:documentation>
+                  <xs:documentation xml:lang="DE">Hier werden die Codes für einen Fehler auf Dokumentebene angegeben.</xs:documentation>
+                  <xs:documentation xml:lang="DE">Code A01 oder A02 muss immer angeführt werden.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:attribute name="v" use="required">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:NMTOKEN">
+                        <xs:enumeration value="A01">
+                          <xs:annotation>
+                            <xs:documentation></xs:documentation>
+                            <xs:documentation>Message fully accepted</xs:documentation>
+                            <xs:documentation>The message has been fully accepted for application processing.</xs:documentation>
+                            <xs:documentation xml:lang="DE">Message fully accepted</xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="A02">
+                          <xs:annotation>
+                            <xs:documentation></xs:documentation>
+                            <xs:documentation>Message fully rejected</xs:documentation>
+                            <xs:documentation>No part of the message has been accepted for application processing, e.g. Global position incomplete.</xs:documentation>
+                            <xs:documentation xml:lang="DE">Message fully rejected</xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="Z12">
+                          <xs:annotation>
+                            <xs:documentation xml:lang="DE">Syntaxfehler erkannt</xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="Z13">
+                          <xs:annotation>
+                            <xs:documentation xml:lang="DE">Zuordnungsfehler</xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="Z14">
+                          <xs:annotation>
+                            <xs:documentation xml:lang="DE">Dokumentidentifikation uneindeutig</xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="Z15">
+                          <xs:annotation>
+                            <xs:documentation xml:lang="DE">Sender unberechtigt</xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="Z16">
+                          <xs:annotation>
+                            <xs:documentation xml:lang="DE">gem. AWT nicht zulässig</xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="Z17">
+                          <xs:annotation>
+                            <xs:documentation xml:lang="DE">Formatversion ungültig</xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="ReasonText" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation></xs:documentation>
+                  <xs:documentation xml:lang="DE">Hier kann erläuternder Text zur detaillierten Fehlerbeschreibung stehen.</xs:documentation>
+                  <xs:documentation>Wenn im ReasonCode der Code Z12 Verwendung findet, sind im ReasonText Informationen zum Syntaxfehler anzugeben. Dies können bspw. Inhalte sein, die der Parser ausgibt.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:attribute name="v" use="required">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="512"/>
+                        <xs:whiteSpace value="preserve"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="TimeIntervalError" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation></xs:documentation>
+            <xs:documentation>nur bei ReasonCode A21</xs:documentation>
+            <xs:documentation xml:lang="DE">Das Element wird derzeit für Redispatch 2.0 nicht genutzt.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="QuantityTimeInterval">
+                <xs:annotation>
+                  <xs:documentation></xs:documentation>
+                  <xs:documentation xml:lang="DE">Angabe des Zeitintervalls, in dem ein Fehler aufgetreten ist, gemäß Pattern.</xs:documentation>
+                  <xs:documentation xml:lang="DE">
+Hier erfolgt die Angabe des Zeitintervalls für den Fehler im gesendeten Dokument. Die Angabe erfolgt im UTC-Format yyyymm-ddThh:mmZ/yyyy-mm-ddThh:mmZ:
+yyyy vier Ziffern für die Jahresangabe
+mm zwei Ziffern für die Monatsangabe
+dd zwei Ziffern für die Tagesangabe
+hh zwei Ziffern für die Stundenangabe
+mm zwei Ziffern für die Minutenangabe
+T, Z, / Zeichen, die an den entsprechenden Stellen
+zwingend anzugeben sind.
+                  </xs:documentation>
+                  <xs:documentation xml:lang="DE">Das Element wird derzeit für Redispatch 2.0 nicht genutzt.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:attribute name="v" use="required">
+                    <xs:annotation>
+                      <xs:documentation>
+ISO 8601 time intervals are always expressed in the form 
+			yyyy-mm-ddThh:mmZ/yyyy-mm-ddThh:mmZ
+			Note: The minimum XML form of dateTime is yyyy-mm-ddThh:mm:ssZ
+                      </xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:pattern value="20(\d{2}(\-(0[13578]|1[02])\-(0[1-9]|[12]\d|3[01])|\-02\-(0[1-9]|1\d|2[0-8])|\-(0[469]|11)\-(0[1-9]|[12]\d|30))|([02468][048]|[13579][26])\-02\-(29))T([01]\d|2[0-3]):[0-5]\dZ/20(\d{2}(\-(0[13578]|1[02])\-(0[1-9]|[12]\d|3[01])|\-02\-(0[1-9]|1\d|2[0-8])|\-(0[469]|11)\-(0[1-9]|[12]\d|30))|([02468][048]|[13579][26])\-02\-(29))T([01]\d|2[0-3]):[0-5]\dZ"/>
+                        <xs:whiteSpace value="preserve"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Reason" maxOccurs="unbounded">
+                <xs:annotation>
+                  <xs:documentation></xs:documentation>
+                  <xs:documentation xml:lang="DE">Das Element wird derzeit für Redispatch 2.0 nicht genutzt.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="ReasonCode">
+                      <xs:annotation>
+                        <xs:documentation></xs:documentation>
+                        <xs:documentation xml:lang="DE">Das Element wird derzeit für Redispatch 2.0 nicht genutzt.</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:attribute name="v" use="required">
+                          <xs:simpleType>
+                            <xs:restriction base="xs:NMTOKEN">
+                              <xs:enumeration value="Z99">
+                                <xs:annotation>
+                                  <xs:documentation xml:lang="DE">Platzhalter</xs:documentation>
+                                </xs:annotation>
+                              </xs:enumeration>
+                            </xs:restriction>
+                          </xs:simpleType>
+                        </xs:attribute>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="ReasonText" minOccurs="0">
+                      <xs:annotation>
+                        <xs:documentation></xs:documentation>
+                        <xs:documentation xml:lang="DE">Das Element wird derzeit für Redispatch 2.0 nicht genutzt.</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:attribute name="v" use="required">
+                          <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                              <xs:maxLength value="512"/>
+                              <xs:whiteSpace value="preserve"/>
+                            </xs:restriction>
+                          </xs:simpleType>
+                        </xs:attribute>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="DtdVersion" fixed="5" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:whiteSpace value="preserve"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="DtdRelease" fixed="1" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:whiteSpace value="preserve"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="DtdBDEWNachrichtenVersion" type="xs:string" fixed="1.0e"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
