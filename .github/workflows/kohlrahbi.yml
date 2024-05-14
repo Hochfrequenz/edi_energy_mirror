@@ -35,9 +35,16 @@ jobs:
           repository: Hochfrequenz/machine-readable_anwendungshandbuecher
           path: machine-readable_anwendungshandbuecher
           lfs: true
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.EEAHB_CP_PUSH_TOKEN }}
+          repository: Hochfrequenz/edi_energy_ahb_conditions_and_packages
+          path: edi_energy_ahb_conditions_and_packages
+          lfs: true
       - name: Run Extraction
         run: |
-          kohlrahbi --input-path edi_energy_mirror/edi_energy_de/${{ matrix.format_version }} --output-path ./machine-readable_anwendungshandbuecher/${{ matrix.format_version }} --format-version ${{ matrix.format_version }} --file-type flatahb --file-type csv --file-type xlsx 
+          kohlrahbi ahb --assume-yes --edi-energy-mirror-path edi_energy_mirror --output-path ./machine-readable_anwendungshandbuecher/${{ matrix.format_version }} --format-version ${{ matrix.format_version }} --file-type flatahb --file-type csv --file-type xlsx
+          kohlrahbi ahb --assume-yes --edi-energy-mirror-path edi_energy_mirror --output-path ./edi_energy_ahb_conditions_and_packages/${{ matrix.format_version }} --format-version ${{ matrix.format_version }}
       - name: Get current time
         uses: srfrnk/current-time@master
         id: current-time
@@ -54,3 +61,14 @@ jobs:
            branch: update-${{ matrix.format_version }}-${{ steps.current-time.outputs.formattedTime }}
            reviewers: hf-krechan
            assignees: hf-krechan
+      - name: Push conditions and packages AHBs to edi energy ahb conditons and packages
+        uses: peter-evans/create-pull-request@v6
+        with:
+           path:  edi_energy_ahb_conditions_and_packages
+           title: EDI@Energy KohlrAHBi ${{ matrix.format_version }} Changes ${{ steps.current-time.outputs.formattedTime }}
+           token: ${{ secrets.EEAHB_CP_PUSH_TOKEN }} # this token expires on yyyy-mm-dd
+           # token with repo scope
+           # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/EEAHB_CP_PUSH_TOKEN
+           branch: update-${{ matrix.format_version }}-${{ steps.current-time.outputs.formattedTime }}
+           reviewers: hf-krechan, DeltaDaniel
+           assignees: hf-krechan, DeltaDaniel
