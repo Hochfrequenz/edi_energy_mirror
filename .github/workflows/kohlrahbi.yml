@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - github_workflow_kohlrahbi_add_cond_packages
     paths:
       - 'edi_energy_de/**/*.docx'
       - 'dependencies/kohlrahbi-requirements.txt'
