@@ -71,5 +71,5 @@ jobs:
            # token with repo scope
            # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/EEAHB_CP_PUSH_TOKEN
            branch: update-${{ matrix.format_version }}-${{ steps.current-time.outputs.formattedTime }}
-           reviewers: hf-krechan, DeltaDaniel
+           reviewers: hf-krechan
            assignees: hf-krechan, DeltaDaniel
