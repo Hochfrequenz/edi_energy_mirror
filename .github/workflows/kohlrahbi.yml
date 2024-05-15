@@ -45,7 +45,7 @@ jobs:
       - name: Run Extraction
         run: |
           kohlrahbi ahb --assume-yes --edi-energy-mirror-path edi_energy_mirror --output-path ./machine-readable_anwendungshandbuecher/${{ matrix.format_version }} --format-version ${{ matrix.format_version }} --file-type flatahb --file-type csv --file-type xlsx
-          kohlrahbi ahb --assume-yes --edi-energy-mirror-path edi_energy_mirror --output-path ./edi_energy_ahb_conditions_and_packages/${{ matrix.format_version }} --format-version ${{ matrix.format_version }}
+          kohlrahbi conditions --assume-yes --edi-energy-mirror-path edi_energy_mirror --output-path ./edi_energy_ahb_conditions_and_packages/${{ matrix.format_version }} --format-version ${{ matrix.format_version }}
       - name: Get current time
         uses: srfrnk/current-time@master
         id: current-time
