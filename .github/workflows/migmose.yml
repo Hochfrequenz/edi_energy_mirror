@@ -22,6 +22,7 @@ jobs:
         with:
           path: edi_energy_mirror
           lfs: true
+          token: ${{ secrets.MRMIG_PUSH_TOKEN }} # this token expires on 2025-05-15
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
@@ -50,7 +51,7 @@ jobs:
         with:
            path:  machine-readable_message-implementation-guide
            title: EDI@Energy MIGmose ${{ matrix.format_version }} Changes ${{ steps.current-time.outputs.formattedTime }}
-           token: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2025-05-15
+           token: ${{ secrets.MRMIG_PUSH_TOKEN }} # this token expires on 2025-05-15
            # token with repo scope
            # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/MRMIG_PUSH_TOKEN
            branch: update-${{ matrix.format_version }}-${{ steps.current-time.outputs.formattedTime }}
