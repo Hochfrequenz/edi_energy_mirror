@@ -46,7 +46,7 @@ jobs:
         id: current-time
         with:
           format: YYYY-MM-DDTHH-mm-ss
-      - name: Push flat AHBs to machine-readable_migs
+      - name: Push results to machine-readable_migs
         uses: peter-evans/create-pull-request@v6
         with:
            path:  machine-readable_message-implementation-guide
