@@ -23,6 +23,8 @@ jobs:
           path: edi_energy_mirror
           lfs: true
           token: ${{ secrets.MRMIG_PUSH_TOKEN }} # this token expires on 2025-05-15
+          # token with repo scope
+          # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/MRAHB_PUSH_TOKEN
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
