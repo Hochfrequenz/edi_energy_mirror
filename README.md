@@ -26,8 +26,9 @@ Das Skript [download_and_post_process.py](/download_and_post_process.py) lädt d
 So werden Änderungen an MIGs, AHBs und weiteren Dokumenten als Diffs einzelner git commits sichtbar und Änderungen sind leichter aufzufinden und auszuwerten.
 
 ## Weiterverarbeitung der Rohdaten
-Die in diesem Repository abgelegten Rohdaten (genauer die AHB-Worddateien), werden automatisiert von [kohlrahbi](github.com/Hochfrequenz/kohlrahbi) weiterverarbeitet.
-Eine [weitere Github Action](/.github/workflows/mirror.yml) spiegelt jegliche Änderungen in den Rohdaten in das Repository [machine-readable_anwendungshandbuecher](https://github.com/Hochfrequenz/machine-readable_anwendungshandbuecher).
+Die in diesem Repository abgelegten Rohdaten (genauer die AHB-Worddateien), werden automatisiert von [kohlrahbi](https://github.com/Hochfrequenz/kohlrahbi) und [migmose](https://github.com/Hochfrequenz/migmose) weiterverarbeitet.
+* Eine [Github Action](/.github/workflows/kohlrahbi.yml) spiegelt jegliche Änderungen in den Rohdaten in das Repository [machine-readable_anwendungshandbuecher](https://github.com/Hochfrequenz/machine-readable_anwendungshandbuecher) und [edi_energy_ahb_conditions_and_packages](https://github.com/Hochfrequenz/edi_energy_ahb_conditions_and_packages/).
+* Eine [weitere Github Action](/.github/workflows/migmose.yml) spiegelt jegliche Änderungen in den Rohdaten in das Repository [machine-readable_message-implementation-guide](https://github.com/Hochfrequenz/machine-readable_anwendungshandbuecher).
 
 ## Urheberrecht
 
