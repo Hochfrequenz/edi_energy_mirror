@@ -40,7 +40,7 @@ jobs:
           lfs: true
       - name: Run Extraction
         run: |
-          migmose -eemp edi_energy_mirror/edi_energy_de/${{ matrix.format_version }} -o ./machine-readable_message-implementation-guide/${{ matrix.format_version }} --file-type csv --file-type nested_json --file-type reduced_nested_json
+          migmose -eemp edi_energy_de/${{ matrix.format_version }} -o ./machine-readable_message-implementation-guide/${{ matrix.format_version }} --file-type csv --file-type nested_json --file-type reduced_nested_json
       - name: Get current time
         uses: srfrnk/current-time@master
         id: current-time
