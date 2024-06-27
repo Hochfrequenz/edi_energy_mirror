@@ -54,7 +54,7 @@ jobs:
       - name: Install prettier
         run: npm install prettier
       - name: prettier JSON files
-        run: prettier -w machine-readable_message-implementation-guide
+        run: prettier -w machine-readable_anwendungshandbuecher/${{ matrix.format_version }}
       - name: Get current time
         uses: srfrnk/current-time@master
         id: current-time
@@ -71,6 +71,8 @@ jobs:
            branch: update-${{ matrix.format_version }}-${{ steps.current-time.outputs.formattedTime }}
            reviewers: hf-krechan
            assignees: hf-krechan
+      - name: prettier condition files
+        run: prettier -w edi_energy_ahb_conditions_and_packages
       - name: Push conditions and packages AHBs to edi energy ahb conditons and packages
         uses: peter-evans/create-pull-request@v6
         with:
