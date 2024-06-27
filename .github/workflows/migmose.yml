@@ -43,6 +43,14 @@ jobs:
       - name: Run Extraction
         run: |
           migmose -eemp ./edi_energy_mirror -o ./machine-readable_message-implementation-guide -fv ${{ matrix.format_version }} --file-type csv --file-type nested_json --file-type reduced_nested_json
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install prettier
+        run: npm install prettier
+      - name: prettier JSON files
+        run: prettier -w machine-readable_message-implementation-guide
       - name: Get current time
         uses: srfrnk/current-time@master
         id: current-time
