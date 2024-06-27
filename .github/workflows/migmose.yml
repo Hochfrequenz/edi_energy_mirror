@@ -48,7 +48,7 @@ jobs:
         with:
           node-version: 20
       - name: Install prettier
-        run: npm install prettier
+        run: npm install prettier -g
       - name: prettier JSON files
         run: prettier -w machine-readable_message-implementation-guide
       - name: Get current time
