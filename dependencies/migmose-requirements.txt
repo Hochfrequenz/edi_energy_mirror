@@ -14,15 +14,19 @@ colorama==0.4.6
     # via
     #   click
     #   loguru
+jinja2==3.1.4
+    # via migmose
 loguru==0.7.2
     # via migmose
 lxml==5.2.2
     # via python-docx
+markupsafe==2.1.5
+    # via jinja2
 marshmallow==3.21.3
     # via maus
 maus==0.5.3
     # via migmose
-migmose==0.1.0
+migmose==0.1.1
     # via -r migmose-requirements.in
 more-itertools==10.3.0
     # via maus
