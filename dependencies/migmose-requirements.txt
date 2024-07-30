@@ -26,7 +26,7 @@ marshmallow==3.21.3
     # via maus
 maus==0.5.3
     # via migmose
-migmose==0.1.1
+migmose==0.1.2
     # via -r migmose-requirements.in
 more-itertools==10.3.0
     # via maus
