@@ -18,13 +18,13 @@ colorlog==6.8.2
     # via kohlrahbi
 et-xmlfile==1.1.0
     # via openpyxl
-kohlrahbi==1.4.2
+kohlrahbi==1.4.4
     # via -r kohlrahbi-requirements.in
 lxml==5.2.2
     # via python-docx
 marshmallow==3.21.3
     # via maus
-maus==0.5.3
+maus==0.5.4
     # via kohlrahbi
 more-itertools==10.3.0
     # via maus
