@@ -6,38 +6,32 @@
 #
 annotated-types==0.7.0
     # via pydantic
-attrs==23.2.0
-    # via maus
 click==8.1.7
     # via migmose
 colorama==0.4.6
     # via
     #   click
     #   loguru
+efoli==1.1.0
+    # via migmose
 jinja2==3.1.4
     # via migmose
 loguru==0.7.2
     # via migmose
-lxml==5.2.2
+lxml==5.3.0
     # via python-docx
 markupsafe==2.1.5
     # via jinja2
-marshmallow==3.21.3
-    # via maus
-maus==0.5.3
-    # via migmose
-migmose==0.1.2
+migmose==0.2.0
     # via -r migmose-requirements.in
-more-itertools==10.3.0
-    # via maus
-packaging==24.1
-    # via marshmallow
 pydantic==2.8.2
     # via migmose
 pydantic-core==2.20.1
     # via pydantic
 python-docx==1.1.2
     # via migmose
+pytz==2024.1
+    # via efoli
 typing-extensions==4.12.2
     # via
     #   pydantic
