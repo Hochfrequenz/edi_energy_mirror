@@ -6,8 +6,6 @@
 #
 annotated-types==0.7.0
     # via pydantic
-attrs==24.2.0
-    # via maus
 click==8.1.7
     # via kohlrahbi
 colorama==0.4.6
@@ -17,27 +15,19 @@ colorama==0.4.6
 colorlog==6.8.2
     # via kohlrahbi
 efoli==1.1.0
-    # via
-    #   kohlrahbi
-    #   maus
+    # via kohlrahbi
 et-xmlfile==1.1.0
     # via openpyxl
-kohlrahbi==1.5.1
+kohlrahbi==1.5.3
     # via -r kohlrahbi-requirements.in
 lxml==5.3.0
     # via python-docx
-marshmallow==3.22.0
-    # via maus
-maus==0.6.0
-    # via kohlrahbi
 more-itertools==10.4.0
-    # via maus
+    # via kohlrahbi
 numpy==2.1.0
     # via pandas
 openpyxl==3.1.5
     # via kohlrahbi
-packaging==24.1
-    # via marshmallow
 pandas==2.2.2
     # via kohlrahbi
 pydantic==2.8.2
