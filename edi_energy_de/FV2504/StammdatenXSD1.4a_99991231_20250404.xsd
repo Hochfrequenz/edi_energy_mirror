@@ -3,8 +3,8 @@
     xmlns="urn:kwep_stammdaten:1:0"
     targetNamespace="urn:kwep_stammdaten:1:0"
     elementFormDefault="qualified">
-		<!-- Diese XSD-Datei baut auf den konsultierten Formatbeschreibungen der XML-Datenformate für den Redispatch 2.0 auf. Der BDEW übernimmt keinerlei Gewähr für die Aktualität, Korrektheit, Vollständigkeit, Qualität oder wettbewerbsrechtliche Zulässigkeit der bereitgestellten Informationen.
-	Der BDEW behält sich vor, in Zukunft eine kostenpflichtige Veröffentlichung der XSD-Datei einzuführen. -->
+	<!-- Diese XSD-Datei baut auf den konsultierten Formatbeschreibungen der XML-Datenformate für den Redispatch 2.0 auf. Der BDEW uebernimmt keinerlei Gewaehr für die Aktualitaet, Korrektheit, Vollstaendigkeit, Qualitaet oder wettbewerbsrechtliche Zulaessigkeit der bereitgestellten Informationen.
+	Der BDEW behaelt sich vor, in Zukunft eine kostenpflichtige Veroeffentlichung der XSD-Datei einzufuehren. -->
   <xs:element name="Stammdaten">
     <xs:complexType>
       <xs:sequence>
@@ -53,7 +53,7 @@
         <xs:element name="Erstellungszeitpunkt">
           <xs:annotation>
             <xs:documentation xml:lang="DE">
-Hier ist der Erzeugungszeitpunkt des Dokuments anzugeben. Die Zeitangabe erfolgt in UTC. Der Zeitpunkt ist immer im Format 
+Hier ist der Erzeugungszeitpunkt des Dokuments in UTC anzugeben. Der Zeitpunkt ist immer im Format 
 yyyy-mm-ddThh:mm:ssZ anzugeben mit:
 
 yyyy vier Ziffern für die Jahresangabe
@@ -257,9 +257,9 @@ Z Verweis auf UTC
         </xs:element>
         <xs:element name="OriginalErstellungszeitpunkt" minOccurs="0">
           <xs:annotation>
-            <xs:documentation xml:lang="DE">Zeitpunkt in UTC gemäß Pattern</xs:documentation>
             <xs:documentation xml:lang="DE">
-Das Format yyyy-mm-ddThh:mm:ssZ ist anzugeben mit:
+Hier ist bei Weiterleitung der ursprüngliche Erzeugungszeitpunkt des Dokuments in UTC anzugeben. Der Zeitpunkt ist immer im Format 
+yyyy-mm-ddThh:mm:ssZ anzugeben mit:
 
 yyyy vier Ziffern für die Jahresangabe
 mm zwei Ziffern für die Monatsangabe
@@ -280,7 +280,7 @@ Z Verweis auf UTC
         <xs:element name="Gueltig_ab">
           <xs:annotation>
             <xs:documentation xml:lang="DE">
-Das Format yyyy-mm-ddThh:mm:ssZ ist anzugeben mit:
+Der Zeitpunkt in UTC ist immer im Format yyyy-mm-ddThh:mm:ssZ anzugeben mit:
 
 yyyy vier Ziffern für die Jahresangabe
 mm zwei Ziffern für die Monatsangabe
@@ -667,9 +667,12 @@ Ansonsten: lesbarer Klarname gemäß folgender Konvention:
                   <xs:documentation xml:lang="DE">Entweder Stufen ODER Schritte angegeben. </xs:documentation>
                   <xs:documentation xml:lang="DE">
 Art der technischen Steuerbarkeit der SR
-Granularität und Ausgestaltung der Steuerung zwischen EIV und Anlage im Aufforderungsfall, in % oder MW. Es sind folgende Informationen zu übermitteln: 
-a. Relative Stufung auf einen Sollwert (Limit; bspw. „auf 60% der installierten Leistung“), 
-b. Absoluter Sollwert auf (festen) Arbeitspunkt (komplette Fixierung), 
+Granularität und Ausgestaltung der Steuerung zwischen EIV und Anlage im
+Aufforderungsfall, in % oder MW. Es sind folgende Informationen zu
+übermitteln:
+a. Relative Stufung auf einen Sollwert (Limit; bspw. „auf 60% der
+installierten Leistung“),
+b. Absoluter Sollwert auf (festen) Arbeitspunkt (komplette Fixierung),
 c. Limitsetzung auf max. MW-Wert.
 BK6-20-061
                   </xs:documentation>
@@ -681,14 +684,11 @@ BK6-20-061
                         <xs:sequence>
                           <xs:element name="Einzelstufe" minOccurs="2" maxOccurs="10">
                             <xs:annotation>
-                              <xs:documentation xml:lang="DE">
-Bei der Einheit MAW gilt der Wertebereich 0,000 bis 999999,999 (max. 3 Nachkommastellen) mit dem Pattern \d{0,6}(\.[\d]{1,3})?
-Bei der Einheit P1 gilt der Wertebereich 0 bis 100 (ohne Nachkommastellen) mit dem Pattern 100|\d{1,2}
-Stufen werden nur genutzt, wenn es keine feste Schrittweite gibt, bspw. bei Rundsteuertechnik mit vier „Schaltausgängen“ 0-30-60-100%. 
-                              </xs:documentation>
+                              <xs:documentation xml:lang="DE">Bei der Einheit P1 gilt der Wertebereich 0,000 bis 100,000. Stufen werden nur genutzt, wenn es keine feste Schrittweite gibt, bspw. bei Rundsteuertechnik mit vier „Schaltausgängen“ 0-30-60-100%.</xs:documentation>
                             </xs:annotation>
                             <xs:simpleType>
                               <xs:restriction base="xs:decimal">
+                                <xs:pattern value="100.000|\d{1,2}(.[\d]{3})"/>
                                 <xs:minInclusive value="0"/>
                                 <xs:fractionDigits value="3"/>
                               </xs:restriction>
@@ -698,11 +698,6 @@ Stufen werden nur genutzt, wenn es keine feste Schrittweite gibt, bspw. bei Rund
                         <xs:attribute name="Einheit" use="required">
                           <xs:simpleType>
                             <xs:restriction base="xs:string">
-                              <xs:enumeration value="MAW">
-                                <xs:annotation>
-                                  <xs:documentation xml:lang="DE">megawatt</xs:documentation>
-                                </xs:annotation>
-                              </xs:enumeration>
                               <xs:enumeration value="P1">
                                 <xs:annotation>
                                   <xs:documentation xml:lang="DE">percent</xs:documentation>
@@ -734,13 +729,10 @@ Stufen werden nur genutzt, wenn es keine feste Schrittweite gibt, bspw. bei Rund
                         <xs:attribute name="Schrittweite" use="required">
                           <xs:annotation>
                             <xs:documentation xml:lang="DE">
-Über das Element Schrittweite wird die Inkrementgröße der Schritte von Min bis Max spezifiziert, in welchem die Ressource in der Wirkleistung über die Steuerung verändert werden kann. Die Summe der möglichen Schritte muss dabei exakt der Differenz zwischen Min und Max entsprechen. 
-
-Bei der Einheit MAW gilt der Wertebereich &gt;0,000 bis 999999,999 (max. 3 Nachkommastellen) mit dem Pattern \d{0,6}(\.[\d]{1,3})?
-
-Bei der Einheit P1 gilt der Wertebereich &gt;0 bis 100 (ohne Nachkommastellen) mit dem Pattern 100|\d{1,2}
-
-Bei einer SR mit einer Nennleistung von 1MW, welche in 10% Schritten über den gesamten Leistungsbereich gesteuert werden kann, ist hier unter Verwendung der Einheit MAW der Wert "0,100" bzw. unter Verwendung der Einheit "P1" der Wert 10 anzugeben.
+Über das Element Schrittweite wird die Inkrementgröße der Schritte von Min bis Max spezifiziert, in welchem die Ressource in der Wirkleistung über die Steuerung verändert werden kann. Die Summe der möglichen Schritte muss dabei exakt der Differenz zwischen Min und Max entsprechen. 
+Bei der Einheit MAW gilt der Wertebereich &gt;0,000 bis 999999,999 (3 Nachkommastellen) mit dem Pattern \d{0,6}\.[\d]{3}
+Bei der Einheit P1 gilt der Wertebereich &gt;0,000 bis 100,000  mit dem Pattern 100.000|\d{1,2}(.[\d]{3}) 
+Bei einer SR mit einer Nennleistung von 1 MW, welche in 10% Schritten über den gesamten Leistungsbereich gesteuert werden kann, ist hier unter Verwendung der Einheit MAW der Wert "0,100" bzw. unter Verwendung der Einheit "P1" der Wert 10.000 anzugeben
                             </xs:documentation>
                           </xs:annotation>
                           <xs:simpleType>
@@ -753,13 +745,13 @@ Bei einer SR mit einer Nennleistung von 1MW, welche in 10% Schritten über den g
                         <xs:attribute name="Max" use="required">
                           <xs:annotation>
                             <xs:documentation xml:lang="DE">
-Der Wert Max gibt die obere Grenze der Steuerbarkeit an. Bei Verwendung der Einheit P1 ist die Referenz die Nennleistung der Ressource. 
+Der Wert Max gibt die obere Grenze der Steuerbarkeit  an. Bei Verwendung der Einheit P1 ist die Referenz die Nennleistung der Ressource. 
 
-Bei der Einheit MAW gilt der Wertebereich 0,000 bis 999999,999 (max. 3 Nachkommastellen) mit dem Pattern \d{0,6}(\.[\d]{1,3})?
+Bei der Einheit MAW gilt der Wertebereich 0,000 bis 999999,999 (3 Nachkommastellen) mit dem Pattern \d{0,6}(\.[\d]{1,3})?
 
-Bei der Einheit P1 gilt der Wertebereich 0 bis 100 (ohne Nachkommastellen) mit dem Pattern 100|\d{1,2}
+Bei der Einheit P1 gilt der Wertebereich 0,000 bis 100,000 mit dem Pattern 100.000|\d{1,2}(.[\d]{3})
 
-Bei einer SR mit einer Nennleistung von 1MW, welche in 10% Schritten über den gesamten Leistungsbereich gesteuert werden kann, ist hier unter Verwendung der Einheit MAW der Wert "0,000" bzw. unter Verwendung der Einheit "P1" der Wert 100 anzugeben.
+Bei einer SR mit einer Nennleistung von 1MW, welche in 10% Schritten über den gesamten Leistungsbereich gesteuert werden kann, ist hier unter Verwendung der Einheit MAW der Wert "1.000" bzw. unter Verwendung der Einheit "P1" der Wert "100.000" anzugeben.
                             </xs:documentation>
                           </xs:annotation>
                           <xs:simpleType>
@@ -774,10 +766,11 @@ Bei einer SR mit einer Nennleistung von 1MW, welche in 10% Schritten über den g
                             <xs:documentation xml:lang="DE">
 Der Wert Min gibt die untere Grenze der  Steuerbarkeit an. Bei Verwendung der Einheit P1 ist die Referenz die Nennleistung der Ressource. 
 
-Bei der Einheit MAW gilt der Wertebereich 0,000 bis 999999,999 (max. 3 Nachkommastellen) mit dem Pattern \d{0,6}(\.[\d]{1,3})?
-Bei der Einheit P1 gilt der Wertebereich 0 bis 100 (ohne Nachkommastellen) mit dem Pattern 100|\d{1,2}
+Bei der Einheit MAW gilt der Wertebereich 0,000 bis 999999,999 (3 Nachkommastellen) mit dem Pattern \d{0,6}(\.[\d]{1,3})?
 
-Bei einer SR mit einer Nennleistung von 1MW, welche in 10% Schritten über den gesamten Leistungsbereich gesteuert werden kann, ist hier unter Verwendung der Einheit MAW der Wert "0,000" bzw. unter Verwendung der Einheit "P1" der Wert 0 anzugeben.
+Bei der Einheit P1 gilt der Wertebereich 0,000 bis 100,000 mit dem Pattern 100.000|\d{1,2}(.[\d]{3}) 
+
+Bei einer SR mit einer Nennleistung von 1MW, welche in 10% Schritten über den gesamten Leistungsbereich gesteuert werden kann, ist hier unter Verwendung der Einheit MAW der Wert "0,000" bzw. unter Verwendung der Einheit "P1" der Wert "0,000" anzugeben.
                             </xs:documentation>
                           </xs:annotation>
                           <xs:simpleType>
@@ -861,7 +854,10 @@ Bei einer SR mit einer Nennleistung von 1MW, welche in 10% Schritten über den g
                   <xs:sequence>
                     <xs:element name="Quote" maxOccurs="20">
                       <xs:annotation>
-                        <xs:documentation xml:lang="DE">Die Mengenangabe erfolgt in Prozent. Der Wert muss größer 0 und kleiner oder gleich 100 sein.</xs:documentation>
+                        <xs:documentation xml:lang="DE">
+Die Mengenangabe erfolgt in Prozent. Der Wert muss
+größer 0,000 und kleiner oder gleich 100,000 sein. 
+                        </xs:documentation>
                       </xs:annotation>
                       <xs:complexType>
                         <xs:sequence>
@@ -915,6 +911,7 @@ Bei einer SR mit einer Nennleistung von 1MW, welche in 10% Schritten über den g
                         <xs:attribute name="Wert" use="required">
                           <xs:simpleType>
                             <xs:restriction base="xs:decimal">
+                              <xs:pattern value="100.000|\d{1,2}(.[\d]{3})"/>
                               <xs:fractionDigits value="3"/>
                             </xs:restriction>
                           </xs:simpleType>
@@ -1715,7 +1712,7 @@ Der Wert muss größer 0 und kleiner oder gleich 100 sein. Bei einer bilateral v
                     <xs:element name="Betrieb" minOccurs="0">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element name="Stilllegungszeitpunkt_vorlaufig_erreicht" minOccurs="0">
+                          <xs:element name="Stilllegung_vorlaeufig_erreicht" minOccurs="0">
                             <xs:annotation>
                               <xs:documentation xml:lang="DE">Hier ist anzugeben, ob der vorläufige Stilllegungszeitpunkt ab dem Tag "Gueltig_ab" erreicht ist. </xs:documentation>
                             </xs:annotation>
@@ -1734,7 +1731,7 @@ Der Wert muss größer 0 und kleiner oder gleich 100 sein. Bei einer bilateral v
                               </xs:restriction>
                             </xs:simpleType>
                           </xs:element>
-                          <xs:element name="Stilllegungszeitpunkt_endgueltig_erreicht" minOccurs="0">
+                          <xs:element name="Stilllegung_endgueltig_erreicht" minOccurs="0">
                             <xs:annotation>
                               <xs:documentation xml:lang="DE">Hier ist anzugeben, ob der endgültige Stilllegungszeitpunkt ab dem Tag "Gueltig_ab" erreicht ist. </xs:documentation>
                             </xs:annotation>
@@ -2605,9 +2602,7 @@ Ansonsten: lesbarer Klarname gemäß folgender Konvention:
                   <xs:documentation xml:lang="DE">Entweder Stufen ODER Schritte angegeben. </xs:documentation>
                   <xs:documentation xml:lang="DE">
 Art der technischen Steuerbarkeit der SG
-Granularität und Ausgestaltung der Steuerung zwischen EIV und Anlage im Aufforderungsfall, in %. Es sind folgende Informationen zu übermitteln: 
-a. Relative Stufung auf einen Sollwert (Limit; bspw. „auf 60% der installierten Leistung“), 
-b. Absoluter Sollwert auf (festen) Arbeitspunkt (komplette Fixierung).
+Granularität und Ausgestaltung der Steuerung zwischen EIV und Anlage im Aufforderungsfall, in %. Es sind die relativen Stufungen auf Sollwerte zu übermitteln (Limit; bspw. „auf 60% der installierten Leistung“).
 NKK-Detailprozesse, Version 2.3 vom 01.08.2023
                   </xs:documentation>
                 </xs:annotation>
@@ -2618,7 +2613,7 @@ NKK-Detailprozesse, Version 2.3 vom 01.08.2023
                         <xs:sequence>
                           <xs:element name="Einzelstufe" minOccurs="2" maxOccurs="10">
                             <xs:annotation>
-                              <xs:documentation xml:lang="DE">Bei der Einheit P1 gilt der Wertebereich 0 bis 100 (ohne Nachkommastellen) mit dem Pattern 100|\d{1,2} Stufen werden nur genutzt, wenn es keine feste Schrittweite gibt, bspw. bei Rundsteuertechnik mit vier „Schaltausgängen“ 0-30-60-100%.</xs:documentation>
+                              <xs:documentation xml:lang="DE">Bei der Einheit P1 gilt der Wertebereich 0,000 bis 100,000 mit dem Pattern 100.000|\d{1,2}(.[\d]{3}) Stufen werden nur genutzt, wenn es keine feste Schrittweite gibt, bspw. bei Rundsteuertechnik mit vier „Schaltausgängen“ 0-30-60-100%.</xs:documentation>
                             </xs:annotation>
                             <xs:simpleType>
                               <xs:restriction base="xs:decimal">
@@ -2865,7 +2860,7 @@ NKK-Detailprozesse, Version 2.3 vom 01.08.2023
           </xs:complexType>
         </xs:element>
       </xs:sequence>
-      <xs:attribute name="DtdBDEWNachrichtenVersion" type="xs:string" fixed="1.4" use="required"/>
+      <xs:attribute name="DtdBDEWNachrichtenVersion" type="xs:string" fixed="1.4a" use="required"/>
     </xs:complexType>
   </xs:element>
   <xs:simpleType name="ContentType_1">
