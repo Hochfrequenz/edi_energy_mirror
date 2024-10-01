@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified">
-		<!-- Diese XSD-Datei baut auf den konsultierten Formatbeschreibungen der XML-Datenformate für den Redispatch 2.0 auf. Der BDEW übernimmt keinerlei Gewähr für die Aktualität, Korrektheit, Vollständigkeit, Qualität oder wettbewerbsrechtliche Zulässigkeit der bereitgestellten Informationen.
-	Der BDEW behält sich vor, in Zukunft eine kostenpflichtige Veröffentlichung der XSD-Datei einzuführen. -->
+	<!-- Diese XSD-Datei baut auf den konsultierten Formatbeschreibungen der XML-Datenformate für den Redispatch 2.0 auf. Der BDEW uebernimmt keinerlei Gewaehr für die Aktualitaet, Korrektheit, Vollstaendigkeit, Qualitaet oder wettbewerbsrechtliche Zulaessigkeit der bereitgestellten Informationen.
+	Der BDEW behaelt sich vor, in Zukunft eine kostenpflichtige Veroeffentlichung der XSD-Datei einzufuehren. -->
   <xs:element name="PlannedResourceScheduleDocument">
     <xs:complexType>
       <xs:sequence>
@@ -12,6 +12,9 @@
           </xs:annotation>
           <xs:complexType>
             <xs:attribute name="v" use="required">
+              <xs:annotation>
+                <xs:documentation>20170812_PRSD_TEST</xs:documentation>
+              </xs:annotation>
               <xs:simpleType>
                 <xs:restriction base="xs:string">
                   <xs:maxLength value="35"/>
@@ -27,6 +30,9 @@
           </xs:annotation>
           <xs:complexType>
             <xs:attribute name="v" use="required">
+              <xs:annotation>
+                <xs:documentation>3</xs:documentation>
+              </xs:annotation>
               <xs:simpleType>
                 <xs:restriction base="xs:integer">
                   <xs:pattern value="[1-9]\d{0,2}"/>
@@ -106,6 +112,11 @@
           <xs:complexType>
             <xs:attribute name="v" use="required">
               <xs:annotation>
+                <xs:documentation>
+9900405000004
+(MP-ID der Mainzer Netze GmbH als BDEWCode
+in seiner Rolle als Netzbetreiber)
+                </xs:documentation>
                 <xs:documentation xml:lang="DE">13 Zeichen</xs:documentation>
               </xs:annotation>
               <xs:simpleType>
@@ -247,9 +258,8 @@
         <xs:element name="DocumentDateTime">
           <xs:annotation>
             <xs:documentation xml:lang="DE">
-Hier ist der Erzeugungszeitpunkt des Dokuments (in der jeweiligen Version) anzugeben. Die Zeitangabe erfolgt in UTC. 
-
-Der Zeitpunkt ist immer im Format yyyy-mm-ddThh:mm:ssZ anzugeben mit:
+Hier ist der Erzeugungszeitpunkt des Dokuments in UTC anzugeben. Der Zeitpunkt ist immer im Format 
+yyyy-mm-ddThh:mm:ssZ anzugeben mit:
 
 yyyy vier Ziffern für die Jahresangabe
 mm zwei Ziffern für die Monatsangabe
@@ -260,12 +270,11 @@ ss zwei Ziffern für die Sekundenangabe
 T Trennzeichen zwischen Datum und Uhrzeit
 Z Verweis auf UTC
             </xs:documentation>
-            <xs:documentation xml:lang="DE">Zeitpunkt in UTC gemäß Pattern</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:attribute name="v" use="required">
               <xs:annotation>
-                <xs:documentation xml:lang="DE">Zeitpunkt in UTC gemäß Pattern</xs:documentation>
+                <xs:documentation>2017-04-09T11:56:23Z</xs:documentation>
               </xs:annotation>
               <xs:simpleType>
                 <xs:restriction base="xs:dateTime">
@@ -279,20 +288,16 @@ Z Verweis auf UTC
         <xs:element name="TimePeriodCovered">
           <xs:annotation>
             <xs:documentation xml:lang="DE">
-Der Zeitraum entspricht immer dem Erfüllungstag (ein Kalendertag von 0:00 Uhr lokaler deutscher Zeit des Erfüllungstages bis 0:00 Uhr lokaler deutscher Zeit des unmittelbar auf den Erfüllungstag folgenden Tages), für den die Daten gesendet werden. 
-
-Das Zeitintervall (von Beginn des Erfüllungstages bis Ende des Erfüllungstages) ist im UTC-Format yyyy-mm-ddThh:mmZ/yyyy-mmddThh:mmZ wie folgt anzugeben:
+Hier erfolgt die Angabe des Zeitintervalls für das Dokument (vollständiger Erfüllungstag/Kalendertag). 
+Die Angabe erfolgt im UTC-Format yyyy-mm-ddThh:mmZ/yyyy-mm-ddThh:mmZ:
 
 yyyy vier Ziffern für die Jahresangabe
 mm zwei Ziffern für die Monatsangabe
 dd zwei Ziffern für die Tagesangabe
 hh zwei Ziffern für die Stundenangabe
 mm zwei Ziffern für die Minutenangabe
-T Trennzeichen zwischen Datum und Uhrzeit
-Z Verweis auf UTC
-/ Trennzeichen zwischen beiden Zeitangaben
+T, Z, / Zeichen, die an den entsprechenden Stellen zwingend anzugeben sind.
             </xs:documentation>
-            <xs:documentation xml:lang="DE">Tag in UTC gemäß Pattern</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:attribute name="v" use="required">
@@ -301,6 +306,10 @@ Z Verweis auf UTC
 ISO 8601 time intervals are always expressed in the form 
 			yyyy-mm-ddThh:mmZ/yyyy-mm-ddThh:mmZ
 			Note: The minimum XML form of dateTime is yyyy-mm-ddThh:mm:ssZ
+                </xs:documentation>
+                <xs:documentation>
+2017-12-14T23:00Z/2017-12-15T23:00Z
+(Erfüllungstag 15. Dezember 2017)
                 </xs:documentation>
               </xs:annotation>
               <xs:simpleType>
@@ -324,6 +333,9 @@ ISO 8601 time intervals are always expressed in the form
                 </xs:annotation>
                 <xs:complexType>
                   <xs:attribute name="v" use="required">
+                    <xs:annotation>
+                      <xs:documentation>MRLUP775840</xs:documentation>
+                    </xs:annotation>
                     <xs:simpleType>
                       <xs:restriction base="xs:string">
                         <xs:maxLength value="35"/>
@@ -578,6 +590,9 @@ Sind die betrachteten Netzelemente die Zweige zum Netzverknüpfungspunkt vom eig
                 </xs:annotation>
                 <xs:complexType>
                   <xs:attribute name="v" use="required">
+                    <xs:annotation>
+                      <xs:documentation>11WD2-TESTGEN1-D</xs:documentation>
+                    </xs:annotation>
                     <xs:simpleType>
                       <xs:restriction base="xs:string">
                         <xs:maxLength value="18"/>
@@ -610,6 +625,10 @@ Sind die betrachteten Netzelemente die Zweige zum Netzverknüpfungspunkt vom eig
                 <xs:complexType>
                   <xs:attribute name="v" use="required">
                     <xs:annotation>
+                      <xs:documentation>
+9900405000004
+(MP-ID der Mainzer Netze GmbH als BDEWCode)
+                      </xs:documentation>
                       <xs:documentation xml:lang="DE">13 Zeichen</xs:documentation>
                     </xs:annotation>
                     <xs:simpleType>
@@ -877,21 +896,23 @@ Es ist der Netzverknüpfungspunkt (Netzknoten) zum vorgelagerten Netzbetreiber a
               <xs:element name="OriginalDocumentDateTime" minOccurs="0">
                 <xs:annotation>
                   <xs:documentation xml:lang="DE">
-Das Format yyyy-mm-ddThh:mm:ssZ ist anzugeben mit: 
-yyyy vier Ziffern für die Jahresangabe 
-mm zwei Ziffern für die Monatsangabe 
-dd zwei Ziffern für die Tagesangabe 
-hh zwei Ziffern für die Stundenangabe mm zwei Ziffern für die Minutenangabe 
-ss zwei Ziffern für die Sekundenangabe 
-T Trennzeichen zwischen Datum und Uhrzeit 
-Z Verweis auf UTC
+Hier ist bei Weiterleitung der ursprüngliche Erzeugungszeitpunkt des Dokuments in UTC anzugeben. Der Zeitpunkt ist immer im Format 
+yyyy-mm-ddThh:mm:ssZ anzugeben mit:
 
+yyyy vier Ziffern für die Jahresangabe
+mm zwei Ziffern für die Monatsangabe
+dd zwei Ziffern für die Tagesangabe
+hh zwei Ziffern für die Stundenangabe
+mm zwei Ziffern für die Minutenangabe
+ss zwei Ziffern für die Sekundenangabe
+T Trennzeichen zwischen Datum und Uhrzeit
+Z Verweis auf UTC
                   </xs:documentation>
                 </xs:annotation>
                 <xs:complexType>
                   <xs:attribute name="v" use="required">
                     <xs:annotation>
-                      <xs:documentation xml:lang="DE">Zeitpunkt in UTC gemäß Pattern</xs:documentation>
+                      <xs:documentation>2017-04-09T11:56:23Z</xs:documentation>
                     </xs:annotation>
                     <xs:simpleType>
                       <xs:restriction base="xs:dateTime">
@@ -953,7 +974,7 @@ ISO 8601 time intervals are always expressed in the form
 			yyyy-mm-ddThh:mmZ/yyyy-mm-ddThh:mmZ
 			Note: The minimum XML form of dateTime is yyyy-mm-ddThh:mm:ssZ
                             </xs:documentation>
-                            <xs:documentation xml:lang="DE">Tag in UTC gemäß Pattern</xs:documentation>
+                            <xs:documentation>2017-12-15T08:15Z/2017-12-15T23:00Z</xs:documentation>
                           </xs:annotation>
                           <xs:simpleType>
                             <xs:restriction base="xs:string">
@@ -998,6 +1019,9 @@ ISO 8601 time intervals are always expressed in the form
                             </xs:annotation>
                             <xs:complexType>
                               <xs:attribute name="v" use="required">
+                                <xs:annotation>
+                                  <xs:documentation>78</xs:documentation>
+                                </xs:annotation>
                                 <xs:simpleType>
                                   <xs:restriction base="xs:integer">
                                     <xs:pattern value="100|[1-9]\d?"/>
@@ -1015,17 +1039,20 @@ ISO 8601 time intervals are always expressed in the form
 In diesem Element wird der Wert der physikalischen Größe übermittelt, die über MeasurementUnit und Product eindeutig spezifiziert ist (Wirkleistungswert der Position in MW oder als anteilige Angabe einer Wirkleistung). Der Wert muss immer ≥ 0 sein. Bei Bedarf ist als Dezimaltrennzeichen der Punkt (.) zu verwenden. Es können maximal drei Dezimalstellen angegeben werden.
 Im UC Übermittlung prognostizierter Abruf und Info über Abruf über Planungsdaten ist nach Sollwertanweisen für Positionen, in denen kein Abruf und kein Abruf mehr erfolgt, ist der Wert 999 einzutragen.
                               </xs:documentation>
-                              <xs:documentation xml:lang="DE">max. 3 Nachkommastellen</xs:documentation>
                               <xs:documentation>
 Bei der MeasurementUnit = "MAW" liegt der Wertebereich der Qty bei 0,000 bis 999999,999 (max. 3 Nachkommastellen) und das Pattern ist \d{0,6}(\.[\d]{1,3})?
-Bei der MeasurementUnit =„P1“ (percent) liegt der Wertebereich der Qty bei 0 bis 100 (ohne Nachkommastellen) und das Pattern ist 100|\d{1,2}
 Im Fall des UC Übermittlung prognostizierter Abruf und Info über Abruf über Planungsdaten ist nach Sollwertanweisen für Positionen, in denen kein Abruf und kein Abruf mehr erfolgt, auch der Wert 999 gültig.
+Bei der MeasureUnit = „P1“ (percent) liegt der Wertebereich der Qty bei 0,000 bis 100,000 (3 Nachkommastellen) und das Pattern ist 999|100.000|\d{1,2}(.[\d]{3})
                               </xs:documentation>
                             </xs:annotation>
                             <xs:complexType>
                               <xs:attribute name="v" use="required">
+                                <xs:annotation>
+                                  <xs:documentation>32.56</xs:documentation>
+                                </xs:annotation>
                                 <xs:simpleType>
                                   <xs:restriction base="xs:decimal">
+                                    <xs:pattern value="[\d]{0,6}(\.[\d]{1,3})?"/>
                                     <xs:whiteSpace value="collapse"/>
                                     <xs:minInclusive value="0"/>
                                     <xs:fractionDigits value="3"/>
@@ -1058,7 +1085,7 @@ Im Fall des UC Übermittlung prognostizierter Abruf und Info über Abruf über P
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
-      <xs:attribute name="DtdBDEWNachrichtenVersion" type="xs:string" fixed="1.0d"/>
+      <xs:attribute name="DtdBDEWNachrichtenVersion" type="xs:string" fixed="1.0e"/>
     </xs:complexType>
   </xs:element>
 </xs:schema>
