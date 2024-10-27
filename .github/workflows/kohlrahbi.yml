@@ -64,7 +64,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
            path:  machine-readable_anwendungshandbuecher
-           title: EDI@Energy KohlrAHBi ${{ matrix.format_version }} Changes ${{ steps.current-time.outputs.formattedTime }} (Triggered by ${{ github.event_name }})
+           title: EDI@Energy KohlrAHBi ${{ matrix.format_version }} Changes ${{ steps.current-time.outputs.formattedTime }} (Triggered by ${{ github.event.head_commit.message }})
            token: ${{ secrets.MRAHB_PUSH_TOKEN }} # this token expires on 2025-02-13
            # token with repo scope
            # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/MRAHB_PUSH_TOKEN
@@ -77,7 +77,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
            path:  edi_energy_ahb_conditions_and_packages
-           title: EDI@Energy KohlrAHBi ${{ matrix.format_version }} Changes ${{ steps.current-time.outputs.formattedTime }} (Triggered by ${{ github.event_name }})
+           title: EDI@Energy KohlrAHBi ${{ matrix.format_version }} Changes ${{ steps.current-time.outputs.formattedTime }} (Triggered by ${{ github.event.head_commit.message }})
            token: ${{ secrets.EEAHB_CP_PUSH_TOKEN }} # this token expires on yyyy-mm-dd
            # token with repo scope
            # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/EEAHB_CP_PUSH_TOKEN
