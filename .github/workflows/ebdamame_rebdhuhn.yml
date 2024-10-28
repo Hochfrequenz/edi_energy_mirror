@@ -26,7 +26,7 @@ jobs:
           path: machine-readable_entscheidungsbaumdiagramme
       - name: login to GHCR
         # token expires 2025-10-27
-        run: echo "${{ secrets.GHCR_USR }}" | docker login ghcr.io -u ${{ secrets.GHCR_USR }} --password-stdin
+        run: echo "${{ secrets.GHCR_PWD }}" | docker login ghcr.io -u ${{ secrets.GHCR_USR }} --password-stdin
       - name: Run Extraction
         working-directory: ebd-tooling
         run: docker compose up
