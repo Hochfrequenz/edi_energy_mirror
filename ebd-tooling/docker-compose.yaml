@@ -11,6 +11,7 @@ services:
       retries: 3
 
   scrape-and-plot:
+    restart: "no"  # Prevent the container from restarting
     image: ghcr.io/hochfrequenz/ebd_toolchain:v0.1.0
     # If you run into 'manifest unknown' during docker pull, try replacing `:latest` with `:v1.2.3`.
     # where v1.2.3 is the latest version of the GHCR image, which can be found here:
