@@ -36,6 +36,10 @@ jobs:
         id: current-time
         with:
           format: YYYY-MM-DDTHH-mm-ss
+      - name: debug ls
+        run: ls -A
+      - name: debug find
+        run: find . | grep .svg
       - name: Push EBD files to machine-readable_entscheidungsbaumdiagramme
         uses: peter-evans/create-pull-request@v6
         with:
