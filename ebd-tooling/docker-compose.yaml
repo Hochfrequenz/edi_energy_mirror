@@ -1,0 +1,25 @@
+services:
+  kroki:
+    image: yuzutech/kroki:0.24.1
+    ports:
+      - "8125:8000"  # Expose Kroki on port 8125 for rendering diagrams
+      # we hardcode 8125 because of https://github.com/Hochfrequenz/rebdhuhn/issues/205
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  scrape-and-plot:
+    restart: "no"  # Prevent the container from restarting
+    image: ghcr.io/hochfrequenz/ebd_toolchain:v0.1.0
+    # If you run into 'manifest unknown' during docker pull, try replacing `:latest` with `:v1.2.3`.
+    # where v1.2.3 is the latest version of the GHCR image, which can be found here:
+    # https://github.com/Hochfrequenz/ebd_toolchain/pkgs/container/ebd_toolchain 
+    depends_on:
+      kroki:
+        condition: service_healthy
+    volumes:
+      - ${EBD_DOCX_FILE}:/container/ebd.docx
+      - ${OUTPUT_DIR}:/container/output
+    network_mode: host

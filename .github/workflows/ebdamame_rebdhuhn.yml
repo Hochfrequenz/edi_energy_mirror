@@ -1,0 +1,48 @@
+name: Run EBD_amame and r_EBD_huhn
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'edi_energy_de/**/*.docx'
+      - 'ebd-tooling/**'
+      - '.github/workflows/ebdamame_rebdhuhn.yml'
+jobs:
+  check:
+    name: Scrape the Latest Docx File
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+        with:
+          path: edi_energy_mirror
+          lfs: true
+      - uses: actions/checkout@v4
+        with:
+          # token expires 2025-10-27
+          token: ${{ secrets.MREBD_PUSH_TOKEN }}
+          repository: Hochfrequenz/machine-readable_entscheidungsbaumdiagramme
+          path: machine-readable_entscheidungsbaumdiagramme
+      - name: login to GHCR
+        # token expires 2025-10-27
+        run: echo "${{ secrets.GHCR_PWD }}" | docker login ghcr.io -u ${{ secrets.GHCR_USR }} --password-stdin
+      - name: Run Extraction
+        working-directory: edi_energy_mirror/ebd-tooling
+        run: docker compose up --abort-on-container-exit
+      - name: Get current time
+        uses: srfrnk/current-time@master
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          # we use this to have unique branch names
+      - name: Push EBD files to machine-readable_entscheidungsbaumdiagramme
+        uses: peter-evans/create-pull-request@v6
+        with:
+           path:  machine-readable_entscheidungsbaumdiagramme
+           title: EDI@Energy ebd_amame & r_ebd_huhn changes (Triggered by ${{ github.event.head_commit.message }})
+           token: ${{ secrets.MREBD_PUSH_TOKEN }} # this token expires on 2025-10-27
+           # token with repo scope
+           # https://github.com/Hochfrequenz/edi_energy_mirror/settings/secrets/actions/MREBD_PUSH_TOKEN
+           branch: update-${{ steps.current-time.outputs.formattedTime }}
+           reviewers: deltadaniel
+           assignees: deltadaniel
