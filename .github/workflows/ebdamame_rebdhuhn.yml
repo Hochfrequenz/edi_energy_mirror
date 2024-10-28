@@ -6,7 +6,7 @@ on:
       - hf-kklein-patch-1
     paths:
       - 'edi_energy_de/**/*.docx'
-      - 'ebd-tooling/docker-compose.yaml'
+      - 'ebd-tooling/**'
       - '.github/workflows/ebdamame_rebdhuhn.yml'
 jobs:
   check:
