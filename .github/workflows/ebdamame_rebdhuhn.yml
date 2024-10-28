@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - hf-kklein-patch-1
     paths:
       - 'edi_energy_de/**/*.docx'
       - 'ebd-tooling/docker-compose.yaml'
