@@ -18,6 +18,7 @@ jobs:
         with:
           path: edi_energy_mirror
           lfs: true
+          ref: 'hf-kklein-patch-1'
       - uses: actions/checkout@v4
         with:
           # token expires 2025-10-27
