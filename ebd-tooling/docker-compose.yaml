@@ -1,25 +1,22 @@
-services:
-  kroki:
-    image: yuzutech/kroki:0.24.1
-    ports:
-      - "8125:8000"  # Expose Kroki on port 8125 for rendering diagrams
-      # we hardcode 8125 because of https://github.com/Hochfrequenz/rebdhuhn/issues/205
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
-  scrape-and-plot:
-    restart: "no"  # Prevent the container from restarting
-    image: ghcr.io/hochfrequenz/ebd_toolchain:v0.2.0
-    # If you run into 'manifest unknown' during docker pull, try replacing `:latest` with `:v1.2.3`.
-    # where v1.2.3 is the latest version of the GHCR image, which can be found here:
-    # https://github.com/Hochfrequenz/ebd_toolchain/pkgs/container/ebd_toolchain 
-    depends_on:
-      kroki:
-        condition: service_healthy
-    volumes:
-      - ${EBD_DOCX_FILE}:/container/ebd.docx
-      - ${OUTPUT_DIR}:/container/output
-    network_mode: host
+services: 
+   kroki: 
+     image: yuzutech/kroki:0.24.1 
+  
+   scrape-and-plot: 
+     build: . 
+     image: ghcr.io/hochfrequenz/ebd_toolchain:v0.3.0
+     # If you run into 'manifest unknown' during docker pull, try replacing `:latest` with `:v1.2.3`. 
+     # where v1.2.3 is the latest version of the GHCR image, which can be found here: 
+     # https://github.com/Hochfrequenz/ebd_toolchain/pkgs/container/ebd_toolchain 
+     volumes: 
+       - ${EBD_DOCX_FILE}:/container/ebd.docx 
+       - ${OUTPUT_DIR}:/container/output 
+     # we need to set the KROKI_HOST and KROKI_PORT to the host and port of the kroki service 
+     # this is configurable here, but it does not need to be changed if the kroki service is named "kroki" 
+     environment: 
+       KROKI_PORT: "8000" 
+       KROKI_HOST: "kroki" 
+     # the .env file contains the parameter which the user can set 
+     env_file: 
+       - path: .env 
+         required: true  # default is true
