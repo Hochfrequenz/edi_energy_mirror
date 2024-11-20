@@ -2,6 +2,10 @@ name: Pull Documents from edi@energy
 on:
   schedule:
     - cron: '01 8,11,17 * * *'
+  push:
+    paths:
+      - 'dependencies/mirror-requirements.txt'
+      - '.github/workflows/mirror.yml'
 jobs:
   check:
     name: Read all AHBs and Extract Conditions
