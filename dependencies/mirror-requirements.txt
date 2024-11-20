@@ -23,7 +23,7 @@ brotli==1.1.0
 coworker==2.0.1
     # via aiohttp-requests
 edi-energy-scraper==0.7.1
-    # via -r .\dependencies\mirror-requirements.in
+    # via -r mirror-requirements.in
 efoli==1.1.0
     # via edi-energy-scraper
 frozenlist==1.4.1
