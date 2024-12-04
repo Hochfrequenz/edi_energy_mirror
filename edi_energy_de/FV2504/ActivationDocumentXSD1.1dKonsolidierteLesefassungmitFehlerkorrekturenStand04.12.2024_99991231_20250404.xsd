@@ -3,7 +3,7 @@
     xmlns="urn:entsoe.eu:wgedi:errp:activationdocument:5:0"
     targetNamespace="urn:entsoe.eu:wgedi:errp:activationdocument:5:0"
     elementFormDefault="qualified">
-	<!-- Diese XSD-Datei baut auf den konsultierten Formatbeschreibungen der XML-Datenformate für den Redispatch 2.0 auf. Der BDEW uebernimmt keinerlei Gewaehr für die Aktualitaet, Korrektheit, Vollstaendigkeit, Qualitaet oder wettbewerbsrechtliche Zulaessigkeit der bereitgestellten Informationen.
+		<!-- Diese XSD-Datei baut auf den konsultierten Formatbeschreibungen der XML-Datenformate für den Redispatch 2.0 auf. Der BDEW uebernimmt keinerlei Gewaehr für die Aktualitaet, Korrektheit, Vollstaendigkeit, Qualitaet oder wettbewerbsrechtliche Zulaessigkeit der bereitgestellten Informationen.
 	Der BDEW behaelt sich vor, in Zukunft eine kostenpflichtige Veroeffentlichung der XSD-Datei einzufuehren. -->
   <xs:element name="ActivationDocument">
     <xs:complexType>
@@ -930,7 +930,7 @@ ISO 8601 time intervals are always expressed in the form
                               <xs:documentation xml:lang="DE">
 In diesem Element wird der Wert der physikalischen Größe übermittelt, die über MeasureUnit spezifiziert ist. Der Wert muss immer ≥ 0 sein. Bei ACO entspricht der Eintrag dem Wert, der angefordert wird, bei AAR und ACR dem Wert, der aktiviert werden kann. Bei Bedarf ist als Dezimaltrennzeichen der Punkt (.) zu verwenden. Es können maximal drei Dezimalstellen angegeben werden.
 
-Für die ACO gilt: für Zeitintervalle ohne RD-Abruf ist für den Fall der Sollwertanweisung der Wert "100" und kein ReasonCode anzugeben; für den Fall der Deltaanweisung ist ohne RD-Abruf der Wert "0" und kein ReasonCode anzugeben. Wird ein Abruf für eine Viertelstunde komplett zurückgenommen, so ist diese Viertelstunde zusätzlich mit dem ReasonCode A44 zu kennzeichnen. 
+Für die ACO gilt: für Zeitintervalle ohne RD-Abruf ist für den Fall der Sollwertanweisung der Wert "100" und kein ReasonCode anzugeben; für den Fall der Deltaanweisung ist ohne RD-Abruf der Wert "0" und kein ReasonCode anzugeben. 
 
 Für die ACR und AAR ist der ReasonCode A44 anzugeben, wenn die Anforderung nicht oder nicht vollständig umgesetzt werden kann.   
 
