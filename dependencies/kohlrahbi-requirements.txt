@@ -18,7 +18,7 @@ efoli==1.4.0
     # via kohlrahbi
 et-xmlfile==2.0.0
     # via openpyxl
-kohlrahbi==1.11.2
+kohlrahbi==1.12.1
     # via -r kohlrahbi-requirements.in
 lxml==5.3.0
     # via python-docx
