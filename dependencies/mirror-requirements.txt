@@ -14,7 +14,7 @@ annotated-types==0.7.0
     # via pydantic
 attrs==24.2.0
     # via aiohttp
-edi-energy-scraper==2.0.0
+edi-energy-scraper==2.0.1
     # via -r mirror-requirements.in
 efoli==1.4.0
     # via edi-energy-scraper
