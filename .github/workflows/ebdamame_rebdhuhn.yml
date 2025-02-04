@@ -2,7 +2,7 @@ name: Run EBD_amame and r_EBD_huhn
 on:
   push:
     branches:
-      - master
+      - ci/toolchain-FV2404
     paths:
       - 'edi_energy_de/**/*.docx'
       - 'ebd-tooling/**'
