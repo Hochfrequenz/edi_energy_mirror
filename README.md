@@ -26,9 +26,9 @@ Das Skript [download_and_post_process.py](/download_and_post_process.py) lädt d
 So werden Änderungen an MIGs, AHBs und weiteren Dokumenten als Diffs einzelner git commits sichtbar und Änderungen sind leichter aufzufinden und auszuwerten.
 
 ## Weiterverarbeitung der Rohdaten
-Die in diesem Repository abgelegten Rohdaten (genauer die AHB-Worddateien), werden automatisiert von [kohlrahbi](https://github.com/Hochfrequenz/kohlrahbi) und [migmose](https://github.com/Hochfrequenz/migmose) weiterverarbeitet.
-* Eine [Github Action](/.github/workflows/kohlrahbi.yml) spiegelt jegliche Änderungen in den Rohdaten in das Repository [machine-readable_anwendungshandbuecher](https://github.com/Hochfrequenz/machine-readable_anwendungshandbuecher) und [edi_energy_ahb_conditions_and_packages](https://github.com/Hochfrequenz/edi_energy_ahb_conditions_and_packages/).
-* Eine [weitere Github Action](/.github/workflows/migmose.yml) spiegelt jegliche Änderungen in den Rohdaten in das Repository [machine-readable_message-implementation-guide](https://github.com/Hochfrequenz/machine-readable_anwendungshandbuecher).
+* Eine [Github Action](/.github/workflows/migmose.yml) spiegelt jegliche Änderungen in den Rohdaten in das Repository [machine-readable_message-implementation-guide](https://github.com/Hochfrequenz/machine-readable_message-implementation-guide).
+* Eine [Github Action](/.github/workflows/ebdamame_rebdhuhn.yml) spiegelt jegliche Änderungen in den Rohdaten in das Repository [machine-readable_entscheidungsbaumdiagramme](https://github.com/Hochfrequenz/machine-readable_entscheidungsbaumdiagramme) - das ist die Grundlage für [ebd.hochfrequenz.de](https://ebd.hochfrequenz.de/).
+
 
 ## Urheberrecht
 

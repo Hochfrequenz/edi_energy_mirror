@@ -19,12 +19,12 @@ jobs:
           lfs: true
       - uses: actions/checkout@v4
         with:
-          # token expires 2025-10-27
+          # token expires 2026-05-16; has repo and read:packages scope
           token: ${{ secrets.MREBD_PUSH_TOKEN }}
           repository: Hochfrequenz/machine-readable_entscheidungsbaumdiagramme
           path: machine-readable_entscheidungsbaumdiagramme
       - name: login to GHCR
-        # token expires 2025-10-27
+        # token expires 2026-05-16; has repo and read:package scope
         run: echo "${{ secrets.GHCR_PWD }}" | docker login ghcr.io -u ${{ secrets.GHCR_USR }} --password-stdin
       - name: Run Extraction
         working-directory: edi_energy_mirror/ebd-tooling
