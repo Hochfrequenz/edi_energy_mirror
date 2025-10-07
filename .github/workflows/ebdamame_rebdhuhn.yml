@@ -17,7 +17,7 @@ jobs:
         with:
           path: edi_energy_mirror
           lfs: true
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           # token expires 2026-05-16; has repo and read:packages scope
           token: ${{ secrets.MREBD_PUSH_TOKEN }}
@@ -36,7 +36,7 @@ jobs:
           format: YYYY-MM-DDTHH-mm-ss
           # we use this to have unique branch names
       - name: Push EBD files to machine-readable_entscheidungsbaumdiagramme
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
            path:  machine-readable_entscheidungsbaumdiagramme
            title: EDI@Energy ebd_amame & r_ebd_huhn changes (Triggered by ${{ github.event.head_commit.message }})
