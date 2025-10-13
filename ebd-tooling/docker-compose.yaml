@@ -1,10 +1,10 @@
 services: 
    kroki: 
-     image: yuzutech/kroki:0.24.1 
+     image: yuzutech/kroki:0.28.0 
   
    scrape-and-plot: 
      build: . 
-     image: ghcr.io/hochfrequenz/ebd_toolchain:v0.13.3-rc2
+     image: ghcr.io/hochfrequenz/ebd_toolchain:v0.14.0
      # If you run into 'manifest unknown' during docker pull, try replacing `:latest` with `:v1.2.3`. 
      # where v1.2.3 is the latest version of the GHCR image, which can be found here: 
      # https://github.com/Hochfrequenz/ebd_toolchain/pkgs/container/ebd_toolchain 

@@ -16,7 +16,7 @@ attrs==25.1.0
     # via aiohttp
 edi-energy-scraper==2.1.0
     # via -r mirror-requirements.in
-efoli==1.4.0
+efoli==2.1.0
     # via edi-energy-scraper
 frozenlist==1.5.0
     # via
