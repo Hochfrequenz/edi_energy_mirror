@@ -9,8 +9,18 @@ on:
       - '.github/workflows/ebdamame_rebdhuhn.yml'
 jobs:
   check:
-    name: Scrape the Latest Docx File
+    name: Scrape ${{ matrix.output }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - docx: edi_energy_de/FV2504/EBD_4.0b_20250606_20250131_20241212_xoxx_11154.docx
+            output: FV2504
+          - docx: edi_energy_de/FV2510/EBD_4.1_20251211_20260331_20251211_xoxx_11998.docx
+            output: FV2510
+          - docx: edi_energy_de/FV2604/EBD_4.2_20260401_99991231_20251211_oxox_12000.docx
+            output: FV2604
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
@@ -28,7 +38,10 @@ jobs:
         run: echo "${{ secrets.GHCR_PWD }}" | docker login ghcr.io -u ${{ secrets.GHCR_USR }} --password-stdin
       - name: Run Extraction
         working-directory: edi_energy_mirror/ebd-tooling
-        run: docker compose up --abort-on-container-exit
+        run: |
+          EBD_DOCX_FILE=../${{ matrix.docx }} \
+          OUTPUT_DIR=../../machine-readable_entscheidungsbaumdiagramme/${{ matrix.output }} \
+          docker compose up --abort-on-container-exit
       - name: Get current time
         uses: srfrnk/current-time@master
         id: current-time
