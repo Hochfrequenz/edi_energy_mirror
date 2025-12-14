@@ -38,10 +38,10 @@ jobs:
         run: echo "${{ secrets.GHCR_PWD }}" | docker login ghcr.io -u ${{ secrets.GHCR_USR }} --password-stdin
       - name: Run Extraction
         working-directory: edi_energy_mirror/ebd-tooling
-        run: |
-          EBD_DOCX_FILE=../${{ matrix.docx }} \
-          OUTPUT_DIR=../../machine-readable_entscheidungsbaumdiagramme/${{ matrix.output }} \
-          docker compose up --abort-on-container-exit
+        env:
+          EBD_DOCX_FILE: ../${{ matrix.docx }}
+          OUTPUT_DIR: ../../machine-readable_entscheidungsbaumdiagramme/${{ matrix.output }}
+        run: docker compose up --abort-on-container-exit
       - name: Get current time
         uses: srfrnk/current-time@master
         id: current-time
