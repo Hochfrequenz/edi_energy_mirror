@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - docx: edi_energy_de/FV2510/EBD_4.1_20251211_20260331_20251211_xoxx_11998.docx
+          - docx: edi_energy_de/FV2510/EBD_4.1_20260116_20260331_20260116_xoxx_12043.docx
             output: FV2510
           - docx: edi_energy_de/FV2604/EBD_4.2_20260401_99991231_20251211_oxox_12000.docx
             output: FV2604
