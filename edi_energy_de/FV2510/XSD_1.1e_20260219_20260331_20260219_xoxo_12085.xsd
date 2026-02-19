@@ -3,7 +3,7 @@
     xmlns="urn:entsoe.eu:wgedi:errp:activationdocument:5:0"
     targetNamespace="urn:entsoe.eu:wgedi:errp:activationdocument:5:0"
     elementFormDefault="qualified">
-		<!-- Diese XSD-Datei baut auf den konsultierten Formatbeschreibungen der XML-Datenformate für den Redispatch 2.0 auf. Der BDEW übernimmt keinerlei Gewähr für die Aktualität, Korrektheit, Vollständigkeit, Qualität oder wettbewerbsrechtliche Zulässigkeit der bereitgestellten Informationen.
+	<!-- Diese XSD-Datei baut auf den konsultierten Formatbeschreibungen der XML-Datenformate für den Redispatch 2.0 auf. Der BDEW übernimmt keinerlei Gewähr für die Aktualität, Korrektheit, Vollständigkeit, Qualität oder wettbewerbsrechtliche Zulässigkeit der bereitgestellten Informationen.
 	Der BDEW behält sich vor, in Zukunft eine kostenpflichtige Veröffentlichung der XSD-Datei einzuführen. -->
   <xs:element name="ActivationDocument">
     <xs:annotation>
@@ -563,7 +563,6 @@ ISO 8601 time intervals are always expressed in the form
                           </xs:annotation>
                         </xs:enumeration>
                         <xs:maxLength value="16"/>
-                        <xs:pattern value="10Y[A-Z,\d,-]{13}"/>
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:attribute>
@@ -1018,7 +1017,7 @@ Für die ACR und AAR ist der ReasonCode A44 anzugeben, wenn die Anforderung nich
 Bei der MeasureUnit = "MAW" liegt der Wertebereich der Qty bei 0,000 bis 999999,999 (max. 3 Nachkommastellen) und das Pattern ist [\d]{0,6}(\.[\d]{1,3})?
 
 Bei der MeasureUnit = „P1“ liegt der Wertebereich der Qty bei 0,000 bis 100,000 (3 Nachkommastellen) und das
-Pattern ist 100.000|\d{1,2}(.[\d]{3}) 
+Pattern ist 100\.000|\d{1,2}(\.[\d]{3})
 
                               </xs:documentation>
                               <xs:documentation>Layout</xs:documentation>
