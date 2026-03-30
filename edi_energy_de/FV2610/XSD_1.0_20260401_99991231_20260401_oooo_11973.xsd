@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="urn:iec62325.351:tc57wg16:451-6:outagedocument:3:0"
+    targetNamespace="urn:iec62325.351:tc57wg16:451-6:outagedocument:3:0"
+    elementFormDefault="qualified">
+			<!-- Diese XSD-Datei baut auf den konsultierten Formatbeschreibungen der XML-Datenformate für den Redispatch 2.0 auf. Der BDEW übernimmt keinerlei Gewähr für die Aktualität, Korrektheit, Vollständigkeit, Qualität oder wettbewerbsrechtliche Zulässigkeit der bereitgestellten Informationen.
+	Der BDEW behält sich vor, in Zukunft eine kostenpflichtige Veröffentlichung der XSD-Datei einzuführen. -->
+  <xs:element name="Kaskade">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="createdDateTime">
+          <xs:annotation>
+            <xs:documentation>2017-04-09T11:56:23Z</xs:documentation>
+            <xs:documentation xml:lang="DE">
+Hier ist der Erzeugungszeitpunkt des Dokuments (in der jeweiligen Version) anzugeben. Die Zeitangabe erfolgt in UTC. 
+Der Zeitpunkt ist immer im Format yyyy-mm-ddThh:mm:ssZ anzugeben mit:
+yyyy vier Ziffern für die Jahresangabe
+mm zwei Ziffern für die Monatsangabe
+dd zwei Ziffern für die Tagesangabe
+hh zwei Ziffern für die Stundenangabe
+mm zwei Ziffern für die Minutenangabe
+ss zwei Ziffern für die Sekundenangabe
+T Trennzeichen zwischen Datum und Uhrzeit
+Z Verweis auf UTC
+            </xs:documentation>
+            <xs:documentation xml:lang="DE">sekundenscharfer Zeitpunkt in UTC, gemäß Pattern</xs:documentation>
+            <xs:documentation>Layout</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:dateTime">
+              <xs:pattern value="20(\d{2}(\-(0[13578]|1[02])\-(0[1-9]|[12]\d|3[01])|\-02\-(0[1-9]|1\d|2[0-8])|\-(0[469]|11)\-(0[1-9]|[12]\d|30))|([02468][048]|[13579][26])\-02\-(29))T([01]\d|2[0-3]):[0-5]\d:[0-5]\dZ"/>
+              <xs:whiteSpace value="collapse"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="mRID">
+          <xs:annotation>
+            <xs:documentation xml:lang="DE">Die Identifikation des Dokuments (mRID) hat je Absender und je Dokumententyp eindeutig zu sein. Bei der Bildung der Identifikation ist auf Groß- und Kleinschreibung zu achten (case-sensitive). Die Eindeutigkeit der unterschiedlichen Versionen erfolgt durch die Nutzung der Meldungsversion (revisionNumber). Alle Nachrichten zu einer Maßnahme haben die indentische mRID. D. h. die Maßnahme wird mit der mRID und der revisionNumber mit dem Wert 1 eröffnet und mit der Nachricht, die dieselbe mRID, aber den höchsten Wert als revisionNumber hat, beendet / aufgehoben.</xs:documentation>
+            <xs:documentation>OUT894837</xs:documentation>
+            <xs:documentation>Layout</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:maxLength value="35"/>
+              <xs:whiteSpace value="preserve"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="revisionNumber">
+          <xs:annotation>
+            <xs:documentation xml:lang="DE">Die revisionNumber (auch als Meldungsversion bezeichnet) gibt die Version eines Dokumentes an, welches über die mRID identifiziert wird. Mit jeder Aktualisierung wird die Versionsangabe kontinuierlich, mit 1 beginnend, hochgezählt. Die jeweils höchste revisionNumber kennzeichnet die aktuelle Version. Die Meldungsversion darf maximal drei Stellen besitzen.</xs:documentation>
+            <xs:documentation>34</xs:documentation>
+            <xs:documentation>Layout</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:integer">
+              <xs:pattern value="[1-9]\d{0,2}"/>
+              <xs:whiteSpace value="collapse"/>
+              <xs:maxInclusive value="999"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="status">
+          <xs:annotation>
+            <xs:documentation>Ausgabe</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="value">
+                <xs:annotation>
+                  <xs:documentation>Layout</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:NMTOKEN">
+                    <xs:enumeration value="A07">
+                      <xs:annotation>
+                        <xs:documentation></xs:documentation>
+                        <xs:documentation>Activated</xs:documentation>
+                        <xs:documentation>The quantities in the time series have been activated.</xs:documentation>
+                        <xs:documentation xml:lang="DE">Activated (Erfüllungshemmnis)</xs:documentation>
+                      </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="A10">
+                      <xs:annotation>
+                        <xs:documentation></xs:documentation>
+                        <xs:documentation>Ordered</xs:documentation>
+                        <xs:documentation>The quantities in the time series are to be activated.</xs:documentation>
+                        <xs:documentation xml:lang="DE">Ordered (Anforderung)</xs:documentation>
+                      </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="A16">
+                      <xs:annotation>
+                        <xs:documentation></xs:documentation>
+                        <xs:documentation>Deactivation</xs:documentation>
+                        <xs:documentation>The action requested to be carried out is to deactivate an existing object.</xs:documentation>
+                        <xs:documentation xml:lang="DE">Deactivation (Aufhebung)</xs:documentation>
+                      </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="A35">
+                      <xs:annotation>
+                        <xs:documentation></xs:documentation>
+                        <xs:documentation>Preliminary</xs:documentation>
+                        <xs:documentation>Indicative information only for initial planning purposes.</xs:documentation>
+                        <xs:documentation xml:lang="DE">Preliminary (Ankündigung)</xs:documentation>
+                      </xs:annotation>
+                    </xs:enumeration>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="type">
+          <xs:annotation>
+            <xs:documentation xml:lang="DE">Der type dient zur eindeutigen Kennzeichnung des Dokumenttyps und basiert auf einer vordefinierten Codeliste. Alle Versionen eines Kaskade_MarketDocument müssen denselben type enthalten.</xs:documentation>
+            <xs:documentation>Layout</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:NMTOKEN">
+              <xs:enumeration value="Z16">
+                <xs:annotation>
+                  <xs:documentation xml:lang="DE">Umsetzung von Notfallmaßnahmen nach §13(2) EnWG</xs:documentation>
+                  <xs:documentation xml:lang="EN"></xs:documentation>
+                </xs:annotation>
+              </xs:enumeration>
+              <xs:enumeration value="Z17">
+                <xs:annotation>
+                  <xs:documentation xml:lang="DE">Testnachricht zur Umsetzung von Notfallmaßnahmen nach §13(2) EnWG</xs:documentation>
+                </xs:annotation>
+              </xs:enumeration>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="sender_MarketParticipant.mRID">
+          <xs:annotation>
+            <xs:documentation>
+9900909000005
+(MP-ID der SW Rostock Netzgesellschaft mbH als BDEW-Code)
+            </xs:documentation>
+            <xs:documentation xml:lang="DE">Dieses Element dient zur eindeutigen Identifikation des Senders über seine Marktpartner-ID, die zu einer vordefinierten Codeliste einer vergebenden Organisation gehören muss.</xs:documentation>
+            <xs:documentation>Layout</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="ContentType_1">
+                <xs:attribute name="codingScheme" use="required">
+                  <xs:annotation>
+                    <xs:documentation xml:lang="DE">Das codingScheme definiert das Codierungssystem für den genutzten Identifikator.</xs:documentation>
+                  </xs:annotation>
+                  <xs:simpleType>
+                    <xs:restriction base="xs:NMTOKEN">
+                      <xs:enumeration value="A10">
+                        <xs:annotation>
+                          <xs:documentation></xs:documentation>
+                          <xs:documentation>GS1</xs:documentation>
+                          <xs:documentation>The coding scheme for the preceding attribute is the Global Location Number (GLN 13) or Global Service Relation Number (GSRN 18), maintained by GS1.</xs:documentation>
+                        </xs:annotation>
+                      </xs:enumeration>
+                      <xs:enumeration value="NDE">
+                        <xs:annotation>
+                          <xs:documentation></xs:documentation>
+                          <xs:documentation>Germany National coding scheme (BDEW-Code)</xs:documentation>
+                          <xs:documentation>The National coding scheme of the country in question.</xs:documentation>
+                        </xs:annotation>
+                      </xs:enumeration>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:attribute>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="sender_MarketParticipant.marketRole.type">
+          <xs:annotation>
+            <xs:documentation xml:lang="DE">Dieses Element dient zur Angabe der Marktrolle des Absenders.</xs:documentation>
+            <xs:documentation>Layout</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:NMTOKEN">
+              <xs:enumeration value="A18">
+                <xs:annotation>
+                  <xs:documentation></xs:documentation>
+                  <xs:documentation>Grid operator</xs:documentation>
+                  <xs:documentation>Refer to role model definitions in the ENTSO-E Harmonised Role Model Document.</xs:documentation>
+                </xs:annotation>
+              </xs:enumeration>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="receiver_MarketParticipant.mRID">
+          <xs:annotation>
+            <xs:documentation xml:lang="DE">Dieses Element dient zur eindeutigen Identifikation des Empfängers über seine Marktpartner-ID, die zu einer vordefinierten Codeliste einer vergebenden Organisation gehören muss.</xs:documentation>
+            <xs:documentation>
+4033872000058
+(MP-ID von TenneT als GS1-Code)
+            </xs:documentation>
+            <xs:documentation>Layout</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="ContentType_1">
+                <xs:attribute name="codingScheme" use="required">
+                  <xs:annotation>
+                    <xs:documentation xml:lang="DE">Das codingScheme definiert die vergebende Organisation der Marktpartner-ID.</xs:documentation>
+                  </xs:annotation>
+                  <xs:simpleType>
+                    <xs:restriction base="xs:NMTOKEN">
+                      <xs:enumeration value="A10">
+                        <xs:annotation>
+                          <xs:documentation></xs:documentation>
+                          <xs:documentation>GS1</xs:documentation>
+                          <xs:documentation>The coding scheme for the preceding attribute is the Global Location Number (GLN 13) or Global Service Relation Number (GSRN 18), maintained by GS1.</xs:documentation>
+                        </xs:annotation>
+                      </xs:enumeration>
+                      <xs:enumeration value="NDE">
+                        <xs:annotation>
+                          <xs:documentation></xs:documentation>
+                          <xs:documentation>Germany National coding scheme (BDEW-Code)</xs:documentation>
+                          <xs:documentation>The National coding scheme of the country in question.</xs:documentation>
+                        </xs:annotation>
+                      </xs:enumeration>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:attribute>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="receiver_MarketParticipant.marketRole.type">
+          <xs:annotation>
+            <xs:documentation xml:lang="DE">Dieses Element dient zur Angabe der Marktrolle des Empfängers.</xs:documentation>
+            <xs:documentation>Layout</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:NMTOKEN">
+              <xs:enumeration value="A18">
+                <xs:annotation>
+                  <xs:documentation></xs:documentation>
+                  <xs:documentation>Grid operator</xs:documentation>
+                  <xs:documentation>Refer to role model definitions in the ENTSO-E Harmonised Role Model Document.</xs:documentation>
+                </xs:annotation>
+              </xs:enumeration>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="TimeSeries">
+          <xs:annotation>
+            <xs:documentation xml:lang="DE">Der Beginn des Zeitraums erfolgt über das Element start, das (voraussichtliche) Ende des Zeitraums erfolgt über das Element end. Dieser Zeitraum muss vollständig von der TimeSeries des Dokuments abgedeckt sein. </xs:documentation>
+            <xs:documentation>Ausgabe</xs:documentation>
+            <xs:documentation xml:lang="DE">
+Es ist nur eine TimeSeries je Nachricht zulässig.
+
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="mRID">
+                <xs:annotation>
+                  <xs:documentation xml:lang="DE">Jede TimeSeries eines Dokuments muss einen eindeutigen Identifikator innerhalb dieses Dokuments haben. Eine Eineindeutigkeit über mehrere Dokumente ist nicht erforderlich. Dieser maximal 35-stellige alphanummerische Wert ist hier anzugeben.</xs:documentation>
+                  <xs:documentation>84498945789489</xs:documentation>
+                  <xs:documentation>Layout</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="35"/>
+                    <xs:whiteSpace value="preserve"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="senders_document_mRID" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation xml:lang="DE">Bei Erfüllungshemmnis (Status A07) oder Aufhebung (Status A16) ist die ursprüngliche mRID der Anforderung (Status A10) anzugeben.</xs:documentation>
+                  <xs:documentation>Layout</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="35"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="senders_revisionNumber" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation xml:lang="DE">Bei Erfüllungshemmnis (Status A07) oder Aufhebung (Status A16) ist die ursprüngliche revisionNumber der Anforderung (Status A10) anzugeben.</xs:documentation>
+                  <xs:documentation>Layout</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:integer">
+                    <xs:maxInclusive value="999"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="senders_createdDateTime" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation>2017-04-09T11:56:23Z</xs:documentation>
+                  <xs:documentation xml:lang="DE">
+Hier ist der Erzeugungszeitpunkt des Dokuments (in der jeweiligen Version) anzugeben. Die Zeitangabe erfolgt in UTC. 
+Der Zeitpunkt ist immer im Format yyyy-mm-ddThh:mm:ssZ anzugeben mit:
+yyyy vier Ziffern für die Jahresangabe
+mm zwei Ziffern für die Monatsangabe
+dd zwei Ziffern für die Tagesangabe
+hh zwei Ziffern für die Stundenangabe
+mm zwei Ziffern für die Minutenangabe
+ss zwei Ziffern für die Sekundenangabe
+T Trennzeichen zwischen Datum und Uhrzeit
+Z Verweis auf UTC
+                  </xs:documentation>
+                  <xs:documentation xml:lang="DE">sekundenscharfer Zeitpunkt in UTC, gemäß Pattern</xs:documentation>
+                  <xs:documentation xml:lang="DE">Bei Erfüllungshemmnis (Status A07) oder Aufhebung (Status A16) ist die ursprüngliche createdDateTime der Anforderung (Status A10) anzugeben.</xs:documentation>
+                  <xs:documentation>Layout</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:dateTime">
+                    <xs:pattern value="20(\d{2}(\-(0[13578]|1[02])\-(0[1-9]|[12]\d|3[01])|\-02\-(0[1-9]|1\d|2[0-8])|\-(0[469]|11)\-(0[1-9]|[12]\d|30))|([02468][048]|[13579][26])\-02\-(29))T([01]\d|2[0-3]):[0-5]\d:[0-5]\dZ"/>
+                    <xs:whiteSpace value="collapse"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="businessType">
+                <xs:annotation>
+                  <xs:documentation>Layout</xs:documentation>
+                  <xs:documentation xml:lang="DE">Die Beschreibung zur Anwendung der Codes befindet sich in den Erläuterungen des Dokuments.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:NMTOKEN">
+                    <xs:enumeration value="A01">
+                      <xs:annotation>
+                        <xs:documentation></xs:documentation>
+                        <xs:documentation>Production</xs:documentation>
+                        <xs:documentation>The nature of the business being described is production details.</xs:documentation>
+                      </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="A04">
+                      <xs:annotation>
+                        <xs:documentation></xs:documentation>
+                        <xs:documentation>Consumption</xs:documentation>
+                        <xs:documentation>The nature of the business being described is consumption details.</xs:documentation>
+                      </xs:annotation>
+                    </xs:enumeration>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="ResourceObject" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                  <xs:documentation>Layout</xs:documentation>
+                  <xs:documentation xml:lang="DE">Für die Netzverknüpfungspunkte ist als Identifikator ein Code möglich, der einem der unten genannten Coding Schemes entspricht (z.B. UUID oder T-Code).</xs:documentation>
+                  <xs:documentation xml:lang="DE">Wenn es sich um ein lokales Netzsicherheitsproblem (ReasonCode Z19) handelt, sind hier die betroffenen Netzverknüpfungspunkte anzugeben. Wenn es sich um ein Systembilanzproblem (ReasonCode Z20) handelt, welches immer das gesamte Netzgebiet betrifft, ist hier keine Angabe von Netzverknüpfungspunkten erlaubt.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:attribute name="v" use="required">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="36"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="codingScheme" use="required">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:NMTOKEN">
+                        <xs:enumeration value="A01">
+                          <xs:annotation>
+                            <xs:documentation xml:lang="DE">EIC-T-Code; The coding scheme is the Energy Identification Coding Scheme (EIC)</xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="A02">
+                          <xs:annotation>
+                            <xs:documentation xml:lang="DE">The coding scheme used for Common Grid Model Exchange Standard (CGMES)</xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="NDE">
+                          <xs:annotation>
+                            <xs:documentation xml:lang="DE">Germany National Coding Scheme</xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="Z01">
+                          <xs:annotation>
+                            <xs:documentation xml:lang="DE">UUID</xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="biddingZone_Domain.mRID">
+                <xs:annotation>
+                  <xs:documentation xml:lang="DE">Hier ist die Regelzone anzugeben, in der die Netzanschlusspunkte liegen, an denen die Notfall-Maßnahme umzusetzen ist.</xs:documentation>
+                  <xs:documentation>
+10YDE-RWENET---I
+(Regelzone Amprion)
+                  </xs:documentation>
+                  <xs:documentation>Layout</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="ContentType_2">
+                      <xs:attribute name="codingScheme" use="required">
+                        <xs:annotation>
+                          <xs:documentation xml:lang="DE">Das codingScheme definiert das Codierungssystem für den genutzten Identifikator.</xs:documentation>
+                          <xs:documentation xml:lang="DE">EIC der jeweiligen dt. Regelzone</xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                          <xs:restriction base="xs:NMTOKEN">
+                            <xs:enumeration value="A01">
+                              <xs:annotation>
+                                <xs:documentation></xs:documentation>
+                                <xs:documentation>EIC</xs:documentation>
+                                <xs:documentation>The coding scheme is the Energy Identification Coding Scheme (EIC), maintained by ENTSO-E.</xs:documentation>
+                              </xs:annotation>
+                            </xs:enumeration>
+                          </xs:restriction>
+                        </xs:simpleType>
+                      </xs:attribute>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="quantity_Measure_Unit.name">
+                <xs:annotation>
+                  <xs:documentation>Layout</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:NMTOKEN">
+                    <xs:enumeration value="MAW">
+                      <xs:annotation>
+                        <xs:documentation></xs:documentation>
+                        <xs:documentation>Megawatt</xs:documentation>
+                        <xs:documentation>A unit of bulk power flow, which can be defined as the rate of energy transfer /consumption when a current of 1000 amperes flows due to a potential of 1000 volts at unity power factor expressed in millions of a watt.</xs:documentation>
+                      </xs:annotation>
+                    </xs:enumeration>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="curveType">
+                <xs:annotation>
+                  <xs:documentation xml:lang="DE">Es wird ausschließlich der curveType „Variable sized Block“ verwendet, der sich dadurch auszeichnet, dass nur die Zeitpunkte angegeben werden müssen, zu denen sich die im Element quantity anzugebende Leistung ändert. Es dürfen keine Punkte angegeben werden, an denen sich die Leistung im Vergleich zum unmittelbar vorangehenden Punkt nicht ändert.</xs:documentation>
+                  <xs:documentation>Layout</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:NMTOKEN">
+                    <xs:enumeration value="A03">
+                      <xs:annotation>
+                        <xs:documentation></xs:documentation>
+                        <xs:documentation>Variable sized Block</xs:documentation>
+                        <xs:documentation>The curve is made of successive Intervals of time (Blocks) of variable duration (size), where the end date and end time of each Block are equal to the start date and start time of the next Interval. For the last Block the end date and end time of the last Interval would be equal to EndDateTime of TimeInterval.</xs:documentation>
+                      </xs:annotation>
+                    </xs:enumeration>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Available_Period">
+                <xs:annotation>
+                  <xs:documentation xml:lang="DE">Jede TimeSeries enthält genau ein Element vom Typ Available_Period.</xs:documentation>
+                  <xs:documentation>Ausgabe</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="timeInterval">
+                      <xs:annotation>
+                        <xs:documentation>Ausgabe</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="start">
+                            <xs:annotation>
+                              <xs:documentation xml:lang="DE">
+Der Zeitpunkt des Beginns der Available_Period ist in UTC im
+Format yyyy-mm-ddThh:mmZ wie folgt anzugeben:
+yyyy vier Ziffern für die Jahresangabe
+mm zwei Ziffern für die Monatsangabe
+dd zwei Ziffern für die Tagesangabe
+hh zwei Ziffern für die Stundenangabe
+mm zwei Ziffern für die Minutenangabe
+T Trennzeichen zwischen Datum und Uhrzeit
+Z Verweis auf UTC
+                              </xs:documentation>
+                              <xs:documentation>2017-01-12T23:00Z</xs:documentation>
+                              <xs:documentation>Startzeitpunkt der Notfallmaßnahme. Bei der Ankündigung einer Notfallmaßnahme handelt es sich um den voraussichtlichen Startzeitpunkt der Notfallmaßnahme. Beim Erfüllungshemmnis ist der Startzeitpunkt aus der zugehörigen Anforderung zu wiederholen.</xs:documentation>
+                              <xs:documentation>Layout</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                              <xs:restriction base="xs:string">
+                                <xs:pattern value="20(\d{2}(\-(0[13578]|1[02])\-(0[1-9]|[12]\d|3[01])|\-02\-(0[1-9]|1\d|2[0-8])|\-(0[469]|11)\-(0[1-9]|[12]\d|30))|([02468][048]|[13579][26])\-02\-(29))T([01]\d|2[0-3]):[0-5]\dZ"/>
+                                <xs:whiteSpace value="preserve"/>
+                              </xs:restriction>
+                            </xs:simpleType>
+                          </xs:element>
+                          <xs:element name="end">
+                            <xs:annotation>
+                              <xs:documentation xml:lang="DE">
+Der Zeitpunkt des Endes der Available_Period ist in UTC im Format yyyy-mm-ddThh:mmZ wie folgt anzugeben:
+yyyy vier Ziffern für die Jahresangabe
+mm zwei Ziffern für die Monatsangabe
+dd zwei Ziffern für die Tagesangabe
+hh zwei Ziffern für die Stundenangabe
+mm zwei Ziffern für die Minutenangabe
+T Trennzeichen zwischen Datum und Uhrzeit
+Z Verweis auf UTC
+                              </xs:documentation>
+                              <xs:documentation>2017-06-23T22:00Z</xs:documentation>
+                              <xs:documentation>
+Bei der Ankündigung und Anforderung ist der voraussichtliche Endzeitpunkt der Notfallmaßnahme anzugeben. 
+Beim Erfüllungshemmnis ist der voraussichtliche Endzeitpunkt aus der zugehörigen Anforderung zu wiederholen. 
+Bei der Aufhebung ist das tatsächliche Ende aller Maßnahmen mit der gleichen mRID zu nennen.
+                              </xs:documentation>
+                              <xs:documentation>Layout</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                              <xs:restriction base="xs:string">
+                                <xs:pattern value="20(\d{2}(\-(0[13578]|1[02])\-(0[1-9]|[12]\d|3[01])|\-02\-(0[1-9]|1\d|2[0-8])|\-(0[469]|11)\-(0[1-9]|[12]\d|30))|([02468][048]|[13579][26])\-02\-(29))T([01]\d|2[0-3]):[0-5]\dZ"/>
+                              </xs:restriction>
+                            </xs:simpleType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="resolution" minOccurs="0">
+                      <xs:annotation>
+                        <xs:documentation xml:lang="DE">Der Start und das Ende ist minutengenau anzugeben.</xs:documentation>
+                        <xs:documentation>Layout</xs:documentation>
+                      </xs:annotation>
+                      <xs:simpleType>
+                        <xs:restriction base="xs:duration">
+                          <xs:enumeration value="PT1M">
+                            <xs:annotation>
+                              <xs:documentation xml:lang="DE">resolution is for a minute</xs:documentation>
+                            </xs:annotation>
+                          </xs:enumeration>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="Point">
+                      <xs:annotation>
+                        <xs:documentation xml:lang="DE">Point gibt die relative Position innerhalb eines Zeitintervalls und die zugehörige Menge an.</xs:documentation>
+                        <xs:documentation>Ausgabe</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="position">
+                            <xs:annotation>
+                              <xs:documentation xml:lang="DE">Hier ist immer die Position 1 anzugeben. </xs:documentation>
+                              <xs:documentation>1</xs:documentation>
+                              <xs:documentation xml:lang="DE">Integerwert (gemäß Pattern) zur Identifikation des Zeitpunktes, für den der Wert gilt</xs:documentation>
+                              <xs:documentation>Layout</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                              <xs:restriction base="xs:integer">
+                                <xs:whiteSpace value="collapse"/>
+                                <xs:maxInclusive value="1"/>
+                                <xs:minInclusive value="1"/>
+                              </xs:restriction>
+                            </xs:simpleType>
+                          </xs:element>
+                          <xs:element name="quantity">
+                            <xs:annotation>
+                              <xs:documentation xml:lang="DE">Hier wird die Leistung (als Delta-Wert) in Megawatt angegeben. </xs:documentation>
+                              <xs:documentation>234</xs:documentation>
+                              <xs:documentation xml:lang="DE">Dezimalzahl &gt;0 ohne Angabe des Vorzeichen, max. 3 Nachkommastellen. Als Dezimaltrennzeichen ist der Punkt (.) zu verwenden.</xs:documentation>
+                              <xs:documentation>Layout</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                              <xs:restriction base="xs:decimal">
+                                <xs:whiteSpace value="collapse"/>
+                                <xs:fractionDigits value="3"/>
+                              </xs:restriction>
+                            </xs:simpleType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Reason">
+                <xs:annotation>
+                  <xs:documentation xml:lang="DE">Es muss einer der Werte verwendet werden. </xs:documentation>
+                  <xs:documentation>Ausgabe</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="code">
+                      <xs:annotation>
+                        <xs:documentation>Layout</xs:documentation>
+                        <xs:documentation xml:lang="DE">Es muss einer der zulässigen Werte verwendet werden. </xs:documentation>
+                      </xs:annotation>
+                      <xs:simpleType>
+                        <xs:restriction base="xs:NMTOKEN">
+                          <xs:enumeration value="Z19">
+                            <xs:annotation>
+                              <xs:documentation xml:lang="DE">Lokales Netzsicherheitsproblem</xs:documentation>
+                            </xs:annotation>
+                          </xs:enumeration>
+                          <xs:enumeration value="Z20">
+                            <xs:annotation>
+                              <xs:documentation xml:lang="DE">Systembilanzproblem</xs:documentation>
+                            </xs:annotation>
+                          </xs:enumeration>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="ReasonText" minOccurs="0">
+                      <xs:annotation>
+                        <xs:documentation></xs:documentation>
+                        <xs:documentation>Layout</xs:documentation>
+                      </xs:annotation>
+                      <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                          <xs:maxLength value="512"/>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="DtdBDEWNachrichtenVersion" type="xs:string" fixed="1.0"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="ContentType_1">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="16"/>
+      <xs:pattern value="\d{13}"/>
+      <xs:whiteSpace value="preserve"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="ContentType_2">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="10YDE-ENBW-----N">
+        <xs:annotation>
+          <xs:documentation xml:lang="DE">TransnetBW</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="10YDE-EON------1">
+        <xs:annotation>
+          <xs:documentation xml:lang="DE">TenneT</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="10YDE-RWENET---I">
+        <xs:annotation>
+          <xs:documentation xml:lang="DE">Amprion</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="10YDE-VE-------2">
+        <xs:annotation>
+          <xs:documentation xml:lang="DE">50Hertz</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:minLength value="16"/>
+      <xs:maxLength value="16"/>
+      <xs:pattern value="10Y[A-Z,\d,-]{13}"/>
+      <xs:whiteSpace value="preserve"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
