@@ -17,9 +17,9 @@ jobs:
         include:
           - docx: edi_energy_de/FV2510/EBD_4.1_20260116_20260331_20260116_xoxx_12043.docx
             output: FV2510
-          - docx: edi_energy_de/FV2604/EBD_4.2_20260401_99991231_20251211_oxox_12000.docx
+          - docx: edi_energy_de/FV2604/EBD_4.2_20260401_99991231_20260331_xoxx_12139.docx
             output: FV2604
-          - docx: edi_energy_de/FV2610/EBD_4.2_20260401_99991231_20260401_ooox_11915.docx
+          - docx: edi_energy_de/FV2610/EBD_4.2_20260401_99991231_20260331_xoxx_12139.docx
             output: FV2610
     steps:
       - name: Check out Git repository
