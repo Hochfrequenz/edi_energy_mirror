@@ -1,6 +1,6 @@
 services: 
    kroki: 
-     image: yuzutech/kroki:0.28.0 
+     image: yuzutech/kroki:0.30.1 
   
    scrape-and-plot: 
      build: . 
