@@ -41,6 +41,8 @@ jobs:
         env:
           EBD_DOCX_FILE: ../${{ matrix.docx }}
           OUTPUT_DIR: ../../machine-readable_entscheidungsbaumdiagramme/${{ matrix.output }}
+          GITHUB_TOKEN: ${{ secrets.XMLMIGSAHBS_READ_TOKEN }}
+          FORMAT_VERSION: ${{ matrix.output }}
         run: docker compose up --abort-on-container-exit
       - name: Get current time
         uses: srfrnk/current-time@master
