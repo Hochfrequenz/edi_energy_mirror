@@ -13,9 +13,11 @@ services:
        - ${OUTPUT_DIR}:/container/output 
      # we need to set the KROKI_HOST and KROKI_PORT to the host and port of the kroki service 
      # this is configurable here, but it does not need to be changed if the kroki service is named "kroki" 
-     environment: 
-       KROKI_PORT: "8000" 
-       KROKI_HOST: "kroki" 
+     environment:
+       KROKI_PORT: "8000"
+       KROKI_HOST: "kroki"
+       GITHUB_TOKEN: "${GITHUB_TOKEN}"
+       FORMAT_VERSION: "${FORMAT_VERSION}"
      # the .env file contains the parameter which the user can set 
      env_file: 
        - path: .env 
