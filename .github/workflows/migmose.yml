@@ -44,7 +44,7 @@ jobs:
         run: |
           migmose -eemp ./edi_energy_mirror -o ./machine-readable_message-implementation-guide -fv ${{ matrix.format_version }} --file-type csv --file-type nested_json --file-type reduced_nested_json
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
       - name: Install prettier
