@@ -23,11 +23,11 @@ jobs:
             output: FV2610
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: edi_energy_mirror
           lfs: true
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           # token expires 2026-05-16; has repo and read:packages scope
           token: ${{ secrets.MREBD_PUSH_TOKEN }}
