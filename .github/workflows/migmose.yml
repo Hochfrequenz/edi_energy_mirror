@@ -57,7 +57,7 @@ jobs:
         with:
           format: YYYY-MM-DDTHH-mm-ss
       - name: Push results to machine-readable_migs
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
            path:  machine-readable_message-implementation-guide
            title: EDI@Energy MIGmose ${{ matrix.format_version }} Changes ${{ steps.current-time.outputs.formattedTime }}
