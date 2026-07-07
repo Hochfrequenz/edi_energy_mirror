@@ -44,6 +44,27 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.XMLMIGSAHBS_READ_TOKEN }}
           FORMAT_VERSION: ${{ matrix.output }}
         run: docker compose up --abort-on-container-exit
+      - name: Regenerate format_versions.json (enumerable FV list for AI/consumers)
+        # ebd_toolchain emits the per-FV discovery files (index.json / pruefi_to_key.json /
+        # ebd.schema.json) into each FV dir; this adds the one cross-FV manifest, which no
+        # single (per-FV) matrix job can otherwise produce. We rescan the whole checkout so
+        # the manifest lists every format version present, not just the one this job scraped.
+        working-directory: machine-readable_entscheidungsbaumdiagramme
+        run: |
+          python3 <<'PY'
+          import json, os, re
+          fvs = sorted(d for d in os.listdir(".") if re.fullmatch(r"FV\d{4}", d) and os.path.isdir(d))
+          def valid_from(fv: str) -> str:
+              return f"20{fv[2:4]}-{fv[4:6]}-01"
+          data = {
+              "latest": fvs[-1] if fvs else None,
+              "format_versions": [{"format_version": fv, "valid_from": valid_from(fv)} for fv in fvs],
+          }
+          with open("format_versions.json", "w", encoding="utf-8") as fh:
+              json.dump(data, fh, ensure_ascii=False, indent=2)
+              fh.write("\n")
+          print(f"wrote format_versions.json with {len(fvs)} format versions")
+          PY
       - name: Get current time
         uses: srfrnk/current-time@master
         id: current-time
