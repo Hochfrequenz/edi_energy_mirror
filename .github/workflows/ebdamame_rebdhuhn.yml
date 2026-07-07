@@ -44,6 +44,35 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.XMLMIGSAHBS_READ_TOKEN }}
           FORMAT_VERSION: ${{ matrix.output }}
         run: docker compose up --abort-on-container-exit
+      - name: Regenerate format_versions.json (enumerable FV list for AI/consumers)
+        # ebd_toolchain emits the per-FV discovery files (index.json / pruefi_to_key.json /
+        # ebd.schema.json) into each FV dir; this adds the one cross-FV manifest, which no single
+        # (per-FV) matrix job can otherwise produce. We list the FV dirs present in the checkout
+        # (this job's freshly-written FV included) and take valid_from from efoli — the authoritative
+        # BDEW dates, which are NOT the FV label and not always the 1st (e.g. FV2504 -> 2025-06-06).
+        # Existing-FV jobs recompute an identical manifest, so create-pull-request includes it only in
+        # the PR of the job that actually adds/changes a format version; it self-heals on the next run.
+        working-directory: machine-readable_entscheidungsbaumdiagramme
+        run: |
+          python3 -m pip install --quiet efoli
+          python3 <<'PY'
+          import json, os, re
+          from efoli import EdifactFormatVersion, get_edifact_format_version_valid_from
+          fvs = sorted(d for d in os.listdir(".") if re.fullmatch(r"FV\d{4}", d) and os.path.isdir(d))
+          def valid_from(fv: str) -> str | None:
+              try:
+                  return get_edifact_format_version_valid_from(EdifactFormatVersion(fv)).isoformat()
+              except ValueError:
+                  return None  # FV not (yet) known to efoli
+          data = {
+              "latest": fvs[-1] if fvs else None,
+              "format_versions": [{"format_version": fv, "valid_from": valid_from(fv)} for fv in fvs],
+          }
+          with open("format_versions.json", "w", encoding="utf-8") as fh:
+              json.dump(data, fh, ensure_ascii=False, indent=2)
+              fh.write("\n")
+          print(f"wrote format_versions.json with {len(fvs)} format versions")
+          PY
       - name: Get current time
         uses: srfrnk/current-time@master
         id: current-time
