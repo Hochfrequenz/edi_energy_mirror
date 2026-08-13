@@ -15,12 +15,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - docx: edi_energy_de/FV2510/EBD_4.1_20260116_20260331_20260116_xoxx_12043.docx
-            output: FV2510
-          - docx: edi_energy_de/FV2604/EBD_4.2_20260401_20260930_20260623_xoxx_12239.docx
-            output: FV2604
-          - docx: edi_energy_de/FV2610/EBD_4.3_20261001_99991231_20260623_xoxx_12241.docx
-            output: FV2610
+          - output: FV2510
+          - output: FV2604
+          - output: FV2610
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v7
@@ -36,10 +33,28 @@ jobs:
       - name: login to GHCR
         # token expires 2026-05-16; has repo and read:package scope
         run: echo "${{ secrets.GHCR_PWD }}" | docker login ghcr.io -u ${{ secrets.GHCR_USR }} --password-stdin
+      - name: Find latest EBD docx
+        id: find-ebd
+        # Files follow the naming convention from edi_energy_scraper's get_meaningful_file_name():
+        # EBD_{version}_{valid_from}_{valid_to}_{publication_date}_{flags}_{id}.docx
+        # The document ID is a sequential number assigned by the BDEW system; the highest ID
+        # is therefore the most recently added document. We sort numerically by this ID.
+        run: |
+          latest=$(ls edi_energy_mirror/edi_energy_de/${{ matrix.output }}/EBD_*.docx 2>/dev/null \
+            | awk -F'_' '{id=$NF; sub(/\.docx$/,"",id); print id+0, $0}' \
+            | sort -n | awk '{print $2}' | tail -n1)
+          if [ -z "$latest" ]; then
+            echo "No EBD docx found in edi_energy_de/${{ matrix.output }}" >&2
+            exit 1
+          fi
+          echo "Found latest EBD docx: $latest"
+          # strip the "edi_energy_mirror/" prefix so the path is relative to edi_energy_mirror/ebd-tooling
+          relative="../${latest#edi_energy_mirror/}"
+          echo "docx=$relative" >> "$GITHUB_OUTPUT"
       - name: Run Extraction
         working-directory: edi_energy_mirror/ebd-tooling
         env:
-          EBD_DOCX_FILE: ../${{ matrix.docx }}
+          EBD_DOCX_FILE: ${{ steps.find-ebd.outputs.docx }}
           OUTPUT_DIR: ../../machine-readable_entscheidungsbaumdiagramme/${{ matrix.output }}
           GITHUB_TOKEN: ${{ secrets.XMLMIGSAHBS_READ_TOKEN }}
           FORMAT_VERSION: ${{ matrix.output }}
