@@ -35,22 +35,107 @@ jobs:
         run: echo "${{ secrets.GHCR_PWD }}" | docker login ghcr.io -u ${{ secrets.GHCR_USR }} --password-stdin
       - name: Find latest EBD docx
         id: find-ebd
-        # Files follow the naming convention from edi_energy_scraper's get_meaningful_file_name():
-        # EBD_{version}_{valid_from}_{valid_to}_{publication_date}_{flags}_{id}.docx
-        # The document ID is a sequential number assigned by the BDEW system; the highest ID
-        # is therefore the most recently added document. We sort numerically by this ID.
+        # The file name is not hardcoded but derived from the naming convention that
+        # edi_energy_scraper applies when it mirrors the BDEW documents into this repository, see
+        # Document.get_meaningful_file_name():
+        # https://github.com/Hochfrequenz/edi_energy_scraper/blob/b04c2be5aeecbdef5870558e5cd54b634c6274f4/src/edi_energy_scraper/apidocument.py#L238
+        #   "{kind}_{edifact_format}{version}_{from_date}_{to_date}_{publication_date}_{flags}_{id}.{extension}"
+        # {edifact_format} is empty for EBD documents, so the names read:
+        #   EBD_{version}_{valid_from}_{valid_to}_{publication_date}_{flags}_{id}.docx
+        # ⚠️ This step only works as long as that format string stays exactly the way it is. If
+        # get_meaningful_file_name() ever changes (field order, the "_" separator, or the trailing
+        # document id), this step has to be adapted, too. It warns about and skips every EBD_*.docx
+        # that does not match the pattern, so an upstream convention change shows up in the job log
+        # instead of silently picking the wrong document.
+        #
+        # How the "latest" document is chosen: among the documents whose validity starts within this
+        # format version, take the one with the highest BDEW document id. That id is a per-file
+        # counter of the BDEW system, so the highest id is the most recently added document.
+        # Sorting by the dates in the file name would be worse: {publication_date} falls back to
+        # {valid_from} whenever the API reports no publication date (which is the case for every
+        # "informatorische Lesefassung", i.e. for practically every .docx in this mirror), and
+        # {valid_to} is occasionally even before {valid_from} in the source data.
+        # Restricting to the format version's own validity window is what keeps this honest: FV
+        # directories have contained documents of the *following* format version before (e.g. an
+        # EBD 4.2 document inside edi_energy_de/FV2510), which a plain max(id) over the directory
+        # would sooner or later pick up. The window bounds come from efoli, i.e. from the
+        # authoritative BDEW dates, not from the FV label.
+        # Known limitation: the document id cannot distinguish an "außerordentliche
+        # Veröffentlichung" or a "Fehlerkorrektur" from a regular publication. It does reproduce the
+        # paths that used to be hardcoded here for all three format versions.
+        env:
+          FORMAT_VERSION: ${{ matrix.output }}
+          FV_DIR: edi_energy_mirror/edi_energy_de/${{ matrix.output }}
         run: |
-          latest=$(ls edi_energy_mirror/edi_energy_de/${{ matrix.output }}/EBD_*.docx 2>/dev/null \
-            | awk -F'_' '{id=$NF; sub(/\.docx$/,"",id); print id+0, $0}' \
-            | sort -n | awk '{print $2}' | tail -n1)
-          if [ -z "$latest" ]; then
-            echo "No EBD docx found in edi_energy_de/${{ matrix.output }}" >&2
-            exit 1
-          fi
-          echo "Found latest EBD docx: $latest"
-          # strip the "edi_energy_mirror/" prefix so the path is relative to edi_energy_mirror/ebd-tooling
-          relative="../${latest#edi_energy_mirror/}"
-          echo "docx=$relative" >> "$GITHUB_OUTPUT"
+          python3 -m pip install --quiet efoli
+          python3 <<'PY'
+          import os
+          import re
+          import sys
+          from datetime import date
+          from pathlib import Path
+
+          from efoli import EdifactFormatVersion, get_edifact_format_version_valid_from
+
+          format_version = os.environ["FORMAT_VERSION"]
+          fv_dir = Path(os.environ["FV_DIR"])
+
+          # keep in sync with get_meaningful_file_name(), see the comment above this script
+          ebd_docx_pattern = re.compile(
+              r"^EBD_(?P<version>[^_]+)"
+              r"_(?P<valid_from>\d{8})_(?P<valid_to>\d{8})_(?P<publication_date>\d{8})"
+              r"_(?P<flags>[xo]{4})_(?P<file_id>\d+)\.docx$"
+          )
+
+          def valid_from_of(fv: EdifactFormatVersion) -> date | None:
+              try:
+                  return get_edifact_format_version_valid_from(fv)
+              except (KeyError, ValueError):
+                  return None  # format version not (yet) known to efoli
+
+          def validity_window(fv: str) -> tuple[date, date | None]:
+              """[valid_from of fv, valid_from of the format version following fv)"""
+              start = get_edifact_format_version_valid_from(EdifactFormatVersion(fv))
+              later = sorted(
+                  s for s in {valid_from_of(other) for other in EdifactFormatVersion} if s and s > start
+              )
+              return start, (later[0] if later else None)
+
+          def parse_date(yyyymmdd: str) -> date:
+              return date(int(yyyymmdd[:4]), int(yyyymmdd[4:6]), int(yyyymmdd[6:8]))
+
+          candidates = []
+          for path in sorted(fv_dir.glob("EBD_*.docx")):
+              match = ebd_docx_pattern.match(path.name)
+              if match is None:
+                  print(f"::warning::Ignoring {path.name}: does not match the EBD naming convention")
+                  continue
+              candidates.append((int(match.group("file_id")), parse_date(match.group("valid_from")), path))
+
+          if not candidates:
+              print(f"::error::No EBD *.docx matching the naming convention found in {fv_dir}")
+              sys.exit(1)
+
+          fv_start, fv_end = validity_window(format_version)
+          in_window = [c for c in candidates if fv_start <= c[1] and (fv_end is None or c[1] < fv_end)]
+          if in_window:
+              candidates = in_window
+          else:
+              # happens for a brand new format version directory that has no own EBD document yet;
+              # extracting *something* loudly beats failing the whole job
+              print(
+                  f"::warning::No EBD *.docx in {fv_dir} starts its validity within {format_version} "
+                  f"({fv_start} .. {fv_end or 'open end'}); falling back to the highest document id"
+              )
+
+          file_id, valid_from, path = max(candidates, key=lambda candidate: candidate[0])
+          print(f"Latest EBD docx for {format_version}: {path.name} (id {file_id}, valid from {valid_from})")
+
+          # EBD_DOCX_FILE is consumed with working-directory: edi_energy_mirror/ebd-tooling,
+          # hence the path has to be relative to that directory
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as github_output:
+              github_output.write(f"docx=../edi_energy_de/{format_version}/{path.name}\n")
+          PY
       - name: Run Extraction
         working-directory: edi_energy_mirror/ebd-tooling
         env:
