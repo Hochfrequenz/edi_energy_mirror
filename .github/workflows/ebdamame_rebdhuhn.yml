@@ -15,12 +15,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - docx: edi_energy_de/FV2510/EBD_4.1_20260116_20260331_20260116_xoxx_12043.docx
-            output: FV2510
-          - docx: edi_energy_de/FV2604/EBD_4.2_20260401_20260930_20260623_xoxx_12239.docx
-            output: FV2604
-          - docx: edi_energy_de/FV2610/EBD_4.3_20261001_99991231_20260623_xoxx_12241.docx
-            output: FV2610
+          - output: FV2510
+          - output: FV2604
+          - output: FV2610
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v7
@@ -36,10 +33,128 @@ jobs:
       - name: login to GHCR
         # token expires 2026-05-16; has repo and read:package scope
         run: echo "${{ secrets.GHCR_PWD }}" | docker login ghcr.io -u ${{ secrets.GHCR_USR }} --password-stdin
+      - name: Find latest EBD docx
+        id: find-ebd
+        # The path is not hardcoded but derived from the file metadata, using the two libraries that
+        # own that knowledge instead of re-implementing it here:
+        #   * edi_energy_scraper writes these file names (Document.get_meaningful_file_name()) and
+        #     reads them back (DocumentMetadata.from_filename()), so the naming convention stays a
+        #     versioned API of the scraper. If the convention ever changes, from_filename() changes
+        #     with it and this step keeps working -- no pattern duplicated here that could silently
+        #     rot. See https://github.com/Hochfrequenz/edi_energy_scraper/blob/b04c2be5aeecbdef5870558e5cd54b634c6274f4/src/edi_energy_scraper/apidocument.py#L238
+        #   * efoli maps a date to the format version valid at that date, which is how we tell
+        #     whether a document in edi_energy_de/FVxxxx really belongs to FVxxxx. That matters
+        #     because the scraper mirrors a document into *every* format version it is valid in
+        #     (download_document_for_all_fv), so an FV directory legitimately contains documents of
+        #     neighbouring format versions.
+        #
+        # Both dependencies are floored and capped: floored because a stale efoli does not know the
+        # newest format version boundaries, capped because a major release could widen
+        # DocumentMetadata.valid_from back to a datetime, which would make the efoli comparison raise.
+        #
+        # Ranking: highest document version wins, the file id only breaks ties within one version.
+        # Sorting by file id alone is NOT safe even though it looks like a counter: the BDEW file id
+        # space has at least two disjoint ranges (a legacy 9xxx family and the current 11xxx/12xxx
+        # one), so in edi_energy_de/FV2410 a plain max(file id) picks EBD 3.5 (id 11420) over the
+        # newer EBD 4.0b (id 10786).
+        # The publication date deliberately does NOT take part in the ranking: when the API reports
+        # none -- which is the case for every "informatorische Lesefassung", i.e. for practically
+        # every .docx in this mirror -- get_meaningful_file_name() falls back to valid_from, so the
+        # date in the file name can be a validity start rather than a publication. Using it as a
+        # tie breaker picks FV2610's ..._20261001_ooox_12141.docx over the correct
+        # ..._20260623_xoxx_12241.docx.
+        env:
+          FORMAT_VERSION: ${{ matrix.output }}
+          FV_DIR: edi_energy_mirror/edi_energy_de/${{ matrix.output }}
+        run: |
+          python3 -m pip install --quiet 'efoli>=2.3,<3' 'edi_energy_scraper>=2.4,<3'
+          python3 <<'PY'
+          import os
+          import sys
+          from pathlib import Path
+
+          from edi_energy_scraper import DocumentMetadata
+          from efoli import EdifactFormatVersion, get_edifact_format_version
+
+          format_version = os.environ["FORMAT_VERSION"]
+          fv_dir = Path(os.environ["FV_DIR"])
+
+
+          def sort_key(metadata: DocumentMetadata) -> tuple:
+              """highest document version first, file id only breaks ties within one version"""
+              if metadata.version is None:
+                  version = (-1, -1, "")
+              else:
+                  # "4.0b" -> (4, 0, "b"); a leading G/S (Gas/Strom) is not part of the version number
+                  major, _, rest = metadata.version.lstrip("GS").partition(".")
+                  digits = "".join(filter(str.isdigit, rest))
+                  version = (int(major), int(digits or 0), "".join(filter(str.isalpha, rest)))
+              return (version, metadata.id)
+
+
+          known_format_versions = {fv.value for fv in EdifactFormatVersion}
+          if format_version not in known_format_versions:
+              # efoli only learns about a new format version with a new release, so it can lag behind
+              # a newly added matrix entry. Then we cannot verify what a document belongs to.
+              print(
+                  f"::warning::{format_version} is unknown to the installed efoli version, so the "
+                  f"documents in {fv_dir} cannot be checked against it; ranking all of them"
+              )
+          elif format_version == list(EdifactFormatVersion)[-1].value:
+              # For the newest format version efoli knows, the check below cannot reject a document
+              # of an even newer format version: get_edifact_format_version() saturates at its newest
+              # known version, and the scraper files documents using that same saturating call. BDEW
+              # publishes informatorische Lesefassungen months early, so this is not hypothetical.
+              print(
+                  f"::warning::{format_version} is the newest format version the installed efoli "
+                  f"knows, so a document belonging to a *later* format version cannot be "
+                  f"distinguished from a {format_version} one. Update efoli if that happens."
+              )
+
+          candidates = []
+          for path in sorted(fv_dir.glob("EBD_*.docx")):
+              try:
+                  metadata = DocumentMetadata.from_filename(path)
+              except Exception as error:
+                  # Not named by get_meaningful_file_name(), or the convention changed. Deliberately
+                  # broad: one odd file name must not kill the job, and from_filename() can raise
+                  # ValueError, IndexError, pydantic's ValidationError and -- if a future release
+                  # widens valid_from back to a datetime -- TypeError from the efoli comparison.
+                  # ::warning:: is a single-line command, so keep the first line only.
+                  print(f"::warning::Ignoring {path.name}, cannot read its metadata: {str(error).splitlines()[0]}")
+                  continue
+              if format_version in known_format_versions:
+                  belongs_to = get_edifact_format_version(metadata.valid_from).value
+                  if belongs_to != format_version:
+                      print(f"Skipping {path.name}: valid from {metadata.valid_from}, i.e. {belongs_to}")
+                      continue
+              candidates.append((metadata, path))
+
+          if not candidates:
+              # Do not guess: extracting another format version's EBDs would silently open a
+              # plausible looking pull request against machine-readable_entscheidungsbaumdiagramme.
+              print(
+                  f"::error::No EBD *.docx belonging to {format_version} found in {fv_dir}. Either "
+                  f"the mirror has not received the {format_version} EBD document yet, or the "
+                  f"documents landed in the wrong directory."
+              )
+              sys.exit(1)
+
+          latest_metadata, latest_path = max(candidates, key=lambda candidate: sort_key(candidate[0]))
+          print(
+              f"Latest EBD docx for {format_version}: {latest_path.name} "
+              f"(version {latest_metadata.version}, file id {latest_metadata.id})"
+          )
+
+          # EBD_DOCX_FILE is consumed with working-directory: edi_energy_mirror/ebd-tooling,
+          # hence the path has to be relative to that directory
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as github_output:
+              github_output.write(f"docx=../edi_energy_de/{format_version}/{latest_path.name}\n")
+          PY
       - name: Run Extraction
         working-directory: edi_energy_mirror/ebd-tooling
         env:
-          EBD_DOCX_FILE: ../${{ matrix.docx }}
+          EBD_DOCX_FILE: ${{ steps.find-ebd.outputs.docx }}
           OUTPUT_DIR: ../../machine-readable_entscheidungsbaumdiagramme/${{ matrix.output }}
           GITHUB_TOKEN: ${{ secrets.XMLMIGSAHBS_READ_TOKEN }}
           FORMAT_VERSION: ${{ matrix.output }}
