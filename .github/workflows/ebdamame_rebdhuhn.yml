@@ -35,116 +35,79 @@ jobs:
         run: echo "${{ secrets.GHCR_PWD }}" | docker login ghcr.io -u ${{ secrets.GHCR_USR }} --password-stdin
       - name: Find latest EBD docx
         id: find-ebd
-        # The file name is not hardcoded but derived from the naming convention that
-        # edi_energy_scraper applies when it mirrors the BDEW documents into this repository, see
-        # Document.get_meaningful_file_name():
-        # https://github.com/Hochfrequenz/edi_energy_scraper/blob/b04c2be5aeecbdef5870558e5cd54b634c6274f4/src/edi_energy_scraper/apidocument.py#L238
-        #   "{kind}_{edifact_format}{version}_{from_date}_{to_date}_{publication_date}_{flags}_{id}.{extension}"
-        # {edifact_format} is empty for EBD documents, so the names read:
-        #   EBD_{version}_{valid_from}_{valid_to}_{publication_date}_{flags}_{id}.docx
-        # ⚠️ This step only works as long as that format string stays exactly the way it is. If
-        # get_meaningful_file_name() ever changes (field order, the "_" separator, or the trailing
-        # document id), this step has to be adapted, too. It warns about and skips every EBD_*.docx
-        # that does not match the pattern, so an upstream convention change shows up in the job log
-        # instead of silently picking the wrong document.
+        # The path is not hardcoded but derived from the file metadata, using the two libraries that
+        # own that knowledge instead of re-implementing it here:
+        #   * edi_energy_scraper writes these file names (Document.get_meaningful_file_name()) and
+        #     reads them back (DocumentMetadata.from_filename()), so the naming convention stays a
+        #     versioned API of the scraper. If the convention ever changes, from_filename() changes
+        #     with it and this step keeps working -- no pattern duplicated here that could silently
+        #     rot. See https://github.com/Hochfrequenz/edi_energy_scraper/blob/b04c2be5aeecbdef5870558e5cd54b634c6274f4/src/edi_energy_scraper/apidocument.py#L238
+        #   * efoli maps a date to the format version valid at that date, which is how we tell
+        #     whether a document in edi_energy_de/FVxxxx really belongs to FVxxxx. That matters
+        #     because the scraper mirrors a document into *every* format version it is valid in
+        #     (download_document_for_all_fv), so an FV directory legitimately contains documents of
+        #     neighbouring format versions.
         #
-        # How the "latest" document is chosen: among the documents whose validity starts within this
-        # format version, take the one with the highest BDEW document id. That id is a per-file
-        # counter of the BDEW system, so the highest id is the most recently added document.
-        # Sorting by the dates in the file name would be worse: {publication_date} falls back to
-        # {valid_from} whenever the API reports no publication date (which is the case for every
-        # "informatorische Lesefassung", i.e. for practically every .docx in this mirror), and
-        # {valid_to} is occasionally even before {valid_from} in the source data.
-        # Restricting to the format version's own validity window is what keeps this honest: FV
-        # directories have contained documents of the *following* format version before (e.g. an
-        # EBD 4.2 document inside edi_energy_de/FV2510), which a plain max(id) over the directory
-        # would sooner or later pick up. The window bounds come from efoli, i.e. from the
-        # authoritative BDEW dates, not from the FV label.
+        # Among the documents that belong to this format version we take the highest BDEW document
+        # id. That id is a per-file counter of the BDEW system, so the highest id is the most
+        # recently added document. The dates in the name are the worse criterion: publication_date
+        # falls back to valid_from whenever the API reports none (which is the case for every
+        # "informatorische Lesefassung", i.e. practically every .docx here) and valid_until is
+        # occasionally even before valid_from in the source data.
         # Known limitation: the document id cannot distinguish an "außerordentliche
-        # Veröffentlichung" or a "Fehlerkorrektur" from a regular publication. It does reproduce the
-        # paths that used to be hardcoded here for all three format versions.
+        # Veröffentlichung" or a "Fehlerkorrektur" from a regular publication.
         env:
           FORMAT_VERSION: ${{ matrix.output }}
           FV_DIR: edi_energy_mirror/edi_energy_de/${{ matrix.output }}
         run: |
-          python3 -m pip install --quiet efoli
+          python3 -m pip install --quiet efoli edi_energy_scraper
           python3 <<'PY'
           import os
-          import re
           import sys
-          from datetime import date
           from pathlib import Path
 
-          from efoli import EdifactFormatVersion, get_edifact_format_version_valid_from
+          from edi_energy_scraper import DocumentMetadata
+          from efoli import EdifactFormatVersion, get_edifact_format_version
 
           format_version = os.environ["FORMAT_VERSION"]
           fv_dir = Path(os.environ["FV_DIR"])
 
-          # keep in sync with get_meaningful_file_name(), see the comment above this script
-          ebd_docx_pattern = re.compile(
-              r"^EBD_(?P<version>[^_]+)"
-              r"_(?P<valid_from>\d{8})_(?P<valid_to>\d{8})_(?P<publication_date>\d{8})"
-              r"_(?P<flags>[xo]{4})_(?P<file_id>\d+)\.docx$"
-          )
-
-          def valid_from_of(fv: EdifactFormatVersion) -> date | None:
-              try:
-                  return get_edifact_format_version_valid_from(fv)
-              except (KeyError, ValueError):
-                  return None  # format version not (yet) known to efoli
-
-          def validity_window(fv: str) -> tuple[date | None, date | None]:
-              """[valid_from of fv, valid_from of the format version following fv)"""
-              try:
-                  start = get_edifact_format_version_valid_from(EdifactFormatVersion(fv))
-              except (KeyError, ValueError):
-                  return None, None  # format version not (yet) known to efoli
-              later = sorted(
-                  s for s in {valid_from_of(other) for other in EdifactFormatVersion} if s and s > start
+          # efoli only learns about a new format version with a new release, so it can lag behind a
+          # newly added matrix entry. In that case we cannot verify what a document belongs to.
+          efoli_knows_format_version = format_version in {fv.value for fv in EdifactFormatVersion}
+          if not efoli_knows_format_version:
+              print(
+                  f"::warning::{format_version} is unknown to the installed efoli version, so the "
+                  f"documents in {fv_dir} cannot be checked against it; taking the highest document id"
               )
-              return start, (later[0] if later else None)
-
-          def parse_date(yyyymmdd: str) -> date:
-              return date(int(yyyymmdd[:4]), int(yyyymmdd[4:6]), int(yyyymmdd[6:8]))
 
           candidates = []
           for path in sorted(fv_dir.glob("EBD_*.docx")):
-              match = ebd_docx_pattern.match(path.name)
-              if match is None:
-                  print(f"::warning::Ignoring {path.name}: does not match the EBD naming convention")
+              try:
+                  metadata = DocumentMetadata.from_filename(path)
+              except (ValueError, IndexError) as error:
+                  # not named by get_meaningful_file_name() (or the convention changed)
+                  print(f"::warning::Ignoring {path.name}, cannot read its metadata: {error}")
                   continue
-              candidates.append((int(match.group("file_id")), parse_date(match.group("valid_from")), path))
+              if efoli_knows_format_version:
+                  belongs_to = get_edifact_format_version(metadata.valid_from).value
+                  if belongs_to != format_version:
+                      print(f"Skipping {path.name}: valid from {metadata.valid_from}, i.e. {belongs_to}")
+                      continue
+              candidates.append((metadata.id, path))
 
           if not candidates:
-              print(f"::error::No EBD *.docx matching the naming convention found in {fv_dir}")
+              # Do not guess: extracting another format version's EBDs would silently open a
+              # plausible looking pull request against machine-readable_entscheidungsbaumdiagramme.
+              print(
+                  f"::error::No EBD *.docx belonging to {format_version} found in {fv_dir}. Either "
+                  f"the mirror has not received the {format_version} EBD document yet, or the "
+                  f"documents landed in the wrong directory."
+              )
               sys.exit(1)
 
-          fv_start, fv_end = validity_window(format_version)
-          if fv_start is None:
-              # efoli does not know this format version yet (it is only taught new format versions by
-              # a new release), so there is no window to check against. Warn and take the highest
-              # document id -- that is the best guess available and still beats failing the job.
-              print(
-                  f"::warning::{format_version} is unknown to efoli, cannot check that the chosen "
-                  f"document actually belongs to it; falling back to the highest document id"
-              )
-          else:
-              in_window = [c for c in candidates if fv_start <= c[1] and (fv_end is None or c[1] < fv_end)]
-              if not in_window:
-                  # every candidate belongs to a *different* format version. Do not guess: extracting
-                  # the wrong format version's EBDs would silently open a plausible looking pull
-                  # request against machine-readable_entscheidungsbaumdiagramme.
-                  print(
-                      f"::error::None of the {len(candidates)} EBD *.docx in {fv_dir} starts its "
-                      f"validity within {format_version} ({fv_start} .. {fv_end or 'open end'}). "
-                      f"Either the mirror has not received the {format_version} EBD document yet, or "
-                      f"the documents landed in the wrong directory."
-                  )
-                  sys.exit(1)
-              candidates = in_window
-
-          file_id, valid_from, path = max(candidates, key=lambda candidate: candidate[0])
-          print(f"Latest EBD docx for {format_version}: {path.name} (id {file_id}, valid from {valid_from})")
+          document_id, path = max(candidates)
+          print(f"Latest EBD docx for {format_version}: {path.name} (document id {document_id})")
 
           # EBD_DOCX_FILE is consumed with working-directory: edi_energy_mirror/ebd-tooling,
           # hence the path has to be relative to that directory
