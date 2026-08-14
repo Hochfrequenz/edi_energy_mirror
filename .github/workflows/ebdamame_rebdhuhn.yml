@@ -93,9 +93,12 @@ jobs:
               except (KeyError, ValueError):
                   return None  # format version not (yet) known to efoli
 
-          def validity_window(fv: str) -> tuple[date, date | None]:
+          def validity_window(fv: str) -> tuple[date | None, date | None]:
               """[valid_from of fv, valid_from of the format version following fv)"""
-              start = get_edifact_format_version_valid_from(EdifactFormatVersion(fv))
+              try:
+                  start = get_edifact_format_version_valid_from(EdifactFormatVersion(fv))
+              except (KeyError, ValueError):
+                  return None, None  # format version not (yet) known to efoli
               later = sorted(
                   s for s in {valid_from_of(other) for other in EdifactFormatVersion} if s and s > start
               )
@@ -117,16 +120,28 @@ jobs:
               sys.exit(1)
 
           fv_start, fv_end = validity_window(format_version)
-          in_window = [c for c in candidates if fv_start <= c[1] and (fv_end is None or c[1] < fv_end)]
-          if in_window:
-              candidates = in_window
-          else:
-              # happens for a brand new format version directory that has no own EBD document yet;
-              # extracting *something* loudly beats failing the whole job
+          if fv_start is None:
+              # efoli does not know this format version yet (it is only taught new format versions by
+              # a new release), so there is no window to check against. Warn and take the highest
+              # document id -- that is the best guess available and still beats failing the job.
               print(
-                  f"::warning::No EBD *.docx in {fv_dir} starts its validity within {format_version} "
-                  f"({fv_start} .. {fv_end or 'open end'}); falling back to the highest document id"
+                  f"::warning::{format_version} is unknown to efoli, cannot check that the chosen "
+                  f"document actually belongs to it; falling back to the highest document id"
               )
+          else:
+              in_window = [c for c in candidates if fv_start <= c[1] and (fv_end is None or c[1] < fv_end)]
+              if not in_window:
+                  # every candidate belongs to a *different* format version. Do not guess: extracting
+                  # the wrong format version's EBDs would silently open a plausible looking pull
+                  # request against machine-readable_entscheidungsbaumdiagramme.
+                  print(
+                      f"::error::None of the {len(candidates)} EBD *.docx in {fv_dir} starts its "
+                      f"validity within {format_version} ({fv_start} .. {fv_end or 'open end'}). "
+                      f"Either the mirror has not received the {format_version} EBD document yet, or "
+                      f"the documents landed in the wrong directory."
+                  )
+                  sys.exit(1)
+              candidates = in_window
 
           file_id, valid_from, path = max(candidates, key=lambda candidate: candidate[0])
           print(f"Latest EBD docx for {format_version}: {path.name} (id {file_id}, valid from {valid_from})")
